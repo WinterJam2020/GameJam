@@ -46,12 +46,6 @@ if false then
 
 	function Resources:GetBindableFunction(_Name: string): BindableFunction
 	end
-
-	function Resources:GetGuiObject(_Name: string): GuiObject
-	end
-
-	function Resources:GetObject(_Name: string): Instance
-	end
 end
 
 function Resources:GetLocalTable(TableName)
