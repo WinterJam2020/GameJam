@@ -45,6 +45,11 @@
             "icon": "bullet",
             "extensions": [".gitignore"],
             "format": "png"
+        },
+        {
+            "icon": "key",
+            "extensions": ["license"],
+            "format": "png"
         }
     ],
     "vsicons.associations.folders": [
@@ -60,7 +65,12 @@
         },
         {
             "icon": "studio",
-            "extensions": ["client", "server"],
+            "extensions": ["client", "server", "events"],
+            "format": "png"
+        },
+        {
+            "icon": "folder_database",
+            "extensions": ["repository"],
             "format": "png"
         }
     ],
