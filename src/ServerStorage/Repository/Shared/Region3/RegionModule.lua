@@ -116,6 +116,7 @@ local function BoxCollision(CFrame0, Size0, CFrame1, Size1, AssumeTrue): boolean
 	local m24, m25, m26 = Size0.X / 2, Size0.Y / 2, Size0.Z / 2
 	local m27, m28, m29 = Size1.X / 2, Size1.Y / 2, Size1.Z / 2
 	local m30, m31, m32 = m12 - m00, m13 - m01, m14 - m02
+
 	m00 = m03 * m30 + m06 * m31 + m09 * m32
 	m01 = m04 * m30 + m07 * m31 + m10 * m32
 	m02 = m05 * m30 + m08 * m31 + m11 * m32
@@ -125,13 +126,16 @@ local function BoxCollision(CFrame0, Size0, CFrame1, Size1, AssumeTrue): boolean
 	m30 = m12 > m27 and m12 - m27 or m12 < -m27 and m12 + m27 or 0
 	m31 = m13 > m28 and m13 - m28 or m13 < -m28 and m13 + m28 or 0
 	m32 = m14 > m29 and m14 - m29 or m14 < -m29 and m14 + m29 or 0
+
 	local m33 = m00 > m24 and m00 - m24 or m00 < -m24 and m00 + m24 or 0
 	local m34 = m01 > m25 and m01 - m25 or m01 < -m25 and m01 + m25 or 0
 	local m35 = m02 > m26 and m02 - m26 or m02 < -m26 and m02 + m26 or 0
 	local m36 = m30 * m30 + m31 * m31 + m32 * m32
+
 	m30 = m33 * m33 + m34 * m34 + m35 * m35
 	m31 = m24 < m25 and (m24 < m26 and m24 or m26) or (m25 < m26 and m25 or m26)
 	m32 = m27 < m28 and (m27 < m29 and m27 or m29) or (m28 < m29 and m28 or m29)
+
 	if m36 < m31 * m31 or m30 < m32 * m32 then
 		return true
 	elseif m36 > m24 * m24 + m25 * m25 + m26 * m26 or m30 > m27 * m27 + m28 * m28 + m29 * m29 then
@@ -161,6 +165,7 @@ local function BoxCollision(CFrame0, Size0, CFrame1, Size1, AssumeTrue): boolean
 		m22 = m25 * m09
 		m23 = m26 * m10
 		m33 = m15 + m16 + m17 - m12
+
 		if m33 * m33 < m08 then
 			m34 = m18 + m19 + m20 - m13
 			if m34 * m34 < m11 then
@@ -261,6 +266,7 @@ local function BoxCollision(CFrame0, Size0, CFrame1, Size1, AssumeTrue): boolean
 		m22 = m29 * m32
 		m23 = m29 * m09
 		m35 = (m02 - m26 + m15 + m16) / m10
+
 		if m35 * m35 < m05 then
 			m33 = m00 + m17 + m18 - m35 * m32
 			if m33 * m33 < m12 then
