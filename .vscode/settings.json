@@ -1,6 +1,6 @@
 {
-	"Lua.runtime.version": "Luau",
-	"vsicons.associations.files": [
+    "Lua.runtime.version": "Luau",
+    "vsicons.associations.files": [
         {
             "icon": "lua_server",
             "extensions": ["server.lua"],
