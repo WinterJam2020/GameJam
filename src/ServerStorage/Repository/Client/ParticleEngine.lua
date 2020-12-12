@@ -57,7 +57,6 @@ end
 
 --[[**
 	Removes a Particle from the ParticleEngine.
-
 	@param [IProperties] Properties The particle you want to remove.
 	@returns [void]
 **--]]
