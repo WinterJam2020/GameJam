@@ -50,6 +50,11 @@
             "icon": "key",
             "extensions": ["license"],
             "format": "png"
+        },
+        {
+            "icon": "table",
+            "extensions": ["toml"],
+            "format": "png"
         }
     ],
     "vsicons.associations.folders": [
@@ -65,7 +70,7 @@
         },
         {
             "icon": "studio",
-            "extensions": ["client", "server", "events"],
+            "extensions": ["client", "server", "events", "services"],
             "format": "png"
         },
         {
