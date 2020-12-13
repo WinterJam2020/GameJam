@@ -59,8 +59,8 @@ do
 
 		return setmetatable({
 			cA = cA;
-			cB = cD;
-			cC = cD;
+			cB = cB;
+			cC = cC;
 			cD = cD;
 			length = (function()
 				local result = 0
