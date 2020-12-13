@@ -77,6 +77,26 @@
             "icon": "folder_database",
             "extensions": ["repository"],
             "format": "png"
+        },
+        {
+            "icon": "starterplayer",
+            "extensions": ["starterplayer"],
+            "format": "png"
+        },
+        {
+            "icon": "serverstorage",
+            "extensions": ["serverstorage"],
+            "format": "png"
+        },
+        {
+            "icon": "replicated",
+            "extensions": ["replicatedstorage", "replicatedfirst"],
+            "format": "png"
+        },
+        {
+            "icon": "starterscripts",
+            "extensions": ["starterplayerscripts", "startercharacterscripts"],
+            "format": "png"
         }
     ],
     "vsicons.associations.folderDefault.folder": {
