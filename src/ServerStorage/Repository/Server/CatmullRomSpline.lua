@@ -64,9 +64,9 @@ do
 			cD = cD;
 			length = (function()
 				local result = 0
-				local start_here = solve(cA, cD, cD, cD, 0)
+				local start_here = solve(cA, cB, cC, cD, 0)
 				for i = 0, 1 - RIEMANN_STEP, RIEMANN_STEP do
-					local stop_here = solve(cA, cD, cD, cD, i + RIEMANN_STEP)
+					local stop_here = solve(cA, cB, cC, cD, i + RIEMANN_STEP)
 					result += (stop_here - start_here).Magnitude
 					start_here = stop_here
 				end
