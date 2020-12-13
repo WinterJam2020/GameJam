@@ -15,6 +15,15 @@ function Table.FastRemoveGivenLength(Array, Index: number, Length: number): numb
 	return Length - 1
 end
 
+function Table.Copy(Target)
+	local NewTable = {}
+	for Index, Value in next, Target do
+		NewTable[Index] = Value
+	end
+
+	return NewTable
+end
+
 local function DeepCopy(Target, Context)
 	Context = Context or {}
 	if Context[Target] then

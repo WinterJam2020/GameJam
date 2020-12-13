@@ -4,13 +4,7 @@ local Scheduler = Resources:LoadLibrary("Scheduler")
 
 local HOUR_DIFFERENCE = math.floor((os.time() - tick()) / 900 + 0.5) * 900
 
-local SyncedPoller = {
-	ClassName = "SyncedPoller";
-	__tostring = function(self)
-		return self.ClassName
-	end;
-}
-
+local SyncedPoller = {ClassName = "SyncedPoller"}
 SyncedPoller.__index = SyncedPoller
 
 local function SyncedPollerLoop(self, Interval, Function)
@@ -26,7 +20,7 @@ local function SyncedPollerLoop(self, Interval, Function)
 		-- end
 
 		local CurrentTime = tick() + HOUR_DIFFERENCE
-		local TimeElapsed = CurrentTime + Scheduler.Wait(Interval - CurrentTime % Interval)
+		local TimeElapsed = CurrentTime + Scheduler.Wait2(Interval - CurrentTime % Interval)
 
 		if self._Running then
 			Function(TimeElapsed)

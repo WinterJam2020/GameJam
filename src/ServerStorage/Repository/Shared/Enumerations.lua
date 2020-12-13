@@ -2,6 +2,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Resources = require(ReplicatedStorage.Resources)
 local Enumeration = Resources:LoadLibrary("Enumeration")
 
+Enumeration.DataStoreHandler = {"ForceLoad", "Steal", "Repeat", "Cancel"}
 Enumeration.EasingFunction = {
 	"Standard";
 	"Deceleration";
@@ -73,7 +74,5 @@ Enumeration.EasingFunction = {
 	"Spring";
 	"SoftSpring";
 }
-
-Enumeration.DataStoreHandler = {"ForceLoad", "Steal", "Repeat", "Cancel"}
 
 return Enumeration

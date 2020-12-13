@@ -11,7 +11,7 @@ local IProperties = Constants.TYPE_CHECKS.IParticleProperties
 local ParticleEngineServer = {}
 
 function ParticleEngineServer:Initialize()
-	self.RemoteEvent = Resources:GetRemoteEvent(Constants.REMOTE_NAME.PARTICLE_ENGINE_EVENT)
+	self.RemoteEvent = Resources:GetRemoteEvent(Constants.REMOTE_NAMES.PARTICLE_ENGINE_EVENT)
 	self.RemoteEvent.OnServerEvent:Connect(function(Player, Properties)
 		Properties.Global = nil
 		for _, OtherPlayer in ipairs(Players:GetPlayers()) do

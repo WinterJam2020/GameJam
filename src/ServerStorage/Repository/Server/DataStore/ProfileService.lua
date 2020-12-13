@@ -148,7 +148,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 local Resources = require(ReplicatedStorage.Resources)
-local DataStoreService = Resources:LoadLibrary("DataStoreService")
+local DataStoreService: DataStoreService = Resources:LoadLibrary("DataStoreService")
 local Enumeration = Resources:LoadLibrary("Enumerations")
 local Janitor = Resources:LoadLibrary("Janitor")
 local Promise = Resources:LoadLibrary("Promise")
