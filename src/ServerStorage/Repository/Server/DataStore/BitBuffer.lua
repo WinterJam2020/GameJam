@@ -1,3 +1,8 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Resources = require(ReplicatedStorage.Resources)
+local BigNum = Resources:LoadLibrary("BigNum")
+local typeof = Resources:LoadLibrary("TypeOf")
+
 -- The standard base64 alphabet as codepoints rather than characters.
 local BASE64_CHAR_SET = {
 	[0] = 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a, 0x4b, 0x4c,
@@ -109,7 +114,7 @@ local function bitBuffer(stream)
 			c = c+1
 		end
 
-		return table.concat(output, "")
+		return table.concat(output)
 	end
 
 	local function dumpHex()
@@ -119,7 +124,7 @@ local function bitBuffer(stream)
 			output[i] = byte_to_hex[v]
 		end
 
-		return table.concat(output, "")
+		return table.concat(output)
 	end
 
 	local function dumpBase64()
@@ -153,7 +158,7 @@ local function bitBuffer(stream)
 			k = k+1
 		end
 
-		return table.concat(realOutput, "")
+		return table.concat(realOutput)
 	end
 
 	local function exportChunk(chunkLength)
@@ -1590,6 +1595,17 @@ local function bitBuffer(stream)
 		return ColorSequence.new(keypoints)
 	end
 
+	-- Custom Objects
+
+	local function writeBigNum(value)
+		assert(typeof(value) == "BigNum", "Value passed wasn't a BigNum.")
+		writeTerminatedString(value:ToString64())
+	end
+
+	local function readBigNum()
+		return BigNum.FromString64(readTerminatedString())
+	end
+
 	return {
 		DumpBinary = dumpBinary,
 		DumpString = dumpString,
@@ -1681,6 +1697,9 @@ local function bitBuffer(stream)
 		ReadNumberRange = readNumberRange,
 		ReadNumberSequence = readNumberSequence,
 		ReadColorSequence = readColorSequence,
+
+		WriteBigNum = writeBigNum,
+		ReadBigNum = readBigNum,
 	}
 end
 
