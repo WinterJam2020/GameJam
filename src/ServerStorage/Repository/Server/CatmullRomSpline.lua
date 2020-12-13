@@ -101,7 +101,6 @@ end
 -- Takes a table of Vector3/Vector2's representing points along the spline path.
 
 local Path = {ClassName = "Path"}
-Path.__index = Path
 
 type Array<Value> = {[number]: Value}
 
@@ -162,11 +161,11 @@ Path.new = Typer.AssignSignature(Typer.ArrayOfVector3s, function(Points: Array<V
 		return SplinePoint:Solve(Alpha)
 	end
 
-	return setmetatable({
+	return {
 		Parts = Parts;
 		Length = Length;
 		GetPointOnPath = GetPointOnPath;
-	}, Path)
+	}
 end)
 
 return {
