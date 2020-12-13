@@ -851,6 +851,7 @@ end
 -- GlobalUpdates object:
 
 local GlobalUpdates = {
+	ClassName = "GlobalUpdates";
 	--[[
 		_updates_latest = {}, -- [table] {update_index, {{update_id, version_id, update_locked, update_data}, ...}}
 		_pending_update_lock = {update_id, ...} / nil, -- [table / nil]
@@ -1140,6 +1141,7 @@ end
 -- Profile object:
 
 local Profile = {
+	ClassName = "Profile";
 	--[[
 		Data = {}, -- [table] -- Loaded once after ProfileStore:LoadProfileAsync() finishes
 		Metadata = {}, -- [table] -- Updated with every auto-save
@@ -1320,6 +1322,7 @@ end
 -- ProfileStore object:
 
 local ProfileStore = {
+	ClassName = "ProfileStore";
 	--[[
 		Mock = {},
 
