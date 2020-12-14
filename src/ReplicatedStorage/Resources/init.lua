@@ -10,8 +10,21 @@ local LocalResourcesLocation
 
 local COMMAND_BAR = {Name = "Command bar"}
 
+local Heartbeat = RunService.Heartbeat
+
 local ipairs = ipairs
 local next = next
+
+local function HeartbeatWait(Seconds)
+	Seconds = math.max(Seconds or 0.03, 0.029)
+	local TimeRemaining = Seconds
+
+	while TimeRemaining > 0 do
+		TimeRemaining -= Heartbeat:Wait()
+	end
+
+	return Seconds - TimeRemaining
+end
 
 local SERVER_SIDE = RunService:IsServer()
 local UNINSTANTIABLE_INSTANCES = setmetatable({
@@ -229,11 +242,11 @@ else
 		local LocalPlayer
 		repeat
 			LocalPlayer = Players.LocalPlayer
-		until LocalPlayer or not wait()
+		until LocalPlayer or not HeartbeatWait(0.03)
 
 		repeat
 			LocalResourcesLocation = LocalPlayer:FindFirstChildOfClass("PlayerScripts")
-		until LocalResourcesLocation or not wait()
+		until LocalResourcesLocation or not HeartbeatWait(0.03)
 	else
 		LocalResourcesLocation = ServerStorage
 		local LibraryRepository = LocalResourcesLocation:FindFirstChild("Repository")

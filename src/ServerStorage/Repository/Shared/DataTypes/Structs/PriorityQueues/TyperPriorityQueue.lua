@@ -1,6 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Resources = require(ReplicatedStorage.Resources)
-local t = Resources:LoadLibrary("t")
+local Typer = Resources:LoadLibrary("Typer")
 
 local PriorityQueue = {ClassName = "PriorityQueue"}
 PriorityQueue.__index = PriorityQueue
@@ -74,18 +74,13 @@ end
 type SingleTypeChecker = (any) -> (boolean, string?)
 type DoubleTypeChecker = (any, any) -> (boolean, string?)
 
-local OptionalBoolean: SingleTypeChecker = t.optional(t.boolean)
-local InsertWithPriorityTuple: DoubleTypeChecker = t.tuple(t.any, t.number)
-
 --[[**
 	Add an element to the queue with an associated priority.
 	@param [Typer.Any] Value The value of the element.
 	@param [Typer.Number] Priority The priority of the element.
 	@returns [Typer.Integer] The inserted position.
 **--]]
-function PriorityQueue:InsertWithPriority(Value: any, Priority: number): number
-	assert(InsertWithPriorityTuple(Value, Priority))
-
+PriorityQueue.InsertWithPriority = Typer.AssignSignature(2, Typer.Any, Typer.Number, function(self, Value: any, Priority: number): number
 	local Heap: Array<HeapEntry> = self.Heap
 	local Position: number = FindClosestIndex(self, Priority, 1, self.Length)
 	local Element1: HeapEntry = {Value = Value, Priority = Priority}
@@ -100,7 +95,7 @@ function PriorityQueue:InsertWithPriority(Value: any, Priority: number): number
 	table.insert(Heap, Position, Element1)
 	self.Length += 1
 	return Position
-end
+end)
 
 PriorityQueue.Insert = PriorityQueue.InsertWithPriority
 
@@ -110,9 +105,7 @@ PriorityQueue.Insert = PriorityQueue.InsertWithPriority
 	@param [Typer.Number] NewPriority The new priority of the value.
 	@returns [Typer.OptionalNumber] The new position of the HeapEntry if it was found.
 **--]]
-function PriorityQueue:ChangePriority(Value: any, NewPriority: number): number?
-	assert(InsertWithPriorityTuple(Value, NewPriority))
-
+PriorityQueue.ChangePriority = Typer.AssignSignature(2, Typer.Any, Typer.Number, function(self, Value: any, NewPriority: number): number
 	local Heap: Array<HeapEntry> = self.Heap
 	for Index, HeapEntry in ipairs(Heap) do
 		if HeapEntry.Value == Value then
@@ -123,7 +116,7 @@ function PriorityQueue:ChangePriority(Value: any, NewPriority: number): number?
 	end
 
 	error("Couldn't find value in queue?", 2)
-end
+end)
 
 --[[**
 	Gets the priority of the first value in the heap. This is the value that will be removed last.
@@ -155,9 +148,7 @@ end
 	@param [Typer.OptionalBoolean] OnlyValue Whether or not to return only the value or the entire entry.
 	@returns [HeapEntry] The removed element.
 **--]]
-function PriorityQueue:PopElement(OnlyValue: boolean?): any | HeapEntry
-	assert(OptionalBoolean(OnlyValue))
-
+PriorityQueue.PopElement = Typer.AssignSignature(2, Typer.OptionalBoolean, function(self, OnlyValue: boolean?): any | HeapEntry
 	local Heap: Array<HeapEntry> = self.Heap
 	local Length: number = self.Length
 	self.Length -= 1
@@ -165,7 +156,7 @@ function PriorityQueue:PopElement(OnlyValue: boolean?): any | HeapEntry
 	local Element: HeapEntry = Heap[Length]
 	Heap[Length] = null
 	return OnlyValue and Element.Value or Element
-end
+end)
 
 PriorityQueue.PullHighestPriorityElement = PriorityQueue.PopElement
 PriorityQueue.GetMaximumElement = PriorityQueue.PopElement
@@ -175,9 +166,7 @@ PriorityQueue.GetMaximumElement = PriorityQueue.PopElement
 	@param [Typer.OptionalBoolean] OnlyValues Whether or not the array is just the values or the priorities as well.
 	@returns [Typer.Array] The PriorityQueue's array.
 **--]]
-function PriorityQueue:ToArray(OnlyValues: boolean?): Array<any> | Array<HeapEntry>
-	assert(OptionalBoolean(OnlyValues))
-
+PriorityQueue.ToArray = Typer.AssignSignature(2, Typer.OptionalBoolean, function(self, OnlyValues: boolean?): Array<any> | Array<HeapEntry>
 	if OnlyValues then
 		local Array: Array<any> = table.create(self.Length)
 		for Index, HeapEntry in ipairs(self.Heap) do
@@ -194,16 +183,14 @@ function PriorityQueue:ToArray(OnlyValues: boolean?): Array<any> | Array<HeapEnt
 
 		return Array
 	end
-end
+end)
 
 --[[**
 	Returns an iterator function for iterating over the PriorityQueue.
 	@param [Typer.OptionalBoolean] OnlyValues Whether or not the iterator returns just the values or the priorities as well.
 	@returns [Typer.Function] The iterator function. Usage is `for Index, Value in PriorityQueue:Iterate(OnlyValues) do`.
 **--]]
-function PriorityQueue:Iterate(OnlyValues: boolean?): IteratorFunction
-	assert(OptionalBoolean(OnlyValues))
-
+PriorityQueue.Iterate = Typer.AssignSignature(2, Typer.OptionalBoolean, function(self, OnlyValues: boolean?): IteratorFunction
 	if OnlyValues then
 		local Array: Array<any> = table.create(self.Length)
 		for Index, HeapEntry in ipairs(self.Heap) do
@@ -214,16 +201,14 @@ function PriorityQueue:Iterate(OnlyValues: boolean?): IteratorFunction
 	else
 		return ipairs(self.Heap)
 	end
-end
+end)
 
 --[[**
 	Returns an iterator function for iterating over the PriorityQueue in reverse.
 	@param [Typer.OptionalBoolean] OnlyValues Whether or not the iterator returns just the values or the priorities as well.
 	@returns [Typer.Function] The iterator function. Usage is `for Index, Value in PriorityQueue:ReverseIterate(OnlyValues) do`.
 **--]]
-function PriorityQueue:ReverseIterate(OnlyValues: boolean?): IteratorFunction
-	assert(OptionalBoolean(OnlyValues))
-
+PriorityQueue.ReverseIterate = Typer.AssignSignature(2, Typer.OptionalBoolean, function(self, OnlyValues: boolean?): IteratorFunction
 	local Length: number = self.Length
 	local Top: number = Length + 1
 
@@ -242,7 +227,7 @@ function PriorityQueue:ReverseIterate(OnlyValues: boolean?): IteratorFunction
 
 		return ipairs(Array)
 	end
-end
+end)
 
 --[[**
 	Clears the entire PriorityQueue.
@@ -259,8 +244,7 @@ end
 	@param [Typer.Any] Value The value you are searching for.
 	@returns [Typer.Boolean] Whether or not the value was found.
 **--]]
-function PriorityQueue:Contains(Value: any): boolean
-	assert(t.any(Value))
+PriorityQueue.Contains = Typer.AssignSignature(2, Typer.Any, function(self, Value: any): boolean
 	for _, HeapEntry in ipairs(self.Heap) do
 		if HeapEntry.Value == Value then
 			return true
@@ -268,15 +252,14 @@ function PriorityQueue:Contains(Value: any): boolean
 	end
 
 	return false
-end
+end)
 
 --[[**
 	Removes the HeapEntry with the given priority, if it exists.
 	@param [Typer.Number] Priority The priority you are removing from the queue.
 	@returns [Typer.Nil]
 **--]]
-function PriorityQueue:RemovePriority(Priority: number)
-	assert(t.number(Priority))
+PriorityQueue.RemovePriority = Typer.AssignSignature(2, Typer.Number, function(self, Priority: number)
 	for Index, HeapEntry in ipairs(self.Heap) do
 		if HeapEntry.Priority == Priority then
 			table.remove(self.Heap, Index)
@@ -284,15 +267,14 @@ function PriorityQueue:RemovePriority(Priority: number)
 			break
 		end
 	end
-end
+end)
 
 --[[**
 	Removes the HeapEntry with the given value, if it exists.
 	@param [Typer.Any] Value The value you are removing from the queue.
 	@returns [Typer.Nil]
 **--]]
-function PriorityQueue:RemoveValue(Value: any)
-	assert(t.any(Value))
+PriorityQueue.RemoveValue = Typer.AssignSignature(2, Typer.Any, function(self, Value: any)
 	for Index, HeapEntry in ipairs(self.Heap) do
 		if HeapEntry.Value == Value then
 			table.remove(self.Heap, Index)
@@ -300,7 +282,7 @@ function PriorityQueue:RemoveValue(Value: any)
 			break
 		end
 	end
-end
+end)
 
 function PriorityQueue:__tostring(): string
 	local Array: Array<string> = table.create(self.Length)

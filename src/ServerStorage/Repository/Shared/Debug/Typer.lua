@@ -336,6 +336,8 @@ setmetatable(Typer, {
 	end;
 })
 
+local Typer_Nil = Typer.Nil
+
 function Typer.AssignSignature(...)
 	local FirstValueToCheckOffset = 0
 	local StackSignature
@@ -382,11 +384,11 @@ function Typer.AssignSignature(...)
 
 	if Castable then
 		return function(...)
-			local NumParameters = select("#", ...) -- This preserves nil's on the stack
-			local Stack = {...}
+			local Stack = table.pack(...)
+			local NumParameters = Stack.n -- This preserves nil's on the stack
 
 			for Index = 1, NumParameters < NumTypes and NumTypes or NumParameters do
-				local Success, Error = Check(StackSignature[Index] or Typer.Nil, Stack[Index + FirstValueToCheckOffset], Index + FirstValueToCheckOffset)
+				local Success, Error = Check(StackSignature[Index] or Typer_Nil, Stack[Index + FirstValueToCheckOffset], Index + FirstValueToCheckOffset)
 
 				if Success then
 					if Castable[Index] and Success ~= true then
@@ -404,7 +406,7 @@ function Typer.AssignSignature(...)
 			local NumParameters = select("#", ...)
 
 			for Index = 1, NumParameters < NumTypes and NumTypes or NumParameters do
-				local Success, Error = Check(StackSignature[Index] or Typer.Nil, select(Index + FirstValueToCheckOffset, ...), Index + FirstValueToCheckOffset)
+				local Success, Error = Check(StackSignature[Index] or Typer_Nil, select(Index + FirstValueToCheckOffset, ...), Index + FirstValueToCheckOffset)
 
 				if not Success then
 					return Resources("Debug").Error(Error)

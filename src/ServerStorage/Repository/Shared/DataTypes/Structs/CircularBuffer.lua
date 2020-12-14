@@ -5,18 +5,15 @@ function CircularBuffer.new(size)
 	assert(size, "Cannot initialize CircularBuffer with nil")
 	assert(size > 0, "Cannot initialize CircularBuffer to size < 1")
 
-	local self = {}
-	setmetatable(self, CircularBuffer)
-
-	self._data = {}
-	self._backIndex = 0
-	self._maxSize = size
-
-	return self
+	return setmetatable({
+		_data = table.create(size);
+		_backIndex = 0;
+		_maxSize = size;
+	}, CircularBuffer)
 end
 
 function CircularBuffer:reset()
-	self._data = {}
+	self._data = table.create(self._maxSize)
 	self._backIndex = 0
 end
 
@@ -42,9 +39,7 @@ function CircularBuffer:setSize(newSize)
 	while msg and ind < newSize do
 		local nextInd = ind + 1
 
-		sorted[nextInd] = {
-			entry = msg
-		}
+		sorted[nextInd] = {entry = msg}
 
 		if sorted[ind] then
 			sorted[ind]._next = sorted[nextInd]
@@ -86,14 +81,15 @@ function CircularBuffer:iterator()
 	local front =  self._data[self:getFrontIndex()]
 
 	local iterator = {
-		data = front,
+		data = front;
 		next = function (this)
 			local retVal = this.data
 			if retVal then
 				this.data = this.data._next
 			end
+
 			return retVal and retVal.entry
-		end
+		end;
 	}
 
 	return iterator
@@ -133,9 +129,7 @@ function CircularBuffer:push_back(newData)
 	end
 
 	local overwrittenData = self._data[newBackIndex]
-	self._data[newBackIndex] = {
-		entry = newData
-	}
+	self._data[newBackIndex] = {entry = newData}
 
 	if currBackIndex > 0 then
 		self._data[currBackIndex]._next = self._data[newBackIndex]
