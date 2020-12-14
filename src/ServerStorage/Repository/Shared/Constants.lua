@@ -10,6 +10,8 @@ return Table.Lock({
 	STOP_TWEEN = 3;
 
 	CONFIGURATION = {
+		RAGDOLL_TAG_NAME = "PlayerRagdoll";
+
 		-- How the day-night cycle handles.
 		DAY_NIGHT_CONSTANTS = {
 			DAY_LENGTH = 60;

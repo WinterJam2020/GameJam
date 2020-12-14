@@ -10,7 +10,7 @@ local Table = Resources:LoadLibrary("Table")
 local Analytics = setmetatable({ClassName = "Analytics"}, BaseObject)
 Analytics.__index = Analytics
 
-Resources:LoadLibrary("PromiseRemoteEventMixin"):Add(Analytics, Constants.REMOTE_NAMES.ANALYTICS_REMOTE_EVENT_NAME)
+Resources:LoadLibrary("PromiseRemoteEventMixin"):Add(Analytics, Constants.REMOTE_NAMES.ANALYTICS_REMOTE_EVENT_NAME, false)
 
 function Analytics.new()
 	local self = setmetatable(BaseObject.new(), Analytics)

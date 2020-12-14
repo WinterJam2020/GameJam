@@ -1154,7 +1154,7 @@ end
 
 local Region = {}
 
-function Region:Init()
+do
 	CurrentPlayers = Players:GetPlayers()
 	CurrentLength = #CurrentPlayers
 

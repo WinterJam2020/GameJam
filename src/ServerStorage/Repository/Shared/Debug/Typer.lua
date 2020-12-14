@@ -393,7 +393,7 @@ function Typer.AssignSignature(...)
 						Stack[Index + FirstValueToCheckOffset] = Success
 					end
 				elseif not Success then
-					return Resources("Debug").Error(Error)
+					return Resources("Debug").Error(Error) -- __call should in theory be faster.
 				end
 			end
 

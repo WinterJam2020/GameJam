@@ -42,7 +42,7 @@ function DefaultCamera:BindToRenderStep()
 	self._CameraState = CameraState.new(Workspace.CurrentCamera)
 end
 
-function DefaultCamera.UnbindFromRenderStep(_)
+function DefaultCamera:UnbindFromRenderStep()
 	RunService:UnbindFromRenderStep("DefaultCamera_Preupdate")
 	RunService:UnbindFromRenderStep("DefaultCamera_PostUpdate")
 end

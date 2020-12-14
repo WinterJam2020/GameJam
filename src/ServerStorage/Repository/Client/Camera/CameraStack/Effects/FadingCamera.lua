@@ -51,7 +51,7 @@ function FadingCamera:__index(index)
 	elseif index == "Velocity" then
 		return self.Spring.Velocity
 	elseif index == "HasReachedTarget" then
-		return math.abs(self.Value - self.Target) < 1e-4 and math.abs(self.Velocity) < 1e-4
+		return math.abs(self.Value - self.Target) < 1E-4 and math.abs(self.Velocity) < 1E-4
 	else
 		return FadingCamera[index]
 	end

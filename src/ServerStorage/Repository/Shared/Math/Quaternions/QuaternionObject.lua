@@ -39,6 +39,7 @@ local function toCFrame(q, position)
 	if position then
 		x, y, z = position.x, position.y, position.z
 	end
+
 	return CFrame.new(x, y, z, Quaternion.QuaternionToCFrame(q))
 end
 Q.ToCFrame = toCFrame
@@ -168,7 +169,7 @@ local function pow(q0,q1)
 		else
 			if w<0 then
 				local m=(-w)^q1
-				local s=m*math.sin(pi*q1)*0.57735026918962576450914878050196--3^-0.5
+				local s=m*math.sin(pi*q1)*0.57735026918963--3^-0.5
 				return new(m*math.cos(pi*q1),s,s,s)
 			else
 				return new(w^q1)
@@ -193,7 +194,7 @@ local function pow(q0,q1)
 			if vv>0 then
 				local v=math.sqrt(vv)
 				local c,s=math.cos(v),math.sin(v)/v
-				local vc,vs=mc*s,ms*c*0.57735026918962576450914878050196
+				local vc,vs=mc*s,ms*c*0.57735026918963
 				-- This is probably TERRIBLY wrong, but raising a negative number to the power of a quaternion is ill-defined in the
 				-- first place.
 				return new(mc*c-ms*s,vc*x+vs,vc*y+vs,vc*z+vs)

@@ -59,13 +59,12 @@ end
 --- Quaternion representation of the rotation of the CameraState
 -- @tfield Quaterion Quaternion
 
-
 --- Adds two camera states together
 -- @tparam CameraState other
 function CameraState:__add(Other)
 	local NewCameraState = CameraState.new(self)
 	NewCameraState.FieldOfView = self.FieldOfView + Other.FieldOfView
-	NewCameraState.Position = NewCameraState.Position + Other.Position
+	NewCameraState.Position += Other.Position
 	NewCameraState.Quaterion = self.Quaterion * Other.Quaterion
 	return NewCameraState
 end
@@ -75,7 +74,7 @@ end
 function CameraState:__sub(Other)
 	local NewCameraState = CameraState.new(self)
 	NewCameraState.FieldOfView = self.FieldOfView - Other.FieldOfView
-	NewCameraState.Position = NewCameraState.Position - Other.Position
+	NewCameraState.Position -= Other.Position
 	NewCameraState.Quaterion = self.Quaterion / Other.Quaterion
 	return NewCameraState
 end

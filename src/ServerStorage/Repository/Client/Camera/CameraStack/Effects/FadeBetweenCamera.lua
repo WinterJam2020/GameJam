@@ -63,9 +63,8 @@ function FadeBetweenCamera:__index(Index)
 				delta.Quaterion = -delta.Quaterion
 			end
 
-			local newState = stateA + delta*value
+			local newState = stateA + delta * value
 			newState.FieldOfView = FieldOfViewUtils.LerpInHeightSpace(stateA.FieldOfView, stateB.FieldOfView, value)
-
 			return newState
 		end
 	elseif Index == "CameraStateA" then

@@ -46,6 +46,9 @@ if false then
 
 	function Resources:GetBindableFunction(_Name: string): BindableFunction
 	end
+
+	function Resources:GetRagdollConstraint(_Name: string): Constraint
+	end
 end
 
 function Resources:GetLocalTable(TableName)

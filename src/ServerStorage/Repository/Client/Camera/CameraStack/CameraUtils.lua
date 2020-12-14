@@ -3,14 +3,14 @@
 
 local CameraUtils = {}
 
-function CameraUtils.GetCubeoidDiameter(Size: Vector3)
-	return math.sqrt(Size.X^2 + Size.Y^2 + Size.Z^2)
+function CameraUtils.GetCubeoidDiameter(Size: Vector3): number
+	return math.sqrt(Size.X ^ 2 + Size.Y ^ 2 + Size.Z ^ 2)
 end
 
 --- Use spherical bounding box to calculate how far back to move a camera
 -- See: https://community.khronos.org/t/zoom-to-fit-screen/59857/12
 function CameraUtils.FitBoundingBoxToCamera(Size, FovDeg, AspectRatio)
-	local Radius = CameraUtils.GetCubeoidDiameter(Size)/2
+	local Radius = CameraUtils.GetCubeoidDiameter(Size) / 2
 	return CameraUtils.FitSphereToCamera(Radius, FovDeg, AspectRatio)
 end
 

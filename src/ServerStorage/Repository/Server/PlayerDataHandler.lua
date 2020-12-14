@@ -7,7 +7,7 @@ local Resources = require(ReplicatedStorage.Resources)
 local CatchFactory = Resources:LoadLibrary("CatchFactory")
 local Enumeration = Resources:LoadLibrary("Enumerations")
 local ProfileService = Resources:LoadLibrary("ProfileService")
-local SyncedPoller = Resources:LoadLibrary("SyncedPoller")
+-- local SyncedPoller = Resources:LoadLibrary("SyncedPoller")
 local Typer = Resources:LoadLibrary("Typer")
 
 local PlayerDataHandler = {

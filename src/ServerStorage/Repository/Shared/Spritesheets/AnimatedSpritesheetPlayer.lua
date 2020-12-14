@@ -7,7 +7,6 @@ local Debug = Resources:LoadLibrary("Debug")
 local Janitor = Resources:LoadLibrary("Janitor")
 
 local Debug_Assert = Debug.Assert
-local TimeFunction = RunService:IsEdit() and os.clock or time
 
 local AnimatedSpritesheetPlayer = setmetatable({ClassName = "AnimatedSpritesheetPlayer"}, BaseObject)
 AnimatedSpritesheetPlayer.__index = AnimatedSpritesheetPlayer
@@ -28,7 +27,7 @@ local function Play(self)
 	local Frames = self.AnimatedSpritesheet:GetFrames()
 
 	PlayJanitor:Add(RunService.RenderStepped:Connect(function()
-		local Frame = math.floor(TimeFunction() * Fps) % Frames + 1
+		local Frame = math.floor(time() * Fps) % Frames + 1
 		self.AnimatedSpritesheet:GetSprite(Frame):Style(self.ImageLabel)
 	end), "Disconnect")
 end

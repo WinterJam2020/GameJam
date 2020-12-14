@@ -11,7 +11,7 @@ BinderProvider.__index = BinderProvider
 function BinderProvider.new(InitializeMethod)
 	return setmetatable({
 		BindersAddedPromise = Promise.new();
-		AfterInitPromise = Promise.new();
+		AfterInitializePromise = Promise.new();
 
 		_initMethod = InitializeMethod or error("No initMethod");
 		_afterInit = false;
@@ -39,18 +39,18 @@ function BinderProvider:PromiseBinder(BinderName)
 	end)
 end
 
-function BinderProvider:Init()
+function BinderProvider:Initialize()
 	self:_initMethod(self)
 	self.BindersAddedPromise:Resolve()
 end
 
-function BinderProvider:AfterInit()
+function BinderProvider:AfterInitialize()
 	self._afterInit = true
 	for _, Binder in ipairs(self._binders) do
-		Binder:Init()
+		Binder:Initialize()
 	end
 
-	self.AfterInitPromise:Resolve()
+	self.AfterInitializePromise:Resolve()
 end
 
 function BinderProvider:__index(Index)

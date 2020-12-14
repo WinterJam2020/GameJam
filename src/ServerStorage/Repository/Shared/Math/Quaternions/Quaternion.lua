@@ -10,9 +10,6 @@ And wisdom to know the difference.
 I cannot change most of this.
 ]]
 
-local RunService = game:GetService("RunService")
-local TimeFunction = RunService:IsEdit() and os.clock or time
-
 local pi = math.pi
 local tau = 2*pi
 
@@ -155,7 +152,7 @@ local Tweens=setmetatable({},{
 	__index=function(_,i)
 		local data=TweenData[i]
 		if data then
-			local timeNow,t0,t1=TimeFunction(),data.t0,data.t1
+			local timeNow,t0,t1=time(),data.t0,data.t1
 			if timeNow>t0 and timeNow<t1 then
 				return BezierPosition(data.x0,data.x1,data.v0,data.v1,(timeNow-t0)/(t1-t0))
 			elseif timeNow>=t1 then
@@ -168,7 +165,7 @@ local Tweens=setmetatable({},{
 	__newindex=function(_,i,v)
 		local data=TweenData[i]
 		if data then
-			local timeNow,t0,t1,x0,x1,v0,v1=TimeFunction(),data.t0,data.t1,nil
+			local timeNow,t0,t1,x0,x1,v0,v1=time(),data.t0,data.t1,nil
 			if timeNow>t0 and timeNow<t1 then
 				local dt=t1-t0
 				local t=(timeNow-t0)/dt
@@ -203,7 +200,7 @@ local QuaternionTweens=setmetatable({},{
 	__index=function(_,i)
 		local data=QuaternionTweenData[i]
 		if data then
-			local timeNow,t0,t1=TimeFunction(),data.t0,data.t1
+			local timeNow,t0,t1=time(),data.t0,data.t1
 			if timeNow>t0 and timeNow<t1 then
 				return BezierRotation(data.q0,data.q1,data.w0,data.w1,(timeNow-t0)/(t1-t0))
 			elseif timeNow>=t1 then
@@ -216,7 +213,7 @@ local QuaternionTweens=setmetatable({},{
 	__newindex=function(_,i,v)
 		local data=QuaternionTweenData[i]
 		if data then
-			local timeNow,t0,t1,q0,q1,w0,w1=TimeFunction(),data.t0,data.t1,nil
+			local timeNow,t0,t1,q0,q1,w0,w1=time(),data.t0,data.t1,nil
 			if timeNow>t0 and timeNow<t1 then
 				local dt=t1-t0
 				local t=(timeNow-t0)/dt
@@ -258,7 +255,7 @@ local CFrameTweens=setmetatable({},{
 	__index=function(_,i)
 		local data=CFrameTweenData[i]
 		if data then
-			local timeNow,t0,t1=TimeFunction(),data.t0,data.t1
+			local timeNow,t0,t1=time(),data.t0,data.t1
 			if timeNow>t0 and timeNow<t1 then
 				local t=(timeNow-t0)/(t1-t0)
 				local p=BezierPosition(data.x0,data.x1,data.v0,data.v1,t)
@@ -273,7 +270,7 @@ local CFrameTweens=setmetatable({},{
 	__newindex=function(_,i,v)
 		local data=CFrameTweenData[i]
 		if data then
-			local timeNow,t0,t1,x0,x1,v0,v1,q0,q1,w0,w1=TimeFunction(),data.t0,data.t1,nil
+			local timeNow,t0,t1,x0,x1,v0,v1,q0,q1,w0,w1=time(),data.t0,data.t1,nil
 			if timeNow>t0 and timeNow<t1 then
 				local dt=t1-t0
 				local t=(timeNow-t0)/dt
@@ -381,7 +378,7 @@ lib.updateCFrameTweens = updateCFrameTweens
 
 local function newTween(name,value,updateFunction,time)
 	TweenData[name]={
-		x0=value,x1=value,v0=value*0,v1=value*0,t0=0,t1=TimeFunction(),time=time or 1,update=updateFunction,tweening=false
+		x0=value,x1=value,v0=value*0,v1=value*0,t0=0,t1=time(),time=time or 1,update=updateFunction,tweening=false
 	}
 	if updateFunction then
 		updateFunction(value)--Just in case c:
@@ -396,7 +393,7 @@ local function newQuaternionTween(name,value,updateFunction,time,autoChoose)
 		w0=iq,
 		w1=iq,
 		t0=0,
-		t1=TimeFunction(),
+		t1=time(),
 		time=time or 1,
 		update=updateFunction,
 		tweening=false,
@@ -423,7 +420,7 @@ local function newCFrameTween(name,value,updateFunction,time)
 		w0=iq,
 		w1=iq,
 		t0=0,
-		t1=TimeFunction(),
+		t1=time(),
 		time=time or 1,
 		update=updateFunction,
 		tweening=false

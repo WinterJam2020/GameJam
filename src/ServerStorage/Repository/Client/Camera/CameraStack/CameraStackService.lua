@@ -22,7 +22,7 @@ Debug_Assert(RunService:IsClient(), "[CameraStackService] - Only require CameraS
 
 local CameraStackService = {}
 
-function CameraStackService:Init(doNotUseDefaultCamera)
+function CameraStackService:Initialize(doNotUseDefaultCamera)
 	self._stack = {}
 	self._disabledSet = {}
 

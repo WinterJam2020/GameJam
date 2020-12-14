@@ -25,7 +25,7 @@ end
 
 -- bind to every instance with tag of "TagName"!
 local binder = Binder.new("TagName", MyClass)
-binder:Init() -- listens for new instances and connects events
+binder:Initialize() -- listens for new instances and connects events
 ]]
 
 local Binder = {ClassName = "Binder"}
@@ -51,7 +51,7 @@ function Binder.new(tagName, constructor)
 
 	delay(5, function()
 		if not self._loaded then
-			warn("Binder is not loaded. Call :Init() on it!")
+			warn("Binder is not loaded. Call :Initialize() on it!")
 		end
 	end)
 
@@ -66,7 +66,7 @@ function Binder.IsBinder(value)
 end
 
 --- Listens for new instances and connects to the GetInstanceAddedSignal() and removed signal!
-function Binder:Init()
+function Binder:Initialize()
 	if self._loaded then
 		return
 	end
@@ -93,7 +93,6 @@ function Binder:Init()
 		self:_remove(inst)
 	end), "Disconnect")
 end
-
 
 -- Returns the tag name that the binder has
 function Binder:GetTag()
@@ -133,7 +132,7 @@ birdBinder:GetClassAddedSignal():Connect(function(bird)
 end)
 
 -- Load all birds
-birdBinder:Init()
+birdBinder:Initialize()
 ]]
 function Binder:GetClassAddedSignal()
 	if self._classAddedSignal then
@@ -166,18 +165,17 @@ RunService.Stepped:Connect(function()
 	end
 end)
 
-birdBinder:Init()
+birdBinder:Initialize()
 ]]
 --- Returns all of the classes in a new table
 function Binder:GetAll()
 	local all = {}
-	for class in pairs(self._allClassSet) do
-		all[#all+1] = class
+	for class in next, self._allClassSet do
+		all[#all + 1] = class
 	end
 
 	return all
 end
-
 
 --[[
 @usage
@@ -191,7 +189,7 @@ RunService.Stepped:Connect(function()
 	end
 end)
 
-birdBinder:Init()
+birdBinder:Initialize()
 ]]
 --- Faster method to get all items in a binder
 -- NOTE: Do not mutate this set directly
@@ -297,7 +295,7 @@ function Binder:_add(inst)
 	if listeners then
 		local bindable = Instance.new("BindableEvent")
 
-		for callback in pairs(listeners) do
+		for callback in next, listeners do
 			local conn = bindable.Event:Connect(function()
 				callback(class)
 			end)
@@ -336,7 +334,7 @@ function Binder:_remove(inst)
 	if listeners then
 		local bindable = Instance.new("BindableEvent")
 
-		for callback in pairs(listeners) do
+		for callback in next, listeners do
 			local conn = bindable.Event:Connect(function()
 				callback(nil)
 			end)

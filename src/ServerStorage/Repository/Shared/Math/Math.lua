@@ -1,4 +1,5 @@
 local Math = {}
+local RandomLib: Random = Random.new(tick() % 1 * 1E7)
 
 function Math.Lerp(StartNumber: number, EndNumber: number, Alpha: number): number
 	return StartNumber + (EndNumber - StartNumber)*Alpha
@@ -19,6 +20,10 @@ end
 
 function Math.InverseLerp(StartNumber: number, EndNumber: number, Alpha: number): number
 	return (Alpha - StartNumber)/(EndNumber - StartNumber)
+end
+
+function Math.Normal(Average: number?, StandardDeviation: number?): number
+	return (Average or 0) * math.sqrt(-2 * math.log(RandomLib:NextNumber())) * math.cos(6.2831853071796 * RandomLib:NextNumber()) * 0.5 * (StandardDeviation or 1)
 end
 
 return Math

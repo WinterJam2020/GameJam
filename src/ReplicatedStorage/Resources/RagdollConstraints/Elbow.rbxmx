@@ -1,0 +1,30 @@
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+	<Meta name="ExplicitAutoJoints">true</Meta>
+	<External>null</External>
+	<External>nil</External>
+	<Item class="HingeConstraint" referent="RBX5E5823750E0F416F98310216D8C3AD2A">
+		<Properties>
+			<token name="ActuatorType">0</token>
+			<float name="AngularSpeed">0</float>
+			<float name="AngularVelocity">0</float>
+			<Ref name="Attachment0">null</Ref>
+			<Ref name="Attachment1">null</Ref>
+			<BinaryString name="AttributesSerialize"></BinaryString>
+			<int name="Color">1009</int>
+			<bool name="Enabled">true</bool>
+			<bool name="LimitsEnabled">true</bool>
+			<float name="LowerAngle">0</float>
+			<float name="MotorMaxAcceleration">INF</float>
+			<float name="MotorMaxTorque">0</float>
+			<string name="Name">Elbow</string>
+			<float name="Radius">0.150000006</float>
+			<float name="Restitution">0</float>
+			<float name="ServoMaxTorque">0</float>
+			<int64 name="SourceAssetId">-1</int64>
+			<BinaryString name="Tags"></BinaryString>
+			<float name="TargetAngle">0</float>
+			<float name="UpperAngle">135</float>
+			<bool name="Visible">false</bool>
+		</Properties>
+	</Item>
+</roblox>
