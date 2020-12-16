@@ -70,7 +70,7 @@
         },
         {
             "icon": "studio",
-            "extensions": ["client", "server", "events", "services"],
+            "extensions": ["client", "server", "events", "services", "script"],
             "format": "png"
         },
         {
