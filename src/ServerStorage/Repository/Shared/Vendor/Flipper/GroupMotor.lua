@@ -4,93 +4,104 @@ local Debug = Resources:LoadLibrary("Debug")
 
 local BaseMotor = require(script.Parent.BaseMotor)
 local SingleMotor = require(script.Parent.SingleMotor)
+
 local IsMotor = require(script.Parent.IsMotor)
+
+local GroupMotor = setmetatable({ClassName = "GroupMotor"}, BaseMotor)
+GroupMotor.__index = GroupMotor
 
 local Debug_Assert = Debug.Assert
 
-local GroupMotor = setmetatable({ClassName = "Motor(Group)"}, BaseMotor)
-GroupMotor.__index = GroupMotor
-
-local function ToMotor(Value)
-	if IsMotor(Value) then
-		return Value
+local function toMotor(value)
+	if IsMotor(value) then
+		return value
 	end
 
-	local ValueType = typeof(Value)
+	local valueType = typeof(value)
 
-	if ValueType == "number" then
-		return SingleMotor.new(Value, false)
-	elseif ValueType == "table" then
-		return GroupMotor.new(Value, false)
+	if valueType == "number" then
+		return SingleMotor.new(value, false)
+	elseif valueType == "table" then
+		return GroupMotor.new(value, false)
 	end
 
-	error(string.format("Unable to convert %q to motor; type %s is unsupported", Value, ValueType))
+	Debug.Error("Unable to convert %q to motor; type %s is unsupported", value, valueType)
 end
 
-function GroupMotor.new(InitialValues, UseImplicitConnections)
-	Debug_Assert(type(InitialValues) == "table", "InitialValues must be a table!")
+function GroupMotor.new(initialValues, useImplicitConnections)
+	assert(type(initialValues) == "table", "initialValues must be a table!")
+
 	local self = setmetatable(BaseMotor.new(), GroupMotor)
 
-	if UseImplicitConnections ~= nil then
-		self.UseImplicitConnections = UseImplicitConnections
+	if useImplicitConnections ~= nil then
+		self._useImplicitConnections = useImplicitConnections
 	else
-		self.UseImplicitConnections = true
+		self._useImplicitConnections = true
 	end
 
-	self.Complete = true
-	self.Motors = {}
+	self._complete = true
+	self._motors = {}
 
-	for Index, Value in next, InitialValues do
-		self.Motors[Index] = ToMotor(Value)
+	for key, value in next, initialValues do
+		self._motors[key] = toMotor(value)
 	end
 
 	return self
 end
 
-function GroupMotor:Step(DeltaTime)
-	if self.Complete then
+function GroupMotor:Step(deltaTime)
+	if self._complete then
 		return true
 	end
 
-	local AllMotorsComplete = true
-	for _, Motor in next, self.Motors do
-		if not Motor:Step(DeltaTime) then
-			AllMotorsComplete = false
+	local allMotorsComplete = true
+
+	for _, motor in next, self._motors do
+		local complete = motor:Step(deltaTime)
+		if not complete then
+			-- If any of the sub-motors are incomplete, the group motor will not be complete either
+			allMotorsComplete = false
 		end
 	end
 
-	self.OnStepSignal:Fire(self:GetValue())
+	self._onStep:Fire(self:GetValue())
 
-	if AllMotorsComplete then
-		if self.UseImplicitConnections then
+	if allMotorsComplete then
+		if self._useImplicitConnections then
 			self:Stop()
 		end
 
-		self.Complete = true
-		self.OnCompleteSignal:Fire()
+		self._complete = true
+		self._onComplete:Fire()
 	end
 
-	return AllMotorsComplete
+	return allMotorsComplete
 end
 
-function GroupMotor:SetGoal(Goals)
-	self.Complete = false
-	for Index, Goal in next, Goals do
-		Debug_Assert(self.Motors[Index], "Unknown motor for index %s", Index):SetGoal(Goal)
+function GroupMotor:SetGoal(goals)
+	self._complete = false
+
+	for key, goal in next, goals do
+		Debug_Assert(self._motors[key], "Unknown motor for key %s", key):SetGoal(goal)
 	end
 
-	if self.UseImplicitConnections then
+	if self._useImplicitConnections then
 		self:Start()
 	end
 end
 
 function GroupMotor:GetValue()
-	local Values = {}
-	for Index, Motor in next, self.Motors do
-		Values[Index] = Motor:GetValue()
+	local values = {}
+
+	for key, motor in next, self._motors do
+		values[key] = motor:GetValue()
 	end
 
-	return Values
+	return values
+end
+
+function GroupMotor:__tostring()
+	return "Motor(Group)"
 end
 
 return GroupMotor

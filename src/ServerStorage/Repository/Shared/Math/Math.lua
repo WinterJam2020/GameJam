@@ -2,11 +2,11 @@ local Math = {}
 local RandomLib: Random = Random.new(tick() % 1 * 1E7)
 
 function Math.Lerp(StartNumber: number, EndNumber: number, Alpha: number): number
-	return StartNumber + (EndNumber - StartNumber)*Alpha
+	return StartNumber + (EndNumber - StartNumber) * Alpha
 end
 
 function Math.Map(Number: number, Minimum0: number, Maximum0: number, Minimum1: number, Maximum1: number): number
-	return (((Number - Minimum0)*(Maximum1 - Minimum1))/(Maximum0 - Minimum0)) + Minimum1
+	return (((Number - Minimum0) * (Maximum1 - Minimum1)) / (Maximum0 - Minimum0)) + Minimum1
 end
 
 function Math.WrapAround(Value: number, Minimum: number, Maximum: number): number
@@ -19,7 +19,7 @@ function Math.WrapAround(Value: number, Minimum: number, Maximum: number): numbe
 end
 
 function Math.InverseLerp(StartNumber: number, EndNumber: number, Alpha: number): number
-	return (Alpha - StartNumber)/(EndNumber - StartNumber)
+	return (Alpha - StartNumber) / (EndNumber - StartNumber)
 end
 
 function Math.Normal(Average: number?, StandardDeviation: number?): number

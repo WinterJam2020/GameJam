@@ -1,14 +1,16 @@
 local Instant = {ClassName = "Instant"}
 Instant.__index = Instant
 
-function Instant.new(TargetValue)
-	return setmetatable({TargetValue = TargetValue}, Instant)
+function Instant.new(targetValue)
+	return setmetatable({
+		_targetValue = targetValue,
+	}, Instant)
 end
 
 function Instant:Step()
 	return {
-		complete = true;
-		value = self.TargetValue;
+		complete = true,
+		value = self._targetValue,
 	}
 end
 

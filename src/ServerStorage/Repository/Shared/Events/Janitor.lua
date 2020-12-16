@@ -6,6 +6,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Resources = require(ReplicatedStorage.Resources)
 local Promise = Resources:LoadLibrary("Promise")
 local Scheduler = Resources:LoadLibrary("Scheduler")
+local Table = Resources:LoadLibrary("Table")
 
 local LinkToInstanceIndex = newproxy(false)
 
@@ -133,7 +134,7 @@ local Disconnect = {Connected = true}
 Disconnect.__index = Disconnect
 function Disconnect:Disconnect()
 	self.Connected = false
-	self.Connection = self.Connection:Disconnect()
+	self.Connection:Disconnect()
 end
 
 function Janitor.__index:LinkToInstance(Object, AllowMultiple)
@@ -155,7 +156,7 @@ function Janitor.__index:LinkToInstance(Object, AllowMultiple)
 					ManualDisconnect.Connected = false
 					return self:Cleanup()
 				else
-					while 1 do
+					while true do
 						Wait(0.2)
 						if not ManualDisconnect.Connected then
 							return
@@ -194,4 +195,4 @@ function Janitor.__index:LinkToInstances(...)
 	return ManualCleanup
 end
 
-return Janitor
+return Table.Lock(Janitor, nil, script.Name)

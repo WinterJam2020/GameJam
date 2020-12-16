@@ -1,3 +1,7 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Resources = require(ReplicatedStorage.Resources)
+local Table = Resources:LoadLibrary("Table")
+
 local Formatter = require(script.Formatter)
 
 local function Format(Template, ...)
@@ -23,9 +27,11 @@ local function Debugify(Object, FmtFunction)
 	})
 end
 
-return {
+return Table.Lock({
 	Formatter = Formatter;
 	Format = Format;
 	Output = Output;
 	Debugify = Debugify;
-}
+}, function(_, ...)
+	return Format(...)
+end, script.Name)

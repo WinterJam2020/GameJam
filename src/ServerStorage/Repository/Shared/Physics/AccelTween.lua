@@ -39,6 +39,7 @@ local RunService = game:GetService("RunService")
 
 local Resources = require(ReplicatedStorage.Resources)
 local Debug = Resources:LoadLibrary("Debug")
+local Table = Resources:LoadLibrary("Table")
 
 local AccelTween = {ClassName = "AccelTween"}
 local TimingFunction = RunService:IsRunning() and time or os.clock
@@ -135,4 +136,4 @@ function AccelTween:SetState(NewPosition, NewVelocity, NewAcceleration, NewTarge
 	end
 end
 
-return AccelTween
+return Table.Lock(AccelTween, nil, script.Name)

@@ -20,7 +20,7 @@ end
 	@param [...Arguments] ... The arguments that will be passed to the connected functions.
 	@returns [nil]
 **--]]
-function FastSignal:Fire(...): nil
+function FastSignal:Fire(...)
 	if not self.BindableEvent then
 		return warn(string.format("Signal is already destroyed - traceback: %s", self.Source))
 	end
@@ -59,7 +59,7 @@ end
 	Disconnects all connected events to the signal. Voids the signal as unusable.
 	@returns [nil]
 **--]]
-function FastSignal:Destroy(): nil
+function FastSignal:Destroy()
 	self.BindableEvent:Destroy()
 	table.clear(self)
 	setmetatable(self, nil)

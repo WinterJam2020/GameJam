@@ -6,82 +6,102 @@ local EPS = 0.0001
 local Spring = {ClassName = "Spring"}
 Spring.__index = Spring
 
-function Spring.new(TargetValue, Options)
-	assert(TargetValue, "Missing argument #1: TargetValue")
-	Options = Options or {}
+function Spring.new(targetValue, options)
+	assert(targetValue, "Missing argument #1: targetValue")
+	options = options or {}
 
 	return setmetatable({
-		TargetValue = TargetValue;
-		Frequency = Options.Frequency or 4;
-		DampingRatio = Options.DampingRatio or 1;
+		_targetValue = targetValue,
+		_frequency = options.Frequency or 4,
+		_dampingRatio = options.DampingRatio or 1
 	}, Spring)
 end
 
-function Spring:step(state, DeltaTime)
+function Spring:Step(state, dt)
 	-- Copyright 2018 Parker Stebbins (parker@fractality.io)
 	-- github.com/Fraktality/Spring
 	-- Distributed under the MIT license
 
-	local DampingRatio = self.DampingRatio
-	local Frequency = self.Frequency * 6.2831853071796
-	local Goal = self.TargetValue
-	local Position0 = state.value
-	local Velocity0 = state.velocity or 0
+	local d = self._dampingRatio
+	local f = self._frequency*6.2831853071796
+	local g = self._targetValue
+	local p0 = state.value
+	local v0 = state.velocity or 0
 
-	local Offset = Position0 - Goal
-	local Decay = math.exp(-DampingRatio * Frequency * DeltaTime)
+	local offset = p0 - g
+	local decay = math.exp(-d*f*dt)
 
-	local Position1, Velocity1
+	local p1, v1
 
-	if DampingRatio == 1 then -- Critically damped
-		Position1 = (Offset * (1 + Frequency * DeltaTime) + Velocity0 * DeltaTime) * Decay + Goal
-		Velocity1 = (Velocity0 * (1 - Frequency * DeltaTime) - Offset * (Frequency * Frequency * DeltaTime)) * Decay
-	elseif DampingRatio < 1 then -- Underdamped
-		local C = math.sqrt(1 - DampingRatio * DampingRatio)
+	if d == 1 then -- Critically damped
+		p1 = (offset*(1 + f*dt) + v0*dt)*decay + g
+		v1 = (v0*(1 - f*dt) - offset*(f*f*dt))*decay
+	elseif d < 1 then -- Underdamped
+		local c = math.sqrt(1 - d*d)
 
-		local I = math.cos(Frequency * C * DeltaTime)
-		local J = math.sin(Frequency * C * DeltaTime)
+		local i = math.cos(f*c*dt)
+		local j = math.sin(f*c*dt)
 
-		local Z
-		if C > EPS then
-			Z = J / C
+		-- Damping ratios approaching 1 can cause division by small numbers.
+		-- To fix that, group terms around z=j/c and find an approximation for z.
+		-- Start with the definition of z:
+		--    z = sin(dt*f*c)/c
+		-- Substitute a=dt*f:
+		--    z = sin(a*c)/c
+		-- Take the Maclaurin expansion of z with respect to c:
+		--    z = a - (a^3*c^2)/6 + (a^5*c^4)/120 + O(c^6)
+		--    z ≈ a - (a^3*c^2)/6 + (a^5*c^4)/120
+		-- Rewrite in Horner form:
+		--    z ≈ a + ((a*a)*(c*c)*(c*c)/20 - c*c)*(a*a*a)/6
+
+		local z
+		if c > EPS then
+			z = j/c
 		else
-			local A = DeltaTime * Frequency
-			Z = A + ((A * A) * (C * C) * (C * C) / 20 - C * C) * (A * A * A) / 6
+			local a = dt*f
+			z = a + ((a*a)*(c*c)*(c*c)/20 - c*c)*(a*a*a)/6
 		end
 
-		local Y
-		if Frequency * C > EPS then
-			Y = J / Frequency * C
+		-- Frequencies approaching 0 present a similar problem.
+		-- We want an approximation for y as f approaches 0, where:
+		--    y = sin(dt*f*c)/(f*c)
+		-- Substitute b=dt*c:
+		--    y = sin(b*c)/b
+		-- Now reapply the process from z.
+
+		local y
+		if f*c > EPS then
+			y = j/(f*c)
 		else
-			local B = Frequency * C
-			Y = DeltaTime + ((DeltaTime * DeltaTime) * (B * B) * (B * B) / 20 - B * B) * (DeltaTime * DeltaTime * DeltaTime) / 6
+			local b = f*c
+			y = dt + ((dt*dt)*(b*b)*(b*b)/20 - b*b)*(dt*dt*dt)/6
 		end
 
-		Position1 = (Offset * (I + DampingRatio * Z) + Velocity0 * Y) * Decay + Goal
-		Velocity1 = (Velocity0 * (I - Z * DampingRatio) - Offset* Z * Frequency) * Decay
+		p1 = (offset*(i + d*z) + v0*y)*decay + g
+		v1 = (v0*(i - z*d) - offset*(z*f))*decay
+
 	else -- Overdamped
-		local C = math.sqrt(DampingRatio * DampingRatio - 1)
+		local c = math.sqrt(d*d - 1)
 
-		local R1 = -Frequency * (DampingRatio - C)
-		local R2 = -Frequency * (DampingRatio + C)
+		local r1 = -f*(d - c)
+		local r2 = -f*(d + c)
 
-		local CO2 = (Velocity0 - Offset * R1) / (2 * Frequency * C)
-		local CO1 = Offset - CO2
+		local co2 = (v0 - offset*r1)/(2*f*c)
+		local co1 = offset - co2
 
-		local E1 = CO1 * math.exp(R1 * DeltaTime)
-		local E2 = CO2 * math.exp(R2 * DeltaTime)
+		local e1 = co1*math.exp(r1*dt)
+		local e2 = co2*math.exp(r2*dt)
 
-		Position1 = E1 + E2 + Goal
-		Velocity1 = E1 * R1 + E2 * R2
+		p1 = e1 + e2 + g
+		v1 = e1*r1 + e2*r2
 	end
 
-	local Complete = Velocity1 < VELOCITY_THRESHOLD and math.abs(Offset) < POSITION_THRESHOLD
+	local complete = math.abs(v1) < VELOCITY_THRESHOLD and math.abs(p1 - g) < POSITION_THRESHOLD
 
 	return {
-		complete = Complete;
-		value = Complete and Goal or Position1;
-		velocity = Velocity1;
+		complete = complete,
+		value = complete and g or p1,
+		velocity = v1,
 	}
 end
 

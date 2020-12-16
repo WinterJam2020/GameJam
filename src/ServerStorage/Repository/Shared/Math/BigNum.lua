@@ -231,7 +231,6 @@ local function __div(N, D, Base)
 	D, D_IsNegative = abs(D, Base)
 
 	local Q_IsNegative
-
 	if N_IsNegative then
 		Q_IsNegative = not D_IsNegative
 	elseif D_IsNegative then
@@ -261,7 +260,6 @@ local function __div(N, D, Base)
 
 	local Q
 	local R = N
-
 	repeat
 		local R_Is_Negative = IsNegative(R, Base)
 		if R_Is_Negative then
@@ -303,13 +301,11 @@ end
 
 local function __pow(A, B, Base)
 	local N = #A
-
     if __eq(B, CONSTANTS[Base][N][0]) then
 		return CONSTANTS[Base][N][1]
 	end
 
     local X = __pow(A, __div(B, CONSTANTS[Base][N][2], Base), Base)
-
     if B[N] % 2 == 0 then
         return __mul(X, X, Base)
     else
@@ -554,6 +550,7 @@ function BigNum.new(Number, Bytes)
 
 		error(Number2 .. " is not a valid Decimal value")
 	elseif Type == "table" then
+		-- The LSP is dumb.
 		local Number2: Map<any, any> = Number
 		return setmetatable(Number2, BigNum)
 	else

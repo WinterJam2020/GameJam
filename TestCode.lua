@@ -1,31 +1,33 @@
-local function SetReadonly(Class, ReadonlyProperties)
-	local __index = assert(Class.__index, "Class must have __index metamethod before calling setreadonly.")
-	for Index, Value in next, ReadonlyProperties do
-		__index[Index] = Value
-	end
+require("strung").install("match")
+local ffi = require("ffi")
+local lfs = require("lfs")
 
-	function Class:__newindex(Index, Value)
-		if ReadonlyProperties[Index] == nil then
-			rawset(self, Index, Value)
-		else
-			assert(false, string.format("Property %q is read-only", tostring(Index)))
+ffi.cdef[[
+	int printf(const char * format, ...);
+]]
+
+local ffi_C = ffi.C
+
+local Libraries = {}
+
+local function GetLibraries(Path)
+	for File in lfs.dir(Path) do
+		if File ~= "." and File ~= ".." then
+			local FilePath = Path .. "/" .. File
+			local Attributes = lfs.attributes(FilePath)
+			if type(Attributes) == "table" then
+				if Attributes.mode == "directory" then
+					GetLibraries(FilePath)
+				else
+					ffi_C.printf("\t%s\n", FilePath)
+				end
+			else
+				ffi_C.printf("Skipping %s\n", FilePath)
+			end
 		end
 	end
 end
 
-local Class = {}
-Class.__index = Class
+GetLibraries("src/ServerStorage/Repository")
 
-function Class.new(BufferSize)
-	return setmetatable({
-		BufferSize = BufferSize;
-		Data = {};
-	}, Class)
-end
-SetReadonly(Class, {BufferSize = 6})
-
-local Object = Class.new(5)
-SetReadonly(Object, {BufferSize = 6})
-print(Object.BufferSize)
-Object.BufferSize = 10
-print(Object.BufferSize)
+return false

@@ -126,7 +126,7 @@ end
 
 function Scheduler.FastSpawn(Function, ...)
 	local Arguments = table.pack(...)
-	local BindableEvent: BindableEvent = Instance.new("BindableEvent")
+	local BindableEvent = Instance.new("BindableEvent")
 	BindableEvent.Event:Connect(function()
 		Function(table.unpack(Arguments, 1, Arguments.n))
 	end)
@@ -142,13 +142,13 @@ function Scheduler.SpawnDelayed(Function, ...)
 		local HeartbeatConnection
 
 		HeartbeatConnection = Heartbeat:Connect(function()
-			HeartbeatConnection = HeartbeatConnection:Disconnect()
+			HeartbeatConnection:Disconnect()
 			Function(table.unpack(Arguments, 1, Length))
 		end)
 	else
 		local HeartbeatConnection
 		HeartbeatConnection = Heartbeat:Connect(function()
-			HeartbeatConnection = HeartbeatConnection:Disconnect()
+			HeartbeatConnection:Disconnect()
 			Function()
 		end)
 	end

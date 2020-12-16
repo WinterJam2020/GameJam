@@ -107,5 +107,8 @@
         "Roblox",
         "Roblox's",
         "evaera"
+    ],
+    "Lua.diagnostics.globals": [
+        "Color3"
     ]
 }

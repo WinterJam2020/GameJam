@@ -98,18 +98,22 @@ return Table.Lock({
 	Vector2 = Vector2.new().Lerp;
 	Vector3 = Vector3.new().Lerp;
 
-	string = function(_, finish, alpha)
+	boolean = function(start: boolean, finish: boolean, alpha: number): boolean
+		return alpha < 0.5 and start or finish
+	end,
+
+	string = function(_, finish: string, alpha: number): string
 		-- Very simple, doesn't yet take into account previous string
 		local count = #finish
 		local a = 1 + count * alpha
 		return string.sub(finish, 1, a < count and a or count)
 	end;
 
-	UDim = function(start, finish, alpha)
+	UDim = function(start: UDim, finish: UDim, alpha: number): UDim
 		return UDim.new(Lerp(start.Scale, finish.Scale, alpha), Lerp(start.Offset, finish.Offset, alpha))
 	end;
 
-	Rect = function(start, finish, alpha)
+	Rect = function(start: Rect, finish: Rect, alpha: number): Rect
 		return Rect.new(
 			Lerp(start.Min.X, finish.Min.X, alpha), Lerp(start.Min.Y, finish.Min.Y, alpha),
 			Lerp(start.Max.X, finish.Max.X, alpha), Lerp(start.Max.Y, finish.Max.Y, alpha)

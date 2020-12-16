@@ -224,6 +224,7 @@ local function bitBuffer(stream)
 					for c = 0, halfLength-1 do
 						output[c] = byte_to_hex[bytes[i+c]]
 					end
+
 					coroutine.yield(table.concat(output, "", 0))
 				end
 			end)
@@ -239,17 +240,20 @@ local function bitBuffer(stream)
 						for c = 0, halfLength-1 do
 							output[c+1] = byte_to_hex[bytes[i+c]]
 						end
+
 						local endByte = byte_to_hex[bytes[i+halfLength]]
 						if endByte then
 							output[halfLength+1] = string.sub(endByte, 1, 1)
 							remainder = string.sub(endByte, 2, 2)
 						end
+
 						i = i+1
 					else
 						output[0] = remainder
 						for c = 0, halfLength-1 do
 							output[c+1] = byte_to_hex[bytes[i+c]]
 						end
+
 						output[halfLength+1] = ""
 						remainder = ""
 					end

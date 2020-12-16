@@ -1,32 +1,34 @@
 local Linear = {ClassName = "Linear"}
 Linear.__index = Linear
 
-function Linear.new(TargetValue, TargetVelocity)
-    assert(TargetValue, "Missing argument #1: TargetValue")
+function Linear.new(targetValue, options)
+	assert(targetValue, "Missing argument #1: targetValue")
+	options = options or {}
+
 	return setmetatable({
-        TargetValue = TargetValue;
-        TargetVelocity = TargetVelocity or 1;
+		_targetValue = targetValue,
+		_velocity = options.Velocity or 1,
 	}, Linear)
 end
 
-function Linear:Step(State, DeltaTime)
-	local Position = State.Value
-	local Velocity = self.TargetVelocity -- Linear motion ignores the state's velocity
-	local Goal = self.TargetValue
+function Linear:Step(state, dt)
+	local position = state.value
+	local velocity = self._velocity -- Linear motion ignores the state's velocity
+	local goal = self._targetValue
 
-	local DeltaPosition = DeltaTime * Velocity
-	local Complete = DeltaPosition >= math.abs(Goal - Position)
-	Position += DeltaPosition * (Goal > Position and 1 or -1)
+	local dPos = dt * velocity
 
-	if Complete then
-		Position = self.TargetValue
-		Velocity = 0
+	local complete = dPos >= math.abs(goal - position)
+	position = position + dPos * (goal > position and 1 or -1)
+	if complete then
+		position = self._targetValue
+		velocity = 0
 	end
 
 	return {
-		complete = Complete;
-		value = Position;
-		velocity = Velocity;
+		complete = complete,
+		value = position,
+		velocity = velocity,
 	}
 end
 

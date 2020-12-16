@@ -1,65 +1,64 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Resources = require(ReplicatedStorage.Resources)
 local BaseMotor = require(script.Parent.BaseMotor)
-local Debug = Resources:LoadLibrary("Debug")
 
-local Debug_Assert = Debug.Assert
-
-local SingleMotor = setmetatable({ClassName = "Motor(Single)"}, BaseMotor)
+local SingleMotor = setmetatable({ClassName = "SingleMotor"}, BaseMotor)
 SingleMotor.__index = SingleMotor
 
-function SingleMotor.new(InitialValue, UseImplicitConnections)
-	Debug_Assert(type(InitialValue) == "number", "InitialValue must be a number!")
+function SingleMotor.new(initialValue, useImplicitConnections)
+	assert(typeof(initialValue) == "number", "initialValue must be a number!")
 
 	local self = setmetatable(BaseMotor.new(), SingleMotor)
 
-	if UseImplicitConnections ~= nil then
-		self.UseImplicitConnections = UseImplicitConnections
+	if useImplicitConnections ~= nil then
+		self._useImplicitConnections = useImplicitConnections
 	else
-		self.UseImplicitConnections = true
+		self._useImplicitConnections = true
 	end
 
-	self.Goal = nil
-	self.State = {
-		complete = true;
-		value = InitialValue;
+	self._goal = nil
+	self._state = {
+		complete = true,
+		value = initialValue,
 	}
 
 	return self
 end
 
-function SingleMotor:Step(DeltaTime)
-	if self.State.complete then
+function SingleMotor:Step(deltaTime)
+	if self._state.complete then
 		return true
 	end
 
-	local NewState = self.Goal:Step(self.State, DeltaTime)
+	local newState = self._goal:Step(self._state, deltaTime)
 
-	self.State = NewState
-	self.OnStepSignal:Fire(NewState.value)
+	self._state = newState
+	self._onStep:Fire(newState.value)
 
-	if NewState.complete then
-		if self.UseImplicitConnections then
+	if newState.complete then
+		if self._useImplicitConnections then
 			self:Stop()
 		end
 
-		self.OnCompleteSignal:Fire()
+		self._onComplete:Fire()
 	end
 
-	return NewState.complete
+	return newState.complete
 end
 
 function SingleMotor:GetValue()
-	return self.State.value
+	return self._state.value
 end
 
-function SingleMotor:SetGoal(Goal)
-	self.State.complete = false
-	self.Goal = Goal
+function SingleMotor:SetGoal(goal)
+	self._state.complete = false
+	self._goal = goal
 
-	if self.UseImplicitConnections then
+	if self._useImplicitConnections then
 		self:Start()
 	end
+end
+
+function SingleMotor:__tostring()
+	return "Motor(Single)"
 end
 
 return SingleMotor
