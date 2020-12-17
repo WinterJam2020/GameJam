@@ -22,18 +22,18 @@ local function DrawTerrainWedge(cf0, cf1, size0, size1)
 	end
 end
 
-local function DrawTerrainBlock(cf, size)
-	local p = Instance.new("Part")
-	p.Anchored = true
-	p.CFrame = cf
-	p.Size = size
-	p.Parent = workspace
-	Terrain:FillBlock(cf, size, Enum.Material.Snow)
-end
+-- local function DrawTerrainBlock(cf, size)
+-- 	local p = Instance.new("Part")
+-- 	p.Anchored = true
+-- 	p.CFrame = cf
+-- 	p.Size = size
+-- 	p.Parent = workspace
+-- 	Terrain:FillBlock(cf, size, Enum.Material.Snow)
+-- end
 
 local function DrawSkiPath(spline)
 	local pathPoints = {}
-	
+
 	for i = 0, 1, 0.001 do
 		local cf = spline.GetRotCFrameOnPath(i)
 		if DEBUG then
@@ -50,11 +50,11 @@ local function DrawSkiPath(spline)
 		}
 	end
 	local numPathPoints = #pathPoints
-	local f = Instance.new("Folder")
+	-- local f = Instance.new("Folder")
 	for i, pt in ipairs(pathPoints) do
 		if i == numPathPoints then break end
 		local nxt = pathPoints[i + 1]
-		local midpoint = (pt.CFrame.Position + nxt.CFrame.Position) / 2
+		-- local midpoint = (pt.CFrame.Position + nxt.CFrame.Position) / 2
 
 		-- 4: midpoint
 		--DrawTerrainWedge(DrawTriangle(pt.P0, pt.P1, midpoint, WEDGE_DEPTH))

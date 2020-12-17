@@ -24,17 +24,17 @@
 --TODO: Combine VectorSpline and CFrameSpline
 --TODO: Combine Path and RotPath
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+-- local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Squad = require(script.SQUAD)
 
-local function AxisAngleToQuaternion(axis, angle)
-	local halfAngle = angle / 2
-	local qw = math.cos(halfAngle)
-	local qx = axis.X * math.sin(halfAngle)
-	local qy = axis.Y * math.sin(halfAngle)
-	local qz = axis.Z * math.sin(halfAngle)
-	return {qw, qx, qy, qz}
-end
+-- local function AxisAngleToQuaternion(axis, angle)
+-- 	local halfAngle = angle / 2
+-- 	local qw = math.cos(halfAngle)
+-- 	local qx = axis.X * math.sin(halfAngle)
+-- 	local qy = axis.Y * math.sin(halfAngle)
+-- 	local qz = axis.Z * math.sin(halfAngle)
+-- 	return {qw, qx, qy, qz}
+-- end
 
 local function CFrameToQuaternion(cf)
 	local _,_,_,m00,m01,m02,m10,m11,m12,m20,m21,m22=cf:GetComponents()
