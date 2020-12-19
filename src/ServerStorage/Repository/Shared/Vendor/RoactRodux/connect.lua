@@ -6,8 +6,6 @@ local getStore = require(script.Parent.getStore)
 local shallowEqual = require(script.Parent.shallowEqual)
 local join = require(script.Parent.join)
 
-local TempConfig = require(script.Parent.TempConfig)
-
 --[[
 	Formats a multi-line message with printf-style placeholders.
 ]]
@@ -33,7 +31,7 @@ local function makeStateUpdater(store)
 		-- The caller can optionally provide mappedStoreState if it needed that
 		-- value beforehand. Doing so is purely an optimization.
 		if mappedStoreState == nil then
-			mappedStoreState = prevState.mapStateToProps(store:GetState(), nextProps)
+			mappedStoreState = prevState.mapStateToProps(store:getState(), nextProps)
 		end
 
 		local propsForChild = join(nextProps, mappedStoreState, prevState.mappedStoreDispatch)
@@ -89,7 +87,7 @@ local function connect(mapStateToPropsOrThunk, mapDispatchToProps)
 		end
 
 		function Connection:createStoreConnection()
-			self.storeChangedConnection = self.store.Changed:Connect(function(storeState)
+			self.storeChangedConnection = self.store.changed:connect(function(storeState)
 				self:setState(function(prevState, props)
 					local mappedStoreState = prevState.mapStateToProps(storeState, props)
 
@@ -118,7 +116,7 @@ local function connect(mapStateToPropsOrThunk, mapDispatchToProps)
 				error(message)
 			end
 
-			local storeState = self.store:GetState()
+			local storeState = self.store:getState()
 
 			local mapStateToProps = mapStateToPropsOrThunk
 			local mappedStoreState = mapStateToProps(storeState, self.props)
@@ -145,12 +143,12 @@ local function connect(mapStateToPropsOrThunk, mapDispatchToProps)
 			end
 
 			local mappedStoreDispatch = mapDispatchToProps(function(...)
-				return self.store:Dispatch(...)
+				return self.store:dispatch(...)
 			end)
 
 			local stateUpdater = makeStateUpdater(self.store)
 
-			self.state = {
+			self:setState({
 				-- Combines props, mappedStoreDispatch, and the result of
 				-- mapStateToProps into propsForChild. Stored in state so that
 				-- getDerivedStateFromProps can access it.
@@ -166,27 +164,19 @@ local function connect(mapStateToPropsOrThunk, mapDispatchToProps)
 				-- Passed directly into the component that Connection is
 				-- wrapping.
 				propsForChild = nil,
-			}
+			})
 
 			local extraState = stateUpdater(self.props, self.state, mappedStoreState)
 
-			for key, value in next, extraState do
+			for key, value in pairs(extraState) do
 				self.state[key] = value
 			end
 
-			if TempConfig.newConnectionOrder then
-				self:createStoreConnection()
-			end
-		end
-
-		function Connection:didMount()
-			if not TempConfig.newConnectionOrder then
-				self:createStoreConnection()
-			end
+			self:createStoreConnection()
 		end
 
 		function Connection:willUnmount()
-			self.storeChangedConnection = self.storeChangedConnection:Disconnect()
+			self.storeChangedConnection:disconnect()
 		end
 
 		function Connection:render()

@@ -62,6 +62,9 @@ if false then
 
 	function Resources:GetRagdollConstraint(_Name: string): Constraint
 	end
+
+	function Resources:GetGuiObject(_Name: string): GuiObject
+	end
 end
 
 function Resources:GetLocalTable(TableName)

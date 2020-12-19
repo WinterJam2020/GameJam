@@ -1,0 +1,85 @@
+{
+	"Name": "GameButton",
+	"ClassName": "TextButton",
+	"Properties": {
+		"BackgroundColor3": {
+			"Type": "Color3",
+			"Value": [1, 1, 1]
+		},
+
+		"Text": {
+			"Type": "String",
+			"Value": ""
+		}
+	},
+
+	"Children": [
+		{
+			"Name": "UICorner",
+			"ClassName": "UICorner",
+			"Properties": {
+				"CornerRadius": {
+					"Type": "UDim",
+					"Value": [1, 0]
+				}
+			}
+		},
+
+		{
+			"Name": "UIGradient",
+			"ClassName": "UIGradient",
+			"Properties": {
+				"Rotation": {
+					"Type": "Float32",
+					"Value": 45
+				},
+
+				"Offset": {
+					"Type": "Vector2",
+					"Value": [-1, 0]
+				}
+			}
+		},
+
+		{
+			"Name": "ButtonText",
+			"ClassName": "TextLabel",
+			"Properties": {
+				"AnchorPoint": {
+					"Type": "Vector2",
+					"Value": [0.5, 0.5]
+				},
+
+				"BackgroundTransparency": {
+					"Type": "Float32",
+					"Value": 1
+				},
+
+				"Font": {
+					"Type": "Enum",
+					"Value": 18
+				},
+
+				"Position": {
+					"Type": "UDim2",
+					"Value": [0.5, 0, 0.5, 0]
+				},
+
+				"Size": {
+					"Type": "UDim2",
+					"Value": [0.7, 0, 0.5, 0]
+				},
+
+				"TextScaled": {
+					"Type": "Bool",
+					"Value": true
+				},
+
+				"TextXAlignment": {
+					"Type": "Enum",
+					"Value": 0
+				}
+			}
+		}
+	]
+}

@@ -1,19 +1,14 @@
 local RunService = game:GetService("RunService")
+
 local Signal = require(script.Parent.Signal)
 local NoYield = require(script.Parent.NoYield)
 
-local Store = {
-	ClassName = "RoduxStore";
-	FlushEvent = RunService.Heartbeat;
-	__tostring = function(self): string
-		return self.ClassName
-	end;
-}
+local Store = {}
 
 -- This value is exposed as a private value so that the test code can stay in
 -- sync with what event we listen to for dispatching the Changed event.
 -- It may not be Heartbeat in the future.
-
+Store._flushEvent = RunService.Heartbeat
 Store.__index = Store
 
 --[[
@@ -27,39 +22,45 @@ Store.__index = Store
 	Reducers do not mutate the state object, so the original state is still
 	valid.
 ]]
-function Store.new(Reducer, InitialState, Middlewares)
-	assert(type(Reducer) == "function", "Bad argument #1 to Store.new, expected function.")
-	assert(Middlewares == nil or type(Middlewares) == "table", "Bad argument #3 to Store.new, expected nil or table.")
+function Store.new(reducer, initialState, middlewares)
+	assert(type(reducer) == "function", "Bad argument #1 to Store.new, expected function.")
+	assert(middlewares == nil or type(middlewares) == "table", "Bad argument #3 to Store.new, expected nil or table.")
 
-	local self = setmetatable({
-		Changed = Signal.new();
+	local self = {}
 
-		Reducer = Reducer;
-		State = Reducer(InitialState, {Type = "@@INIT"});
-		LastState = nil;
+	self._reducer = reducer
+	self._state = reducer(initialState, {
+		type = "@@INIT",
+	})
 
-		MutatedSinceFlush = false;
-		Connections = {};
-	}, Store)
+	self._lastState = self._state
 
-	self.LastState = self.State
-	table.insert(self.Connections, self.FlushEvent:Connect(function()
-		self:Flush()
-	end))
+	self._mutatedSinceFlush = false
+	self._connections = {}
 
-	if Middlewares then
-		local UnboundDispatch = self.Dispatch
-		local function Dispatch(...)
-			return UnboundDispatch(self, ...)
+	self.changed = Signal.new()
+
+	setmetatable(self, Store)
+
+	local connection = self._flushEvent:Connect(function()
+		self:flush()
+	end)
+
+	table.insert(self._connections, connection)
+
+	if middlewares then
+		local unboundDispatch = self.dispatch
+		local dispatch = function(...)
+			return unboundDispatch(self, ...)
 		end
 
-		for Index = #Middlewares, 1, -1 do
-			local Middleware = Middlewares[Index]
-			Dispatch = Middleware(Dispatch, self)
+		for i = #middlewares, 1, -1 do
+			local middleware = middlewares[i]
+			dispatch = middleware(dispatch, self)
 		end
 
-		function self.Dispatch(_, ...)
-			return Dispatch(...)
+		self.dispatch = function(_, ...)
+			return dispatch(...)
 		end
 	end
 
@@ -69,9 +70,8 @@ end
 --[[
 	Get the current state of the Store. Do not mutate this!
 ]]
-function Store:GetState()
-	warn("Store::GetState is deprecated, just reference Store.State directly!")
-	return self.State
+function Store:getState()
+	return self._state
 end
 
 --[[
@@ -81,52 +81,52 @@ end
 	Listeners on the changed event of the store are notified when the state
 	changes, but not necessarily on every Dispatch.
 ]]
-function Store:Dispatch(Action)
-	if type(Action) == "table" then
-		if Action.Type == nil then
-			error("Action does not have a Type field", 2)
+function Store:dispatch(action)
+	if type(action) == "table" then
+		if action.type == nil then
+			error("action does not have a type field", 2)
 		end
 
-		self.State = self.Reducer(self.State, Action)
-		self.MutatedSinceFlush = true
+		self._state = self._reducer(self._state, action)
+		self._mutatedSinceFlush = true
 	else
-		error(string.format("actions of type %q are not permitted", typeof(Action)), 2)
+		error(string.format("actions of type %q are not permitted", typeof(action)), 2)
 	end
 end
 
 --[[
 	Marks the store as deleted, disconnecting any outstanding connections.
 ]]
-function Store:Destroy()
-	for _, Connection in ipairs(self.Connections) do
-		Connection:Disconnect()
+function Store:destruct()
+	for _, connection in ipairs(self._connections) do
+		connection:Disconnect()
 	end
 
-	self.Connections = nil
+	self._connections = nil
 end
 
 --[[
 	Flush all pending actions since the last change event was dispatched.
 ]]
-function Store:Flush()
-	if not self.MutatedSinceFlush then
+function Store:flush()
+	if not self._mutatedSinceFlush then
 		return
 	end
 
-	self.MutatedSinceFlush = false
+	self._mutatedSinceFlush = false
 
 	-- On self.changed:fire(), further actions may be immediately dispatched, in
 	-- which case self._lastState will be set to the most recent self._state,
 	-- unless we cache this value first
-	local State = self.State
+	local state = self._state
 
 	-- If a changed listener yields, *very* surprising bugs can ensue.
 	-- Because of that, changed listeners cannot yield.
 	NoYield(function()
-		self.Changed:Fire(State, self.LastState)
+		self.changed:fire(state, self._lastState)
 	end)
 
-	self.LastState = State
+	self._lastState = state
 end
 
 return Store

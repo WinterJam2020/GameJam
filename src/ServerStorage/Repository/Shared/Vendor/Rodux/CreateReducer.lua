@@ -1,15 +1,15 @@
-return function(InitialState, Handlers)
-	return function(State, Action)
-		if State == nil then
-			State = InitialState
+return function(initialState, handlers)
+	return function(state, action)
+		if state == nil then
+			state = initialState
 		end
 
-		local Handler = Handlers[Action.Type]
+		local handler = handlers[action.type]
 
-		if Handler then
-			return Handler(State, Action)
+		if handler then
+			return handler(state, action)
 		end
 
-		return State
+		return state
 	end
 end

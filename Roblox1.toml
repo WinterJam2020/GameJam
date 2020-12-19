@@ -297,6 +297,9 @@ type = "number"
 [[math.tanh.args]]
 type = "number"
 
+[[math.round.args]]
+type = "number"
+
 # os
 [os.clock]
 args = []

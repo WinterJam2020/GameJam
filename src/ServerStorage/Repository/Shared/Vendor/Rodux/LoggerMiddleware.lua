@@ -1,78 +1,56 @@
 local indent = "    "
 
-local function PrettyPrint(Value, IndentLevel)
-	IndentLevel = IndentLevel or 0
-	local Output = {}
-	local Length = 0
+local function prettyPrint(value, indentLevel)
+	indentLevel = indentLevel or 0
+	local output = {}
 
-	if type(Value) == "table" then
-		Length += 1
-		Output[Length] = "{\n"
+	if type(value) == "table" then
+		table.insert(output, "{\n")
 
-		for Key, Value2 in next, Value do
-			Length += 1
-			Output[Length] = string.rep(indent, IndentLevel + 1)
+		for key, value2 in pairs(value) do
+			table.insert(output, string.rep(indent, indentLevel + 1))
+			table.insert(output, tostring(key))
+			table.insert(output, " = ")
 
-			Length += 1
-			Output[Length] = tostring(Key)
-
-			Length += 1
-			Output[Length] = " = "
-
-			Length += 1
-			Output[Length] = PrettyPrint(Value2, IndentLevel + 1)
-
-			Length += 1
-			Output[Length] = "\n"
+			table.insert(output, prettyPrint(value2, indentLevel + 1))
+			table.insert(output, "\n")
 		end
 
-		Length += 1
-		Output[Length] = string.rep(indent, IndentLevel)
-
-		Length += 1
-		Output[Length] = "}"
-	elseif type(Value) == "string" then
-		Length += 1
-		Output[Length] = string.format("%q", Value)
-
-		Length += 1
-		Output[Length] = " (string)"
+		table.insert(output, string.rep(indent, indentLevel))
+		table.insert(output, "}")
+	elseif type(value) == "string" then
+		table.insert(output, string.format("%q", value))
+		table.insert(output, " (string)")
 	else
-		Length += 1
-		Output[Length] = tostring(Value)
-
-		Length += 1
-		Output[Length] = " ("
-
-		Length += 1
-		Output[Length] = typeof(Value)
-
-		Length += 1
-		Output[Length] = ")"
+		table.insert(output, tostring(value))
+		table.insert(output, " (")
+		table.insert(output, typeof(value))
+		table.insert(output, ")")
 	end
 
-	return table.concat(Output)
+	return table.concat(output)
 end
 
--- We want to be able to override OutputFunction in tests, so the shape of this
+-- We want to be able to override outputFunction in tests, so the shape of this
 -- module is kind of unconventional.
 --
 -- We fix it this weird shape in init.lua.
-local LoggerMiddleware = {
-	OutputFunction = print,
+local loggerMiddleware = {
+	outputFunction = print,
 }
 
-function LoggerMiddleware.Middleware(NextDispatch, Store)
-	return function(Action)
-		local Result = NextDispatch(Action)
-		LoggerMiddleware.OutputFunction(string.format(
+function loggerMiddleware.middleware(nextDispatch, store)
+	return function(action)
+		local result = nextDispatch(action)
+
+		loggerMiddleware.outputFunction(string.format(
 			"Action dispatched: %s\nState changed to: %s",
-			PrettyPrint(Action),
-			PrettyPrint(Store:GetState())
+			prettyPrint(action),
+			prettyPrint(store:getState())
 		))
 
-		return Result
+		return result
 	end
 end
 
-return LoggerMiddleware
+return loggerMiddleware

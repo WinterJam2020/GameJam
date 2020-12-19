@@ -22,54 +22,47 @@ end
 
 local function immutableRemoveValue(list, removeValue)
 	local new = {}
-	local length = 0
-	for _, value in ipairs(list) do
-		if value ~= removeValue then
-			length += 1
-			new[length] = value
+
+	for i = 1, #list do
+		if list[i] ~= removeValue then
+			table.insert(new, list[i])
 		end
 	end
 
 	return new
 end
 
-local Signal = {
-	ClassName = "RoduxSignal";
-	__tostring = function(self): string
-		return self.ClassName
-	end;
-}
-
+local Signal = {}
 Signal.__index = Signal
 
 function Signal.new()
 	return setmetatable({
-		Listeners = {};
+		_listeners = {},
 	}, Signal)
 end
 
-function Signal:Connect(Function)
-	local Listener = {
-		Function = Function;
-		Disconnected = false;
+function Signal:connect(callback)
+	local listener = {
+		callback = callback,
+		disconnected = false,
 	}
 
-	self.Listeners = immutableAppend(self.Listeners, Listener)
+	self._listeners = immutableAppend(self._listeners, listener)
 
-	local function Disconnect()
-		Listener.Disconnected = true
-		self.Listeners = immutableRemoveValue(self.Listeners, Listener)
+	local function disconnect()
+		listener.disconnected = true
+		self._listeners = immutableRemoveValue(self._listeners, listener)
 	end
 
 	return {
-		Disconnect = Disconnect;
+		disconnect = disconnect,
 	}
 end
 
-function Signal:Fire(...)
-	for _, Listener in ipairs(self.Listeners) do
-		if not Listener.Disconnected then
-			Listener.Function(...)
+function Signal:fire(...)
+	for _, listener in ipairs(self._listeners) do
+		if not listener.disconnected then
+			listener.callback(...)
 		end
 	end
 end

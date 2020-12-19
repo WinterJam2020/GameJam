@@ -7,7 +7,7 @@
 
 --TODO: formalize the remaining magic numbers
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+-- local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- local Arrow = require(ReplicatedStorage:WaitForChild("Arrow"))
 local SplineModule = require(script.CatmullRomSpline)
 local DrawSkiPath = require(script.DrawSkiPath)

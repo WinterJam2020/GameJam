@@ -5,13 +5,13 @@ local function shallowEqual(a, b)
 		return a == nil
 	end
 
-	for key, value in next, a do
+	for key, value in pairs(a) do
 		if value ~= b[key] then
 			return false
 		end
 	end
 
-	for key, value in next, b do
+	for key, value in pairs(b) do
 		if value ~= a[key] then
 			return false
 		end

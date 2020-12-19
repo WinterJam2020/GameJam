@@ -1,22 +1,22 @@
 --[[
 	Create a composite reducer from a map of keys and sub-reducers.
 ]]
-local function CombineReducers(Map)
-	return function(State, Action)
+local function combineReducers(map)
+	return function(state, action)
 		-- If state is nil, substitute it with a blank table.
-		if State == nil then
-			State = {}
+		if state == nil then
+			state = {}
 		end
 
-		local NewState = {}
+		local newState = {}
 
-		for Key, Reducer in next, Map do
+		for key, reducer in pairs(map) do
 			-- Each reducer gets its own state, not the entire state table
-			NewState[Key] = Reducer(State[Key], Action)
+			newState[key] = reducer(state[key], action)
 		end
 
-		return NewState
+		return newState
 	end
 end
 
-return CombineReducers
+return combineReducers

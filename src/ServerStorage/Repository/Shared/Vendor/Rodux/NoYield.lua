@@ -7,22 +7,23 @@
 	given function will be returned.
 ]]
 
-local function ResultHandler(Thread, Success, ...)
-	if not Success then
-		local Message = (...)
-		error(debug.traceback(Thread, Message), 2)
+local function resultHandler(co, ok, ...)
+	if not ok then
+		local message = (...)
+		error(debug.traceback(co, message), 2)
 	end
 
-	if coroutine.status(Thread) ~= "dead" then
-		error(debug.traceback(Thread, "Attempted to yield inside changed event!"), 2)
+	if coroutine.status(co) ~= "dead" then
+		error(debug.traceback(co, "Attempted to yield inside changed event!"), 2)
 	end
 
 	return ...
 end
 
-local function NoYield(Function, ...)
-	local Thread = coroutine.create(Function)
-	return ResultHandler(Thread, coroutine.resume(Thread, ...))
+local function NoYield(callback, ...)
+	local co = coroutine.create(callback)
+
+	return resultHandler(co, coroutine.resume(co, ...))
 end
 
 return NoYield
