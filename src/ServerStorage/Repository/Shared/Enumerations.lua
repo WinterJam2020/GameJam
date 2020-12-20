@@ -3,6 +3,8 @@ local Resources = require(ReplicatedStorage.Resources)
 local Enumeration = Resources:LoadLibrary("Enumeration")
 
 Enumeration.DataStoreHandler = {"ForceLoad", "Steal", "Repeat", "Cancel"}
+Enumeration.RectangleMode = {"AllCorners", "SingleEdge", "SingleCorner"}
+
 Enumeration.EasingFunction = {
 	"Standard";
 	"Deceleration";

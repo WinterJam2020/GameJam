@@ -6,6 +6,7 @@ local GuiService = game:GetService("GuiService")
 
 local Resources = require(ReplicatedStorage.Resources)
 local Roact = Resources:LoadLibrary("Roact")
+local t = Resources:LoadLibrary("t")
 
 local CurrentCamera = Workspace.CurrentCamera
 local TopInset, BottomInset = GuiService:GetGuiInset()
@@ -14,6 +15,11 @@ local Scale = Roact.PureComponent:extend("Scale")
 Scale.defaultProps = {
 	Scale = 1,
 }
+
+t.validateProps = t.interface({
+	Size = t.UDim2, -- ?
+	Scale = t.number,
+})
 
 function Scale:init()
 	self:Update()
