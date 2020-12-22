@@ -6,8 +6,9 @@ local Spline = GenerateSkiPath()
 GenerateMarkers(Spline)
 GenerateGates(Spline)
 
-workspace.CurrentCamera.CFrame = Spline.GetCFrameOnPath(0) + Vector3.new(0, 20, 0)
-workspace.CurrentCamera.Focus = Spline.GetCFrameOnPath(0)
+local SplineCFrame0 = Spline.GetCFrameOnPath(0)
+workspace.CurrentCamera.CFrame = SplineCFrame0 + Vector3.new(0, 20, 0)
+workspace.CurrentCamera.Focus = SplineCFrame0 + SplineCFrame0.LookVector * 20
 
 repeat
 	wait()
