@@ -4,7 +4,7 @@ Container.Parent = workspace
 
 local Part = Instance.new("Part")
 Part.Anchored = true
-Part.BrickColor = BrickColor.new("Cyan")
+Part.BrickColor = BrickColor.new("Electric blue")
 Part.CanCollide = false
 Part.TopSurface = Enum.SurfaceType.Smooth
 Part.Transparency = 0.25
@@ -36,7 +36,18 @@ local function generateMarkers(spline, rightOffset)
 	end
 end
 
+local function generateHorizontalMarkers(spline)
+	for i = 0, 1, 4 * DELTA do
+		local cf = spline.GetRotCFrameOnPath(i)
+		local part = Part:Clone()
+		part.CFrame = cf + cf.UpVector * VERTICAL_OFFSET
+		part.Size = Vector3.new(PATH_WIDTH, 1, 1)
+		part.Parent = Container
+	end
+end
+
 return function(spline)
 	generateMarkers(spline,  PATH_WIDTH / 2) -- right
 	generateMarkers(spline, -PATH_WIDTH / 2) -- left
+	generateHorizontalMarkers(spline)
 end
