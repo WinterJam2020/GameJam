@@ -7,4 +7,6 @@ Resources:LoadLibrary("TimeSyncService"):Initialize()
 Resources:LoadLibrary("PlayerDataHandler"):Initialize()
 Resources:LoadLibrary("RagdollHandler"):Initialize(Constants.CONFIGURATION.RAGDOLL_TAG_NAME)
 
+local GameEvent = Resources:GetRemoteEvent("GameEvent")
+
 return false

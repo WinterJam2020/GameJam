@@ -9,6 +9,10 @@ return Table.Lock({
 	PAUSE_TWEEN = 2;
 	STOP_TWEEN = 3;
 
+	SPAWN_AT_TOP = 4;
+	REPLICATE_POSITION = 5;
+	DISPLAY_LEADERBOARD = 6;
+
 	CONFIGURATION = {
 		RAGDOLL_TAG_NAME = "PlayerRagdoll";
 

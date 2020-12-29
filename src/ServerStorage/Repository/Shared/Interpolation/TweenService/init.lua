@@ -33,7 +33,7 @@ local RoTweenTuple = t.tuple(t.Instance, NonNegativeNumber, t.string, t.string, 
 local GetValueTuple = t.tuple(t.numberConstrained(0, 1), t.union(t.enum(Enum.EasingStyle), t.string), t.union(t.enum(Enum.EasingDirection), t.string))
 
 local StepFunction
-if RunService:IsServer() and not RunService:IsClient() then
+if RunService:IsServer() then
 	StepFunction = RunService.Heartbeat
 else
 	StepFunction = RunService.RenderStepped
