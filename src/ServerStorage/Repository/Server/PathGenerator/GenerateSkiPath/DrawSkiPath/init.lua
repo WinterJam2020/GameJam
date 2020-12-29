@@ -1,11 +1,12 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Resources = require(ReplicatedStorage.Resources)
-local DrawTriangle = Resources:LoadLibrary("DrawTriangle")
+local Constants = Resources:LoadShared("Constants").SKI_PATH
+local DrawTriangle = Resources:LoadServer("DrawTriangle")
 local Terrain = workspace.Terrain
-local WIDTH = 100
-local WEDGE_DEPTH = 4
-local DEBUG = false
+local WIDTH = Constants.TERRAIN_WIDTH
+local WEDGE_DEPTH = Constants.WEDGE_DEPTH
+local DEBUG = Constants.DEBUG
 
 local DebugContainer
 if DEBUG then

@@ -10,9 +10,10 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Resources = ReplicatedStorage.Resources
+local Constants = Resources:LoadShared("Constants").SKI_PATH
 -- local Arrow = Resources:LoadLibrary("Arrow")
-local SplineModule = Resources:LoadLibrary("AstroSpline")
-local DrawSkiPath = Resources:LoadLibrary("DrawSkiPath")
+local SplineModule = Resources:LoadShared("AstroSpline")
+local DrawSkiPath = Resources:LoadServer("DrawSkiPath")
 
 ---- Settings
 local DELTA = 0.2
@@ -22,14 +23,14 @@ local MAX_DIST = 9
 local HEIGHT_MAP_THRESHOLD = 0.4
 local NOISE_OFFSET = math.floor(os.clock() % 86400 * 100) / 100
 
-local SCALE_FACTOR = 100
+local SCALE_FACTOR = Constants.SCALE_FACTOR
 local MAX_VERTICAL_OFFSET = 20
 local MAX_HORIZONTAL_OFFSET = 2
 
 local POINT_DENSITY = 5
-local MAX_BANK = math.rad(60)
+local MAX_BANK_ANGLE = Constants.MAX_BANK_ANGLE
 
-local DEBUG = false
+local DEBUG = Constants.DEBUG
 
 ---- Constants
 local PROJ_VEC = Vector3.new(1, 0, 1)
@@ -94,7 +95,6 @@ return function()
 
 	---- Height map cframes
 	local SkiPathCFrames = {}
-	local CameraPathCFrames = {}
 	for i = 0, Length * POINT_DENSITY - 1 do
 		i /= Length * POINT_DENSITY - 1
 		local input = Start[1] + i * Length
@@ -105,7 +105,6 @@ return function()
 		--local z = math.random() * ZFunction(i) * 5
 		local z = math.noise((input + NOISE_OFFSET)* 2) * MAX_HORIZONTAL_OFFSET * 2 -- add horizontal offset later later in the noise
 		local cf = ArcSpline:GetArcCFrame(i) + Vector3.new(0, y * MAX_VERTICAL_OFFSET, 0)
-		table.insert(CameraPathCFrames, cf)
 		cf += cf.RightVector * z -- horizontal offset but along arc
 		table.insert(SkiPathCFrames, cf)
 	end
@@ -121,7 +120,7 @@ return function()
 		local cross = toNext:Cross(toLast)
 		local dot = toNext:Dot(toLast)
 		local angle = math.acos(math.clamp(dot, -1, 1))
-		local rot = math.sign(cross.Y) * (math.pi - angle) * (MAX_BANK / math.pi)
+		local rot = math.sign(cross.Y) * (math.pi - angle) * (MAX_BANK_ANGLE / math.pi)
 		SkiPathCFrames[i] = cf * CFrame.Angles(0, 0, rot)
 	end
 
@@ -129,10 +128,6 @@ return function()
 	local skiPathOrigin = SkiPathCFrames[1].Position * SCALE_FACTOR
 	for i, cf in ipairs(SkiPathCFrames) do
 		SkiPathCFrames[i] = (cf - cf.Position) + cf.Position * SCALE_FACTOR - skiPathOrigin
-	end
-	local cameraPathOrigin = CameraPathCFrames[1].Position * SCALE_FACTOR
-	for i, cf in ipairs(CameraPathCFrames) do
-		CameraPathCFrames[i] = (cf - cf.Position) + cf.Position * SCALE_FACTOR - cameraPathOrigin
 	end
 
 	local SkiPath = SplineModule.Chain.new(SkiPathCFrames, 1)
@@ -187,5 +182,5 @@ return function()
 		end
 	end
 	
-	return SkiPath, SkiPathCFrames, CameraPathCFrames
+	return SkiPath, SkiPathCFrames
 end
