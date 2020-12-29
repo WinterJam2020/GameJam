@@ -5,12 +5,16 @@ local RunService = game:GetService("RunService")
 
 local Resources = require(ReplicatedStorage.Resources)
 local Constants = Resources:LoadLibrary("Constants")
+local ValueObject = Resources:LoadLibrary("ValueObject")
 
 local IProperties = Constants.TYPE_CHECKS.IParticleProperties
 
 local ParticleEngineClient = {
-	MaxParticles = 400;
-	WindSpeed = 10;
+	MaxParticles = ValueObject.new(400);
+	WindSpeed = ValueObject.new(10);
+
+	-- MaxParticles = 400;
+	-- WindSpeed = 10;
 }
 
 local function NewFrame(Name: string): Frame
@@ -29,7 +33,7 @@ local Update
 	@returns [ParticleEngine]
 **--]]
 function ParticleEngineClient:Initialize(ScreenGui: ScreenGui)
-	self.RemoteEvent = Resources:GetRemoteEvent(Constants.REMOTE_NAME.PARTICLE_ENGINE_EVENT)
+	self.RemoteEvent = Resources:GetRemoteEvent(Constants.REMOTE_NAMES.PARTICLE_ENGINE_EVENT)
 	self.RemoteEvent.OnClientEvent:Connect(function(Properties)
 		self:Add(Properties)
 	end)
@@ -40,11 +44,26 @@ function ParticleEngineClient:Initialize(ScreenGui: ScreenGui)
 	self.LastUpdateTime = time()
 	self.ParticleCount = 0
 	self.Particles = {}
-	self.ParticleFrames = table.create(self.MaxParticles)
+	self.ParticleFrames = table.create(self.MaxParticles.Value)
 
-	for Index = 1, self.MaxParticles do
+	for Index = 1, self.MaxParticles.Value do
 		self.ParticleFrames[Index] = NewFrame("Particle")
 	end
+
+	self.MaxParticles.Changed:Connect(function(NewValue)
+		NewValue = math.clamp(NewValue, 100, 3000)
+		print("NewValue:", NewValue)
+
+		for _, ParticleFrame in ipairs(self.ParticleFrames) do
+			ParticleFrame:Destroy()
+		end
+
+		self.ParticleFrames = table.create(NewValue)
+		local ParticleFrames = self.ParticleFrames
+		for Index = 1, NewValue do
+			ParticleFrames[Index] = NewFrame("Particle")
+		end
+	end)
 
 	RunService.Heartbeat:Connect(function()
 		debug.profilebegin("ParticleEngineUpdate")
@@ -134,7 +153,7 @@ function ParticleEngineClient:Add(Properties)
 	end
 
 	Properties.Lifetime = Properties.Lifetime and Properties.Lifetime + time()
-	if self.ParticleCount > self.MaxParticles then
+	if self.ParticleCount > self.MaxParticles.Value then
 		self.Particles[next(self.Particles)] = nil
 	else
 		self.ParticleCount += 1
@@ -162,7 +181,7 @@ local function UpdatePositionVelocity(self, Properties, DeltaTime, CurrentTime)
 
 	local Wind
 	if Properties.WindResistance then
-		Wind = (ParticleWind(CurrentTime, Properties.Position) * self.WindSpeed - Properties.Velocity) * Properties.WindResistance
+		Wind = (ParticleWind(CurrentTime, Properties.Position) * self.WindSpeed.Value - Properties.Velocity) * Properties.WindResistance
 	else
 		Wind = EMPTY_VECTOR3
 	end
@@ -249,15 +268,20 @@ local function ParticleRender(self, CameraPosition, CameraInverse, Frame, Partic
 		return false
 	end
 
-	local ScreenPosition = RealPosition / RealPosition.Z
+	local RealPositionZ = RealPosition.Z
+	local ScreenPosition = RealPosition / RealPositionZ
 	local Bloom = Particle.Bloom
 	local Transparency = Particle.Transparency
+
 	local PositionX = (0.5 - ScreenPosition.X / PlaneSizeX) * ScreenSizeX
 	local PositionY = (0.5 + ScreenPosition.Y / PlaneSizeY) * ScreenSizeY
-	local PreSizeY = -Particle.Size.Y / RealPosition.Z * ScreenSizeY / PlaneSizeY
-	local SizeX = -Particle.Size.X / RealPosition.Z * ScreenSizeY / PlaneSizeY + Bloom.X
+
+	local PreSizeY = -Particle.Size.Y / RealPositionZ * ScreenSizeY / PlaneSizeY
+	local SizeX = -Particle.Size.X / RealPositionZ * ScreenSizeY / PlaneSizeY + Bloom.X
+
 	local RealPositionX, RealPositionY = PositionX - LastScreenPosition.X, PositionY - LastScreenPosition.Y
 	local SizeY = PreSizeY + math.sqrt(RealPositionX * RealPositionX + RealPositionY * RealPositionY) + Bloom.Y
+
 	Particle.LastScreenPosition = Vector2.new(PositionX, PositionY)
 
 	if Particle.Occlusion then
