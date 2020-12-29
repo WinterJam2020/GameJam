@@ -30,6 +30,7 @@ return Table.Lock({
 		TIME_SYNC_REMOTE_EVENT_NAME = "TimeSyncServiceRemoteEvent";
 		TIME_SYNC_REMOTE_FUNCTION_NAME = "TimeSyncServiceRemoteFunction";
 		ANALYTICS_REMOTE_EVENT_NAME = "AnalyticsEvent";
+		SKI_PATH_REMOTE_FUNCTION_NAME = "SkiPathRemoteFunction";
 	};
 
 	TYPE_CHECKS = {
