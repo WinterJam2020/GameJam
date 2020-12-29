@@ -11,7 +11,7 @@ local GenerateSkiPath = Resources:LoadLibrary("GenerateSkiPath")
 Resources:LoadLibrary("ParticleEngine"):Initialize()
 Resources:LoadLibrary("TimeSyncService"):Initialize()
 Resources:LoadLibrary("PlayerDataHandler"):Initialize()
-Resources:LoadLibrary("RagdollHandler"):Initialize(Constants.CONFIGURATION.RAGDOLL_TAG_NAME)
+-- Resources:LoadLibrary("RagdollHandler"):Initialize(Constants.CONFIGURATION.RAGDOLL_TAG_NAME)
 
 local GameEvent = Resources:GetRemoteEvent("GameEvent")
 

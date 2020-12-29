@@ -5,7 +5,7 @@ local function join(...)
 		local source = select(i, ...)
 
 		if source ~= nil then
-			for key, value in pairs(source) do
+			for key, value in next, source do
 				result[key] = value
 			end
 		end

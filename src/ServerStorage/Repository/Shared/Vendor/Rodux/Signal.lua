@@ -6,15 +6,16 @@
 ]]
 
 local function immutableAppend(list, ...)
-	local new = {}
 	local len = #list
+	local varLen = select("#", ...)
+	local new = table.create(varLen + len)
 
-	for key = 1, len do
-		new[key] = list[key]
+	for index = 1, len do
+		new[index] = list[index]
 	end
 
-	for i = 1, select("#", ...) do
-		new[len + i] = select(i, ...)
+	for index = 1, varLen do
+		new[len + index] = select(index, ...)
 	end
 
 	return new
@@ -22,10 +23,12 @@ end
 
 local function immutableRemoveValue(list, removeValue)
 	local new = {}
+	local length = 0
 
-	for i = 1, #list do
-		if list[i] ~= removeValue then
-			table.insert(new, list[i])
+	for _, value in ipairs(list) do
+		if value ~= removeValue then
+			length += 1
+			new[length] = value
 		end
 	end
 
