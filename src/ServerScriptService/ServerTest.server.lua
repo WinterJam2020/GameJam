@@ -1,6 +1,8 @@
-local GenerateSkiPath = require(script.GenerateSkiPath)
-local GenerateMarkers = require(script.GenerateMarkers)
-local GenerateGates = require(script.GenerateGates)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Resources = require(ReplicatedStorage.Resources)
+local GenerateSkiPath = Resources:LoadLibrary("GenerateSkiPath")
+local GenerateMarkers = Resources:LoadLibrary("GenerateMarkers")
+local GenerateGates = Resources:LoadLibrary("GenerateGates")
 
 local Spline = GenerateSkiPath()
 GenerateMarkers(Spline)
