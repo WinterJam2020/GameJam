@@ -168,7 +168,7 @@ local function connect(mapStateToPropsOrThunk, mapDispatchToProps)
 
 			local extraState = stateUpdater(self.props, self.state, mappedStoreState)
 
-			for key, value in pairs(extraState) do
+			for key, value in next, extraState do
 				self.state[key] = value
 			end
 

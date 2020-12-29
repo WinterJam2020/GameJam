@@ -60,6 +60,7 @@ local function createElement(component, props, children)
 		[ElementKind] = elementKind,
 		component = component,
 		props = props,
+		source = nil,
 	}
 
 	if config.elementTracing then

@@ -21,27 +21,22 @@ Check the call to Roact.reconcile at:
 ]]
 
 local function createReconcilerCompat(reconciler)
-	local compat = {}
+	return {
+		reify = function(...)
+			Logging.warnOnce(reifyMessage)
+			return reconciler.mountVirtualTree(...)
+		end,
 
-	function compat.reify(...)
-		Logging.warnOnce(reifyMessage)
+		teardown = function(...)
+			Logging.warnOnce(teardownMessage)
+			return reconciler.unmountVirtualTree(...)
+		end,
 
-		return reconciler.mountVirtualTree(...)
-	end
-
-	function compat.teardown(...)
-		Logging.warnOnce(teardownMessage)
-
-		return reconciler.unmountVirtualTree(...)
-	end
-
-	function compat.reconcile(...)
-		Logging.warnOnce(reconcileMessage)
-
-		return reconciler.updateVirtualTree(...)
-	end
-
-	return compat
+		reconcile = function(...)
+			Logging.warnOnce(reconcileMessage)
+			return reconciler.updateVirtualTree(...)
+		end,
+	}
 end
 
 return createReconcilerCompat

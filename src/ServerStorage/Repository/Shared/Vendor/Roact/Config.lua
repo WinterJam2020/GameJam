@@ -15,13 +15,13 @@
 -- Every valid configuration value should be non-nil in this table.
 local defaultConfig = {
 	-- Enables asserts for internal Roact APIs. Useful for debugging Roact itself.
-	["internalTypeChecks"] = false,
+	internalTypeChecks = false,
 	-- Enables stricter type asserts for Roact's public API.
-	["typeChecks"] = false,
+	typeChecks = false,
 	-- Enables storage of `debug.traceback()` values on elements for debugging.
-	["elementTracing"] = false,
+	elementTracing = false,
 	-- Enables validation of component props in stateful components.
-	["propValidation"] = false,
+	propValidation = false,
 }
 
 -- Build a list of valid configuration values up for debug messages.
@@ -33,20 +33,23 @@ end
 local Config = {}
 
 function Config.new()
-	local self = {}
+	local self = {
+		_currentConfig = setmetatable({}, {
+			__index = function(_, key)
+				local message = string.format(
+					"Invalid global configuration key %q. Valid configuration keys are: %s",
+					tostring(key),
+					table.concat(defaultConfigKeys, ", ")
+				)
 
-	self._currentConfig = setmetatable({}, {
-		__index = function(_, key)
-			local message = (
-				"Invalid global configuration key %q. Valid configuration keys are: %s"
-			):format(
-				tostring(key),
-				table.concat(defaultConfigKeys, ", ")
-			)
+				error(message, 3)
+			end,
+		}),
 
-			error(message, 3)
-		end,
-	})
+		set = nil,
+		get = nil,
+		scoped = nil,
+	}
 
 	-- We manually bind these methods here so that the Config's methods can be
 	-- used without passing in self, since they eventually get exposed on the
@@ -64,7 +67,6 @@ function Config.new()
 	end
 
 	self.set(defaultConfig)
-
 	return self
 end
 
@@ -73,9 +75,8 @@ function Config:set(configValues)
 	-- We only want to apply this configuration if it's valid!
 	for key, value in next, configValues do
 		if defaultConfig[key] == nil then
-			local message = (
-				"Invalid global configuration key %q (type %s). Valid configuration keys are: %s"
-			):format(
+			local message = string.format(
+				"Invalid global configuration key %q (type %s). Valid configuration keys are: %s",
 				tostring(key),
 				typeof(key),
 				table.concat(defaultConfigKeys, ", ")
@@ -86,9 +87,8 @@ function Config:set(configValues)
 
 		-- Right now, all configuration values must be boolean.
 		if type(value) ~= "boolean" then
-			local message = (
-				"Invalid value %q (type %s) for global configuration key %q. Valid values are: true, false"
-			):format(
+			local message = string.format(
+				"Invalid value %q (type %s) for global configuration key %q. Valid values are: true, false",
 				tostring(value),
 				typeof(value),
 				tostring(key)
@@ -114,9 +114,7 @@ function Config:scoped(configValues, callback)
 	self.set(configValues)
 
 	local success, result = pcall(callback)
-
 	self.set(previousValues)
-
 	assert(success, result)
 end
 

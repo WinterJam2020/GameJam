@@ -30,11 +30,12 @@ function componentClassMetatable:__tostring()
 	return self.__componentName
 end
 
-local Component = setmetatable({}, componentClassMetatable)
+local Component = setmetatable({
+	[Type] = Type.StatefulComponentClass,
+	__componentName = "Component",
+}, componentClassMetatable)
 
-Component[Type] = Type.StatefulComponentClass
 Component.__index = Component
-Component.__componentName = "Component"
 
 --[[
 	A method called by consumers of Roact to create a new component class.
@@ -109,10 +110,7 @@ function Component:setState(mapState)
 		lifecyclePhase == ComponentLifecyclePhase.WillUnmount
 	then
 		local messageTemplate = invalidSetStateMessages[internalData.lifecyclePhase]
-
-		local message = messageTemplate:format(tostring(internalData.componentClass))
-
-		error(message, 2)
+		error(string.format(messageTemplate, tostring(internalData.componentClass)), 2)
 	end
 
 	local pendingState = internalData.pendingState
@@ -142,8 +140,8 @@ function Component:setState(mapState)
 		-- If `setState` is called in `init`, we can skip triggering an update!
 		local derivedState = self:__getDerivedState(self.props, newState)
 		self.state = assign(newState, derivedState)
-
-	elseif lifecyclePhase == ComponentLifecyclePhase.DidMount or
+	elseif
+		lifecyclePhase == ComponentLifecyclePhase.DidMount or
 		lifecyclePhase == ComponentLifecyclePhase.DidUpdate or
 		lifecyclePhase == ComponentLifecyclePhase.ReconcileChildren
 	then
@@ -161,10 +159,7 @@ function Component:setState(mapState)
 
 	else
 		local messageTemplate = invalidSetStateMessages.default
-
-		local message = messageTemplate:format(tostring(internalData.componentClass))
-
-		error(message, 2)
+		error(string.format(messageTemplate, tostring(internalData.componentClass)), 2)
 	end
 end
 
@@ -187,12 +182,7 @@ end
 ]]
 function Component:render()
 	local internalData = self[InternalData]
-
-	local message = componentMissingRenderMessage:format(
-		tostring(internalData.componentClass)
-	)
-
-	error(message, 0)
+	error(string.format(componentMissingRenderMessage, tostring(internalData.componentClass)), 0)
 end
 
 --[[
@@ -248,13 +238,13 @@ function Component:__validateProps(props)
 	end
 
 	local validator = self[InternalData].componentClass.validateProps
-
 	if validator == nil then
 		return
 	end
 
 	if type(validator) ~= "function" then
-		error(("validateProps must be a function, but it is a %s.\nCheck the definition of the component %q."):format(
+		error(string.format(
+			"validateProps must be a function, but it is a %s.\nCheck the definition of the component %q.",
 			typeof(validator),
 			self.__componentName
 		))
@@ -264,7 +254,8 @@ function Component:__validateProps(props)
 
 	if not success then
 		failureReason = failureReason or "<Validator function did not supply a message>"
-		error(("Property validation failed in %s: %s\n\n%s"):format(
+		error(string.format(
+			"Property validation failed in %s: %s\n\n%s",
 			self.__componentName,
 			tostring(failureReason),
 			self:getElementTraceback() or "<enable element tracebacks>"),
@@ -294,15 +285,12 @@ function Component:__mount(reconciler, virtualNode)
 		lifecyclePhase = ComponentLifecyclePhase.Init,
 	}
 
-	local instance = {
+	local instance = setmetatable({
 		[Type] = Type.StatefulComponentInstance,
 		[InternalData] = internalData,
-	}
-
-	setmetatable(instance, self)
+	}, self)
 
 	virtualNode.instance = instance
-
 	local props = currentElement.props
 
 	if self.defaultProps ~= nil then
@@ -310,12 +298,10 @@ function Component:__mount(reconciler, virtualNode)
 	end
 
 	instance:__validateProps(props)
-
 	instance.props = props
 
 	local newContext = assign({}, virtualNode.legacyContext)
 	instance._context = newContext
-
 	instance.state = assign({}, instance:__getDerivedState(instance.props, {}))
 
 	if instance.init ~= nil then
@@ -381,6 +367,7 @@ function Component:__update(updatedElement, updatedState)
 			Type.of(updatedElement) == Type.Element or updatedElement == nil,
 			"Expected arg #1 to be of type Element or nil"
 		)
+
 		internalAssert(
 			type(updatedState) == "table" or updatedState == nil,
 			"Expected arg #2 to be of type table or nil"
@@ -439,7 +426,7 @@ function Component:__update(updatedElement, updatedState)
 		updateCount += 1
 
 		if updateCount > MAX_PENDING_UPDATES then
-			error(tooManyUpdatesMessage:format(tostring(internalData.componentClass)), 3)
+			error(string.format(tooManyUpdatesMessage, tostring(internalData.componentClass)), 3)
 		end
 	until internalData.pendingState == nil
 
@@ -466,6 +453,7 @@ function Component:__resolveUpdate(incomingProps, incomingState)
 	if incomingProps == nil then
 		incomingProps = oldProps
 	end
+
 	if incomingState == nil then
 		incomingState = oldState
 	end

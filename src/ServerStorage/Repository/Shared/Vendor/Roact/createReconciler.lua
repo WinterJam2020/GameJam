@@ -112,13 +112,15 @@ local function createReconciler(renderer)
 	end
 
 	local function updateVirtualNodeWithRenderResult(virtualNode, hostParent, renderResult)
-		if Type.of(renderResult) == Type.Element
+		if
+			Type.of(renderResult) == Type.Element
 			or renderResult == nil
 			or type(renderResult) == "boolean"
 		then
 			updateChildren(virtualNode, hostParent, renderResult)
 		else
-			error(("%s\n%s"):format(
+			error(string.format(
+				"%s\n%s",
 				"Component returned invalid children:",
 				virtualNode.currentElement.source or "<enable element tracebacks>"
 			), 0)
@@ -152,7 +154,7 @@ local function createReconciler(renderer)
 		-- 		unmountVirtualNode(childNode)
 		-- 	end
 		else
-			error(("Unknown ElementKind %q"):format(tostring(kind), 2))
+			error(string.format("Unknown ElementKind %q", tostring(kind), 2))
 		end
 	end
 
@@ -241,7 +243,7 @@ local function createReconciler(renderer)
 		elseif kind == ElementKind.Fragment then
 			virtualNode = updateFragmentVirtualNode(virtualNode, newElement)
 		else
-			error(("Unknown ElementKind %q"):format(tostring(kind), 2))
+			error(string.format("Unknown ElementKind %q", tostring(kind), 2))
 		end
 
 		-- Stateful components can abort updates via shouldUpdate. If that
@@ -302,7 +304,6 @@ local function createReconciler(renderer)
 
 	local function mountFunctionVirtualNode(virtualNode)
 		local element = virtualNode.currentElement
-
 		local children = element.component(element.props)
 
 		updateVirtualNodeWithRenderResult(virtualNode, virtualNode.hostParent, children)
@@ -310,7 +311,6 @@ local function createReconciler(renderer)
 
 	local function mountPortalVirtualNode(virtualNode)
 		local element = virtualNode.currentElement
-
 		local targetHostParent = element.props.target
 		local children = element.props[Children]
 
@@ -366,7 +366,7 @@ local function createReconciler(renderer)
 		elseif kind == ElementKind.Fragment then
 			mountFragmentVirtualNode(virtualNode)
 		else
-			error(("Unknown ElementKind %q"):format(tostring(kind), 2))
+			error(string.format("Unknown ElementKind %q", tostring(kind), 2))
 		end
 
 		return virtualNode

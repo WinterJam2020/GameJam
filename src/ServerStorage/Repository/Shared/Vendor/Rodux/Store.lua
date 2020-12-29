@@ -3,12 +3,13 @@ local RunService = game:GetService("RunService")
 local Signal = require(script.Parent.Signal)
 local NoYield = require(script.Parent.NoYield)
 
-local Store = {}
+local Store = {
+	-- This value is exposed as a private value so that the test code can stay in
+	-- sync with what event we listen to for dispatching the Changed event.
+	-- It may not be Heartbeat in the future.
+	_flushEvent = RunService.Heartbeat,
+}
 
--- This value is exposed as a private value so that the test code can stay in
--- sync with what event we listen to for dispatching the Changed event.
--- It may not be Heartbeat in the future.
-Store._flushEvent = RunService.Heartbeat
 Store.__index = Store
 
 --[[
@@ -26,27 +27,23 @@ function Store.new(reducer, initialState, middlewares)
 	assert(type(reducer) == "function", "Bad argument #1 to Store.new, expected function.")
 	assert(middlewares == nil or type(middlewares) == "table", "Bad argument #3 to Store.new, expected nil or table.")
 
-	local self = {}
+	local self = setmetatable({
+		_reducer = reducer,
+		_state = reducer(initialState, {
+			type = "@@INIT",
+		}),
 
-	self._reducer = reducer
-	self._state = reducer(initialState, {
-		type = "@@INIT",
-	})
+		_lastState = nil,
+		_mutatedSinceFlush = false,
+		_connections = {},
+
+		changed = Signal.new(),
+	}, Store)
 
 	self._lastState = self._state
-
-	self._mutatedSinceFlush = false
-	self._connections = {}
-
-	self.changed = Signal.new()
-
-	setmetatable(self, Store)
-
-	local connection = self._flushEvent:Connect(function()
+	self._connections[1] = self._flushEvent:Connect(function()
 		self:flush()
 	end)
-
-	table.insert(self._connections, connection)
 
 	if middlewares then
 		local unboundDispatch = self.dispatch
