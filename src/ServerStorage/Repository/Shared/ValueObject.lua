@@ -13,8 +13,7 @@ function ValueObject.new(InitialValue)
 		_Value = nil;
 	}, ValueObject), "_Value", InitialValue)
 
-	self.Changed = self.Janitor:Add(FastSignal.new(), "Destroy")
-	return self
+	return rawset(self, "Changed", self.Janitor:Add(FastSignal.new(), "Destroy"))
 end
 
 function ValueObject:__index(Index)
@@ -43,8 +42,8 @@ end
 
 function ValueObject:Destroy()
 	self.Value = nil
-	self.Janitor = self.Janitor:Destroy()
-	self.Changed = nil
+	self.Janitor:Destroy()
+	table.clear(self)
 	setmetatable(self, nil)
 end
 

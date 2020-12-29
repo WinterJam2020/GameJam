@@ -372,4 +372,23 @@ function Resources:LoadLibrary(LibraryName)
 end
 
 Metatable.__call = Resources.LoadLibrary
+Resources.LoadShared = Resources.LoadLibrary
+Resources.LoadModule = Resources.LoadLibrary
+
+function Resources:LoadClient(ModuleName: string)
+	if SERVER_SIDE then
+		error("Cannot call Resources:LoadClient on the server.", 2)
+	end
+
+	return self:LoadLibrary(ModuleName)
+end
+
+function Resources:LoadServer(ModuleName: string)
+	if not SERVER_SIDE then
+		error("Cannot call Resources:LoadServer on the client.", 2)
+	end
+
+	return self:LoadLibrary(ModuleName)
+end
+
 return Resources

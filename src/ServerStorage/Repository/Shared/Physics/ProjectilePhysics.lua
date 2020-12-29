@@ -6,7 +6,7 @@ local ProjectilePhysics = {ClassName = "ProjectilePhysics"}
 
 function ProjectilePhysics.new(Initial: number?)
 	Initial = Initial or 0
-	local self = rawset(rawset(rawset(rawset(setmetatable({}, ProjectilePhysics), "_Clock", TimeSyncService:WaitForSyncedClock()), "_Position0", Initial), "_Velocity0", Initial * 0), "_Acceleration", Initial * 0)
+	local self = rawset(rawset(rawset(rawset(setmetatable({}, ProjectilePhysics), "_Clock", TimeSyncService:WaitForSyncedClock()), "_Position0", Initial), "_Velocity0", Initial * 0), "_Acceleration", Initial * 0) -- haha gross
 	rawset(self, "_Time0", self._Clock:GetTime())
 	return self
 end
