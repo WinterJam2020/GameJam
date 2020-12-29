@@ -16,12 +16,12 @@ local Character = Player.Character or Player.CharacterAdded:Wait()
 local Humanoid = Character:WaitForChild("Humanoid")
 local RootPart = Humanoid.RootPart
 
-local SplineRemote = ReplicatedStorage.SplineRemote
-
 ----| Modules |-------------------------------------------------------------------------------------
 local Resources = require(ReplicatedStorage.Resource)
+local Constants = Resources:LoadShared("Constants")
 -- local Arrow = Resources:LoadShared("Arrow")
 local SplineClass = Resources:LoadShared("AstroSpline")
+local SkiPathRemote = Resources:GetRemoteFunction(Constants.REMOTE_NAMES.SKI_PATH_REMOTE_FUNCTION_NAME)
 
 ----| Constants |-----------------------------------------------------------------------------------
 local ROOT_PART_HEIGHT = Humanoid.HipHeight + RootPart.Size.Y / 2 + 2 -- +2 is fudge
@@ -31,7 +31,7 @@ local MAX_CARVE_ANGLE = 40
 local GRAVITY = 196.2
 
 ----| State variables |-----------------------------------------------------------------------------
-local SkiChainCFrames = SplineRemote:InvokeServer()
+local SkiChainCFrames = SkiPathRemote:InvokeServer()
 local SkiChain = SplineClass.Chain.new(SkiChainCFrames, 1)
 local SkiChainAlpha = 0.001
 local SplineCFrame = SkiChain:GetCFrame(SkiChainAlpha)
