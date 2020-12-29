@@ -1,3 +1,7 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Resources = require(ReplicatedStorage.Resources)
+local Constants = Resources:LoadShared("Constants").SKI_PATH
+
 local Container = Instance.new("Model")
 Container.Name = "Markers"
 Container.Parent = workspace
@@ -11,7 +15,7 @@ Part.Transparency = 0.25
 Part.BottomSurface = Enum.SurfaceType.Smooth
 
 local SEGMENTS = 500
-local PATH_WIDTH = 40
+local PATH_WIDTH = Constants.PATH_WIDTH
 local HORIZONTAL_MARKER_DENSITY = 5
 local VERTICAL_OFFSET = 1.8
 
