@@ -28,7 +28,7 @@ local function update(dictionary, key, updater, callback)
 	else
 		v, k = call(callback, false, key)
 	end
-	
+
 	new[k or key] = v
 
 	return new

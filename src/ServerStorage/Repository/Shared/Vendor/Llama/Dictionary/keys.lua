@@ -2,7 +2,7 @@
 local function keys(dictionary)
 	local dictionaryType = type(dictionary)
 	assert(dictionaryType == "table", "expected a table for first argument, got " .. dictionaryType)
-	
+
 	local keysList = {}
 
 	local index = 1

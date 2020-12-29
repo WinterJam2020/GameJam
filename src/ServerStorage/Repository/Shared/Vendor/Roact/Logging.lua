@@ -82,15 +82,11 @@ function logInfoMetatable:__tostring()
 end
 
 local function createLogInfo()
-	local logInfo = {
+	return setmetatable({
 		errors = {},
 		warnings = {},
 		infos = {},
-	}
-
-	setmetatable(logInfo, logInfoMetatable)
-
-	return logInfo
+	}, logInfoMetatable)
 end
 
 local Logging = {}

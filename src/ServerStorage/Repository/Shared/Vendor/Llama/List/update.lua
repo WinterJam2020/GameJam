@@ -29,7 +29,7 @@ local function update(list, index, updater, callback)
 	else
 		value = call(callback, false, index)
 	end
-	
+
 	new[index] = value
 
 	return new

@@ -14,7 +14,7 @@ local function zip(...)
 
 	for i = 1, minLen do
 		new[i] = {}
-		
+
 		for j = 1, argc do
 			new[i][j] = select(j, ...)[i]
 		end

@@ -4,7 +4,7 @@ local toSet = require(script.Parent.toSet)
 local function removeIndex(list, ...)
 	local listType = type(list)
 	assert(listType == "table", "expected a table for first argument, got " .. listType)
-	
+
 	local new = {}
 	local removeIndices = toSet({...})
 	local index = 1

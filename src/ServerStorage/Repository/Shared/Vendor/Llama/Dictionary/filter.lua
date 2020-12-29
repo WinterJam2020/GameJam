@@ -13,7 +13,7 @@ local function filter(dictionary, filterer)
 			new[k] = v
 		end
 	end
-	
+
 	return new
 end
 

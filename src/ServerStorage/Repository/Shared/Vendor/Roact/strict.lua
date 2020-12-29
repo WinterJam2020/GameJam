@@ -3,23 +3,21 @@ local function strict(t, name)
 
 	return setmetatable(t, {
 		__index = function(_, key)
-			local message = ("%q (%s) is not a valid member of %s"):format(
+			error(string.format(
+				"%q (%s) is not a valid member of %s",
 				tostring(key),
 				typeof(key),
 				name
-			)
-
-			error(message, 2)
+			), 2)
 		end,
 
 		__newindex = function(_, key)
-			local message = ("%q (%s) is not a valid member of %s"):format(
+			error(string.format(
+				"%q (%s) is not a valid member of %s",
 				tostring(key),
 				typeof(key),
 				name
-			)
-
-			error(message, 2)
+			), 2)
 		end,
 	})
 end

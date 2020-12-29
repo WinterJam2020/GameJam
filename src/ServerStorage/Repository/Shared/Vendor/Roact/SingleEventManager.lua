@@ -21,7 +21,7 @@ local SingleEventManager = {}
 SingleEventManager.__index = SingleEventManager
 
 function SingleEventManager.new(instance)
-	local self = setmetatable({
+	return setmetatable({
 		-- The queue of suspended events
 		_suspendedEventQueue = {},
 
@@ -44,8 +44,6 @@ function SingleEventManager.new(instance)
 		-- The Roblox instance the manager is managing
 		_instance = instance,
 	}, SingleEventManager)
-
-	return self
 end
 
 function SingleEventManager:connectEvent(key, listener)
@@ -58,7 +56,8 @@ function SingleEventManager:connectPropertyChange(key, listener)
 	end)
 
 	if not success then
-		error(("Cannot get changed signal on property %q: %s"):format(
+		error(string.format(
+			"Cannot get changed signal on property %q: %s",
 			tostring(key),
 			event
 		), 0)

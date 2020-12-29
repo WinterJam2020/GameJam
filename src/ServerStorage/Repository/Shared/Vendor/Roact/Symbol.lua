@@ -15,9 +15,7 @@ local Symbol = {}
 ]]
 function Symbol.named(name)
 	assert(type(name) == "string", "Symbols must be created using a string name!")
-
 	local self = newproxy(true)
-
 	local wrappedName = string.format("Symbol(%s)", name)
 
 	getmetatable(self).__tostring = function()

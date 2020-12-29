@@ -4,7 +4,7 @@ local function has(set, key)
 	assert(setType == "table", "expected a table for first argument, got " .. setType)
 
 	assert(key ~= nil, "expected second argument to be anything but nil, got nil")
-	
+
 	return set[key] == true
 end
 

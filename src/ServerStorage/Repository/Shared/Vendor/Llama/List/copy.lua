@@ -8,7 +8,7 @@ local function copy(list)
 	for i = 1, #list do
 		new[i] = list[i]
 	end
-	
+
 	return new
 end
 

@@ -7,38 +7,38 @@
 ]]
 local ComponentLifecyclePhase = require(script.Parent.ComponentLifecyclePhase)
 
-local invalidSetStateMessages = {}
-
-invalidSetStateMessages[ComponentLifecyclePhase.WillUpdate] = [[
+local invalidSetStateMessages = {
+	[ComponentLifecyclePhase.WillUpdate] = [[
 setState cannot be used in the willUpdate lifecycle method.
 Consider using the didUpdate method instead, or using getDerivedStateFromProps.
 
-Check the definition of willUpdate in the component %q.]]
+Check the definition of willUpdate in the component %q.]],
 
-invalidSetStateMessages[ComponentLifecyclePhase.WillUnmount] = [[
+	[ComponentLifecyclePhase.WillUnmount] = [[
 setState cannot be used in the willUnmount lifecycle method.
 A component that is being unmounted cannot be updated!
 
-Check the definition of willUnmount in the component %q.]]
+Check the definition of willUnmount in the component %q.]],
 
-invalidSetStateMessages[ComponentLifecyclePhase.ShouldUpdate] = [[
+	[ComponentLifecyclePhase.ShouldUpdate] = [[
 setState cannot be used in the shouldUpdate lifecycle method.
 shouldUpdate must be a pure function that only depends on props and state.
 
-Check the definition of shouldUpdate in the component %q.]]
+Check the definition of shouldUpdate in the component %q.]],
 
-invalidSetStateMessages[ComponentLifecyclePhase.Render] = [[
+	[ComponentLifecyclePhase.Render] = [[
 setState cannot be used in the render method.
 render must be a pure function that only depends on props and state.
 
-Check the definition of render in the component %q.]]
+Check the definition of render in the component %q.]],
 
-invalidSetStateMessages["default"] = [[
+	default = [[
 setState can not be used in the current situation, because Roact doesn't know
 which part of the lifecycle this component is in.
 
 This is a bug in Roact.
 It was triggered by the component %q.
-]]
+]],
+}
 
 return invalidSetStateMessages

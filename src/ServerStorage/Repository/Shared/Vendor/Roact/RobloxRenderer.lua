@@ -44,9 +44,7 @@ local function applyRef(ref, newHostObject)
 		Binding.update(ref, newHostObject)
 	else
 		-- TODO (#197): Better error message
-		error(("Invalid ref: Expected type Binding but got %s"):format(
-			typeof(ref)
-		))
+		error(string.format("Invalid ref: Expected type Binding but got %s", typeof(ref)))
 	end
 end
 
@@ -59,7 +57,6 @@ local function setRobloxInstanceProperty(hostObject, key, newValue)
 
 	-- Assign the new value to the object
 	hostObject[key] = newValue
-
 	return
 end
 
@@ -77,13 +74,11 @@ local function attachBinding(virtualNode, key, newBinding)
 
 		if not success then
 			local source = virtualNode.currentElement.source
-
 			if source == nil then
 				source = "<enable element tracebacks>"
 			end
 
-			local fullMessage = updatePropsError:format(errorMessage, source)
-			error(fullMessage, 0)
+			error(string.format(updatePropsError, errorMessage, source), 0)
 		end
 	end
 
@@ -92,7 +87,6 @@ local function attachBinding(virtualNode, key, newBinding)
 	end
 
 	virtualNode.bindings[key] = Binding.subscribe(newBinding, updateBoundProperty)
-
 	updateBoundProperty(newBinding:getValue())
 end
 
@@ -203,14 +197,11 @@ function RobloxRenderer.mountHostNode(reconciler, virtualNode)
 			source = "<enable element tracebacks>"
 		end
 
-		local fullMessage = applyPropsError:format(errorMessage, source)
-		error(fullMessage, 0)
+		error(string.format(applyPropsError, errorMessage, source), 0)
 	end
 
 	instance.Name = tostring(hostKey)
-
 	local children = element.props[Children]
-
 	if children ~= nil then
 		reconciler.updateVirtualNodeWithChildren(virtualNode, virtualNode.hostObject, children)
 	end
@@ -235,7 +226,6 @@ function RobloxRenderer.unmountHostNode(reconciler, virtualNode)
 	end
 
 	detachAllBindings(virtualNode)
-
 	virtualNode.hostObject:Destroy()
 end
 
@@ -259,13 +249,11 @@ function RobloxRenderer.updateHostNode(reconciler, virtualNode, newElement)
 
 	if not success then
 		local source = newElement.source
-
 		if source == nil then
 			source = "<enable element tracebacks>"
 		end
 
-		local fullMessage = updatePropsError:format(errorMessage, source)
-		error(fullMessage, 0)
+		error(string.format(updatePropsError, errorMessage, source), 0)
 	end
 
 	local children = newElement.props[Children]

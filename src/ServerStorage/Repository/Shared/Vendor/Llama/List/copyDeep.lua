@@ -2,7 +2,7 @@
 local function copyDeep(list)
 	local listType = type(list)
 	assert(listType == "table", "expected a table for first argument, got " .. listType)
-	
+
 	local new = {}
 
 	for i = 1, #list do
@@ -12,7 +12,7 @@ local function copyDeep(list)
 			new[i] = list[i]
 		end
 	end
-	
+
 	return new
 end
 
