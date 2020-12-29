@@ -9,7 +9,7 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Resources = ReplicatedStorage.Resources
+local Resources = require(ReplicatedStorage.Resources)
 local Constants = Resources:LoadShared("Constants").SKI_PATH
 -- local Arrow = Resources:LoadLibrary("Arrow")
 local SplineModule = Resources:LoadShared("AstroSpline")

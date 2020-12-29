@@ -1,6 +1,5 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local Resources = ReplicatedStorage.Resources
+local Resources = require(ReplicatedStorage.Resources)
 local Constants = Resources:LoadLibrary("Constants")
 
 local PATH_WIDTH = Constants.SKI_PATH.PATH_WIDTH + 4

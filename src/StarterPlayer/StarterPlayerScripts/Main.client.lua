@@ -3,8 +3,8 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Resources = require(ReplicatedStorage.Resources)
-local ParticleEngine = Resources:LoadLibrary("ParticleEngine"):Initialize(Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("MainGui"))
 Resources:LoadLibrary("ClientHandler")
+local ParticleEngine = Resources:LoadLibrary("ParticleEngine"):Initialize(Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("MainGui"))
 
 local CatchFactory = Resources:LoadLibrary("CatchFactory")
 local ParticleEngineHelper = Resources:LoadLibrary("ParticleEngineHelper")

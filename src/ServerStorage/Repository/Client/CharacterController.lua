@@ -9,7 +9,7 @@ local RunService = game:GetService("RunService")
 ----| Objects |-------------------------------------------------------------------------------------
 local Player = Players.LocalPlayer
 local PlayerScripts = Player.PlayerScripts
-local PlayerModule = require(PlayerScripts.PlayerModule)
+local PlayerModule = require(PlayerScripts:WaitForChild("PlayerModule"))
 local Mouse = Player:GetMouse()
 local Camera = workspace.CurrentCamera
 local Character = Player.Character or Player.CharacterAdded:Wait()
@@ -17,7 +17,7 @@ local Humanoid = Character:WaitForChild("Humanoid")
 local RootPart = Humanoid.RootPart
 
 ----| Modules |-------------------------------------------------------------------------------------
-local Resources = require(ReplicatedStorage.Resource)
+local Resources = require(ReplicatedStorage.Resources)
 local Constants = Resources:LoadShared("Constants")
 -- local Arrow = Resources:LoadShared("Arrow")
 local SplineClass = Resources:LoadShared("AstroSpline")
