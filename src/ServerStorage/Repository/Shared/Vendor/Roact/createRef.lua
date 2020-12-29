@@ -7,12 +7,10 @@ local Binding = require(script.Parent.Binding)
 local function createRef()
 	local binding = Binding.create(nil)
 
-	local ref = {}
-
 	--[[
 		A ref is just redirected to a binding via its metatable
 	]]
-	setmetatable(ref, {
+	return setmetatable({}, {
 		__index = function(_, key)
 			if key == "current" then
 				return binding:getValue()
@@ -33,8 +31,6 @@ local function createRef()
 			return string.format("RoactRef(%s)", tostring(binding:getValue()))
 		end,
 	})
-
-	return ref
 end
 
 return createRef

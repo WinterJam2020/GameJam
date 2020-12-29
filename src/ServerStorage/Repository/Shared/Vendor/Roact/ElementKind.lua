@@ -31,9 +31,9 @@ function ElementKindInternal.of(value)
 end
 
 local componentTypesToKinds = {
-	["string"] = ElementKindInternal.Host,
+	string = ElementKindInternal.Host,
 	["function"] = ElementKindInternal.Function,
-	["table"] = ElementKindInternal.Stateful,
+	table = ElementKindInternal.Stateful,
 }
 
 function ElementKindInternal.fromComponent(component)

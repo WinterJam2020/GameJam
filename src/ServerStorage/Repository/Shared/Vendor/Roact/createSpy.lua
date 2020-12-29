@@ -13,6 +13,11 @@ local function createSpy(inner)
 		callCount = 0,
 		values = {},
 		valuesLength = 0,
+
+		value = nil,
+		assertCalledWith = nil,
+		assertCalledWithDeepEqual = nil,
+		captureValues = nil,
 	}
 
 	self.value = function(...)
@@ -29,7 +34,8 @@ local function createSpy(inner)
 		local len = select("#", ...)
 
 		if self.valuesLength ~= len then
-			error(("Expected %d arguments, but was called with %d arguments"):format(
+			error(string.format(
+				"Expected %d arguments, but was called with %d arguments",
 				self.valuesLength,
 				len
 			), 2)
@@ -46,7 +52,8 @@ local function createSpy(inner)
 		local len = select("#", ...)
 
 		if self.valuesLength ~= len then
-			error(("Expected %d arguments, but was called with %d arguments"):format(
+			error(string.format(
+				"Expected %d arguments, but was called with %d arguments",
 				self.valuesLength,
 				len
 			), 2)
@@ -73,13 +80,11 @@ local function createSpy(inner)
 		return result
 	end
 
-	setmetatable(self, {
+	return setmetatable(self, {
 		__index = function(_, key)
 			error(("%q is not a valid member of spy"):format(key))
 		end,
 	})
-
-	return self
 end
 
 return createSpy

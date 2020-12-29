@@ -5,16 +5,16 @@ local function noop()
 	return nil
 end
 
-local ElementUtils = {}
+local ElementUtils = {
+	--[[
+		A signal value indicating that a child should use its parent's key, because
+		it has no key of its own.
 
---[[
-	A signal value indicating that a child should use its parent's key, because
-	it has no key of its own.
-
-	This occurs when you return only one element from a function component or
-	stateful render function.
-]]
-ElementUtils.UseParentKey = Symbol.named("UseParentKey")
+		This occurs when you return only one element from a function component or
+		stateful render function.
+	]]
+	UseParentKey = Symbol.named("UseParentKey"),
+}
 
 --[[
 	Returns an iterator over the children of an element.
