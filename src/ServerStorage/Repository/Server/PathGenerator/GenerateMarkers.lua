@@ -12,33 +12,32 @@ Part.BottomSurface = Enum.SurfaceType.Smooth
 
 local SEGMENTS = 500
 local PATH_WIDTH = 40
-local DELTA = 1 / SEGMENTS
+local HORIZONTAL_MARKER_DENSITY = 5
 local VERTICAL_OFFSET = 1.8
 
 local function generateMarkers(spline, rightOffset)
-	local nextCFrame = spline.GetRotCFrameOnPath(0)
-	for i = 0, 1, DELTA do
+	local nextCFrame = spline:GetArcRotCFrame(0)
+	for i = 0, SEGMENTS - 1 do
 		local cf = nextCFrame
 		local pos = cf.Position
 			+ cf.UpVector * VERTICAL_OFFSET
 			+ cf.RightVector * rightOffset
-		local nextCF = spline.GetRotCFrameOnPath(i + DELTA)
+		local nextCF = spline:GetArcRotCFrame(i / (SEGMENTS - 1))
 		local nextPos = nextCF.Position
 			+ nextCF.UpVector * VERTICAL_OFFSET
 			+ nextCF.RightVector * rightOffset
 		nextCFrame = nextCF
 
 		local p = Part:Clone()
-		p.CFrame = CFrame.lookAt(pos, nextPos, cf.UpVector)
-			+ (nextPos - pos) / 2
+		p.CFrame = CFrame.lookAt(pos, nextPos, cf.UpVector) + (nextPos - pos) / 2
 		p.Size = Vector3.new(1, 1, (nextPos - pos).Magnitude)
 		p.Parent = Container
 	end
 end
 
 local function generateHorizontalMarkers(spline)
-	for i = 0, 1, 4 * DELTA do
-		local cf = spline.GetRotCFrameOnPath(i)
+	for i = 0, SEGMENTS/HORIZONTAL_MARKER_DENSITY - 1 do
+		local cf = spline:GetArcRotCFrame(i / (SEGMENTS/HORIZONTAL_MARKER_DENSITY - 1))
 		local part = Part:Clone()
 		part.CFrame = cf + cf.UpVector * VERTICAL_OFFSET
 		part.Size = Vector3.new(PATH_WIDTH, 1, 1)
@@ -47,7 +46,7 @@ local function generateHorizontalMarkers(spline)
 end
 
 return function(spline)
-	generateMarkers(spline,  PATH_WIDTH / 2) -- right
+	generateMarkers(spline, PATH_WIDTH / 2) -- right
 	generateMarkers(spline, -PATH_WIDTH / 2) -- left
 	generateHorizontalMarkers(spline)
 end

@@ -12,11 +12,10 @@ Part.BottomSurface = Enum.SurfaceType.Smooth
 
 local SEGMENTS = 50
 local PATH_WIDTH = 44
-local DELTA = 1 / SEGMENTS
 
 local function generateGates(spline, rightOffset)
-	for i = DELTA, 1 - DELTA, DELTA do
-		local cf = spline.GetRotCFrameOnPath(i)
+	for i = 0, SEGMENTS - 1 do
+		local cf = spline:GetArcRotCFrame(i / (SEGMENTS - 1))
 		local p = Part:Clone()
 		p.CFrame = cf + cf.UpVector * 4 + cf.RightVector * rightOffset
 		p.Parent = Container

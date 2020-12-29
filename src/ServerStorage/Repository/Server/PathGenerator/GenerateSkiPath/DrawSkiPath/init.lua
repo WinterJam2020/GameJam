@@ -1,56 +1,66 @@
-local DrawTriangle = require(script.DrawTriangle)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Resources = require(ReplicatedStorage.Resources)
+local DrawTriangle = Resources:LoadLibrary("DrawTriangle")
 local Terrain = workspace.Terrain
 local WIDTH = 100
-local WEDGE_DEPTH = 12
+local WEDGE_DEPTH = 4
 local DEBUG = false
 
-local function DrawTerrainWedge(cf0, cf1, size0, size1)
+local DebugContainer
+if DEBUG then
+	DebugContainer = Instance.new("Folder")
+	DebugContainer.Name = "SkiPathContainer"
+	DebugContainer.Parent = workspace
+end
+
+local function DrawTerrainWedge(cf0, cf1, size0, size1, debugColor)
 	if DEBUG then
 		local w0 = Instance.new("WedgePart")
 		w0.Anchored = true
+		w0.BrickColor = debugColor or BrickColor.new("Medium stone grey")
 		w0.CFrame = cf0
 		w0.Size = size0
-		w0.Parent = workspace
+		w0.Parent = DebugContainer
 		local w1 = Instance.new("WedgePart")
 		w1.Anchored = true
+		w1.BrickColor = debugColor or BrickColor.new("Medium stone grey")
 		w1.CFrame = cf1
 		w1.Size = size1
-		w1.Parent = workspace
+		w1.Parent = DebugContainer
 	else
 		Terrain:FillWedge(cf0, size0, Enum.Material.Snow)
 		Terrain:FillWedge(cf1, size1, Enum.Material.Snow)
 	end
 end
 
--- local function DrawTerrainBlock(cf, size)
--- 	local p = Instance.new("Part")
--- 	p.Anchored = true
--- 	p.CFrame = cf
--- 	p.Size = size
--- 	p.Parent = workspace
--- 	Terrain:FillBlock(cf, size, Enum.Material.Snow)
--- end
-
 local function DrawSkiPath(spline)
 	local pathPoints = {}
-
-	for i = 0, 1, 0.001 do
-		local cf = spline.GetRotCFrameOnPath(i)
+	
+	for i = 0, 1000 - 1 do
+		i /= (1000 - 1)
+		local cf = spline:GetArcRotCFrame(i)
+		local debugColor
 		if DEBUG then
+			local _, curvature = spline:GetArcCurvature(i)
 			local p = Instance.new("Part")
 			p.Anchored = true
 			p.CFrame = cf
 			p.Size = Vector3.new(WIDTH, 1, 1)
-			p.Parent = workspace
+			if curvature * 1000 > 5 then
+				p.BrickColor = BrickColor.Black()
+				debugColor = BrickColor.Black()
+			end
+			p.Parent = DebugContainer
 		end
 		pathPoints[#pathPoints + 1] = {
 			CFrame = cf,
 			P0 = cf.Position + cf.RightVector * WIDTH/2,
-			P1 = cf.Position - cf.RightVector * WIDTH/2
+			P1 = cf.Position - cf.RightVector * WIDTH/2,
+			DebugColor = debugColor
 		}
 	end
 	local numPathPoints = #pathPoints
-	-- local f = Instance.new("Folder")
 	for i, pt in ipairs(pathPoints) do
 		if i == numPathPoints then break end
 		local nxt = pathPoints[i + 1]
@@ -63,8 +73,10 @@ local function DrawSkiPath(spline)
 		--DrawTerrainWedge(DrawTriangle(pt.P1, nxt.P1, midpoint, WEDGE_DEPTH))
 
 		-- 2:
-		DrawTerrainWedge(DrawTriangle(pt.P0, nxt.P0, pt.P1, WEDGE_DEPTH, pt.CFrame.UpVector))
-		DrawTerrainWedge(DrawTriangle(pt.P1, nxt.P0, nxt.P1, WEDGE_DEPTH, pt.CFrame.UpVector))
+		local cf0, cf1, size0, size1 = DrawTriangle(pt.P0, nxt.P0, pt.P1, WEDGE_DEPTH, pt.CFrame.UpVector)
+		local cfa, cfb, sizea, sizeb = DrawTriangle(pt.P1, nxt.P0, nxt.P1, WEDGE_DEPTH, pt.CFrame.UpVector)
+		DrawTerrainWedge(cf0, cf1, size0, size1, pt.DebugColor)
+		DrawTerrainWedge(cfa, cfb, sizea, sizeb, pt.DebugColor)
 	end
 end
 

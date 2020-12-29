@@ -1,16 +1,18 @@
 --[[
 	This method creates a height map from a local max to a local min.
 	Then it offsets the height map vertically with a smaller noise octave
-	and randomly offsets it horizontally. Lastly, the height map is adjusted
+	and  offsets it horizontally with more noise. Lastly, the height map is adjusted
 	to be along a spline made of 4 points.
 --]]
 
 --TODO: formalize the remaining magic numbers
 
--- local ReplicatedStorage = game:GetService("ReplicatedStorage")
--- local Arrow = require(ReplicatedStorage:WaitForChild("Arrow"))
-local SplineModule = require(script.CatmullRomSpline)
-local DrawSkiPath = require(script.DrawSkiPath)
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Resources = ReplicatedStorage.Resources
+-- local Arrow = Resources:LoadLibrary("Arrow")
+local SplineModule = Resources:LoadLibrary("AstroSpline")
+local DrawSkiPath = Resources:LoadLibrary("DrawSkiPath")
 
 ---- Settings
 local DELTA = 0.2
@@ -20,8 +22,14 @@ local MAX_DIST = 9
 local HEIGHT_MAP_THRESHOLD = 0.4
 local NOISE_OFFSET = math.floor(os.clock() % 86400 * 100) / 100
 
+local SCALE_FACTOR = 100
+local MAX_VERTICAL_OFFSET = 20
+local MAX_HORIZONTAL_OFFSET = 2
+
 local POINT_DENSITY = 5
 local MAX_BANK = math.rad(60)
+
+local DEBUG = false
 
 ---- Constants
 local PROJ_VEC = Vector3.new(1, 0, 1)
@@ -37,9 +45,9 @@ local function ErrorBarFunction(y, alpha)
 end
 
 -- Envelope for z offset
-local function ZFunction(x)
-	return math.sin(4 * math.pi * x)
-end
+-- local function ZFunction(x)
+-- 	return math.sin(4 * math.pi * x)
+-- end
 
 return function()
 	-- Find a local maximum and local minimum
@@ -82,72 +90,102 @@ return function()
 			math.random() * 40 - 20
 			))
 	end
-	local ArcSpline = SplineModule.Path.new(ArcPoints)
+	local ArcSpline = SplineModule.Chain.new(ArcPoints, 1)
 
 	---- Height map cframes
-	local HeightMapCFrames = {}
-	for i = 0, 1, 1 / (POINT_DENSITY * Length) do
+	local SkiPathCFrames = {}
+	local CameraPathCFrames = {}
+	for i = 0, Length * POINT_DENSITY - 1 do
+		i /= Length * POINT_DENSITY - 1
 		local input = Start[1] + i * Length
 		local y = Noise(input) -- initial height map
 		y = Scale * (y + VShift) -- shift y between 0 and 1
-		y += math.noise(input + NOISE_OFFSET + 20) / 5 -- add smaller noise octave
+		y += math.noise(input + NOISE_OFFSET + 20) / 5 -- add smaller octave later in the noise
 		y -= ErrorBarFunction(y, i) -- bring y closer to -x + 1
-		local z = math.random() * ZFunction(i) * 5
-		local cf = ArcSpline.GetCFrameOnPath(i)
-		cf += Vector3.new(0, y * 20, 0) + cf.RightVector * z -- position but along arc
-		table.insert(HeightMapCFrames, cf)
+		--local z = math.random() * ZFunction(i) * 5
+		local z = math.noise((input + NOISE_OFFSET)* 2) * MAX_HORIZONTAL_OFFSET * 2 -- add horizontal offset later later in the noise
+		local cf = ArcSpline:GetArcCFrame(i) + Vector3.new(0, y * MAX_VERTICAL_OFFSET, 0)
+		table.insert(CameraPathCFrames, cf)
+		cf += cf.RightVector * z -- horizontal offset but along arc
+		table.insert(SkiPathCFrames, cf)
 	end
 
 	---- Bank height map cframes
-	local numHeightMapCFrames = #HeightMapCFrames
-	for i, v in ipairs(HeightMapCFrames) do
+	local numHeightMapCFrames = #SkiPathCFrames
+	for i, cf in ipairs(SkiPathCFrames) do
 		if i == 1 or i == numHeightMapCFrames then continue end
-		local nextPoint = HeightMapCFrames[i + 1].Position
-		local lastPoint = HeightMapCFrames[i - 1].Position
-		local toLast = ((lastPoint - v.Position) * PROJ_VEC).Unit
-		local toNext = ((nextPoint - v.Position) * PROJ_VEC).Unit
+		local nextPoint = SkiPathCFrames[i + 1].Position
+		local lastPoint = SkiPathCFrames[i - 1].Position
+		local toLast = ((lastPoint - cf.Position) * PROJ_VEC).Unit
+		local toNext = ((nextPoint - cf.Position) * PROJ_VEC).Unit
 		local cross = toNext:Cross(toLast)
 		local dot = toNext:Dot(toLast)
 		local angle = math.acos(math.clamp(dot, -1, 1))
 		local rot = math.sign(cross.Y) * (math.pi - angle) * (MAX_BANK / math.pi)
-		HeightMapCFrames[i] = v * CFrame.Angles(0, 0, rot)
+		SkiPathCFrames[i] = cf * CFrame.Angles(0, 0, rot)
 	end
 
 	---- Scale up height map cframes
-	for i, v in ipairs(HeightMapCFrames) do
-		HeightMapCFrames[i] = (v - v.Position) + v.Position * 100
+	local skiPathOrigin = SkiPathCFrames[1].Position * SCALE_FACTOR
+	for i, cf in ipairs(SkiPathCFrames) do
+		SkiPathCFrames[i] = (cf - cf.Position) + cf.Position * SCALE_FACTOR - skiPathOrigin
+	end
+	local cameraPathOrigin = CameraPathCFrames[1].Position * SCALE_FACTOR
+	for i, cf in ipairs(CameraPathCFrames) do
+		CameraPathCFrames[i] = (cf - cf.Position) + cf.Position * SCALE_FACTOR - cameraPathOrigin
 	end
 
-	local HeightMapSpline = SplineModule.RotPath.new(HeightMapCFrames)
-	DrawSkiPath(HeightMapSpline)
+	local SkiPath = SplineModule.Chain.new(SkiPathCFrames, 1)
+	DrawSkiPath(SkiPath)
 
-	-- visualize
-	for _, v in ipairs(ArcSpline) do
-		local part = Instance.new("Part")
-		part.BrickColor = BrickColor.new("Brick yellow")
-		part.CFrame = CFrame.new(v)
-		part.Size = Vector3.new(1, 1, 1)
-		part.Anchored = true
-		part.Parent = workspace
+	if DEBUG then
+		for _, v in ipairs(ArcPoints) do
+			local part = Instance.new("Part")
+			part.BrickColor = BrickColor.new("Bright yellow")
+			part.CFrame = CFrame.new(v)
+			part.Size = Vector3.new(1, 1, 1)
+			part.Anchored = true
+			part.Parent = workspace
+		end
+		
+		for _, cf in ipairs(SkiPathCFrames) do
+			local part = Instance.new("Part")
+			part.BrickColor = BrickColor.new("Bright green")
+			part.CFrame = cf
+			part.Size = Vector3.new(4, 4, 4)
+			part.Anchored = true
+			part.Parent = workspace
+		end
+		
+		local points = {}
+		for i = 0, 200 - 1 do
+			i /= (200 / 1)
+			local point = ArcSpline:GetArcPosition(i)
+			local part = Instance.new("Part")
+			part.BrickColor = BrickColor.new("Persimmon")
+			part.CFrame = CFrame.new(point)
+			part.Size = Vector3.new(1, 1, 1) / 2
+			part.Anchored = true
+			part.Parent = workspace
+
+			--local point1 = SkiPath.GetRotCFrameOnPath(i)
+			--local part1 = Instance.new("Part")
+			--part1.BrickColor = BrickColor.new("Persimmon")
+			--part1.CFrame = point1
+			--part1.Size = Vector3.new(1, 1, 1) / 2
+			--part1.Anchored = true
+			--part1.Parent = workspace
+			
+			local point2 = SkiPath:GetArcPosition(i)
+			table.insert(points, point2)
+			local part2 = Instance.new("Part")
+			part2.BrickColor = BrickColor.Green()
+			part2.CFrame = CFrame.new(point2)
+			part2.Size = Vector3.new(1, 1, 1) / 2
+			part2.Anchored = true
+			part2.Parent = workspace
+		end
 	end
-
-	for i = 0, 1, 0.004 do
-		local point = ArcSpline.GetPointOnPath(i)
-		local part = Instance.new("Part")
-		part.BrickColor = BrickColor.new("Persimmon")
-		part.CFrame = CFrame.new(point)
-		part.Size = Vector3.new(1, 1, 1) / 2
-		part.Anchored = true
-		part.Parent = workspace
-
-		local point1 = HeightMapSpline.GetRotCFrameOnPath(i)
-		local part1 = Instance.new("Part")
-		part1.BrickColor = BrickColor.new("Persimmon")
-		part1.CFrame = point1
-		part1.Size = Vector3.new(1, 1, 1) / 2
-		part1.Anchored = true
-		part1.Parent = workspace
-	end
-
-	return HeightMapSpline
+	
+	return SkiPath, SkiPathCFrames, CameraPathCFrames
 end
