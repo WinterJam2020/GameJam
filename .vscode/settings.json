@@ -110,5 +110,8 @@
     ],
     "Lua.diagnostics.globals": [
         "Color3"
+    ],
+    "Lua.diagnostics.disable": [
+        "redundant-parameter"
     ]
 }

@@ -6,28 +6,28 @@ local inf = math.huge
 local ipairs = ipairs
 
 local boxmesh = {
-	{p = 0.5; n = Vector3.new(-1, 0, 0)},
-	{p = 0.5; n = Vector3.new(1, 0, 0)},
-	{p = 0.5; n = Vector3.new(0, -1, 0)},
-	{p = 0.5; n = Vector3.new(0, 1, 0)},
-	{p = 0.5; n = Vector3.new(0, 0, -1)},
-	{p = 0.5; n = Vector3.new(0, 0, 1)},
+	{p = 0.5, n = Vector3.new(-1, 0, 0)};
+	{p = 0.5, n = Vector3.new(1, 0, 0)};
+	{p = 0.5, n = Vector3.new(0, -1, 0)};
+	{p = 0.5, n = Vector3.new(0, 1, 0)};
+	{p = 0.5, n = Vector3.new(0, 0, -1)};
+	{p = 0.5, n = Vector3.new(0, 0, 1)};
 }
 
 local wedgemesh = {
-	{p = 0.5; n = Vector3.new(-1, 0, 0)},
-	{p = 0.5; n = Vector3.new(1, 0, 0)},
-	{p = 0.5; n = Vector3.new(0, -1, 0)},
-	{p = 0; n = Vector3.new(0, math.sqrt(0.5), -math.sqrt(0.5))},
-	{p = 0.5; n = Vector3.new(0, 0, 1)},
+	{p = 0.5, n = Vector3.new(-1, 0, 0)};
+	{p = 0.5, n = Vector3.new(1, 0, 0)};
+	{p = 0.5, n = Vector3.new(0, -1, 0)};
+	{p = 0, n = Vector3.new(0, math.sqrt(0.5), -math.sqrt(0.5))};
+	{p = 0.5, n = Vector3.new(0, 0, 1)};
 }
 
 local cornerwedgemesh = {
-	{p = 0.5; n = Vector3.new(1, 0, 0)},
-	{p = 0.5; n = Vector3.new(0, -1, 0)},
-	{p = 0.5; n = Vector3.new(0, 0, -1)},
-	{p = 0; n = Vector3.new(0, math.sqrt(0.5), math.sqrt(0.5))},
-	{p = 0; n = Vector3.new(-math.sqrt(0.5), math.sqrt(0.5), 0)},
+	{p = 0.5, n = Vector3.new(1, 0, 0)};
+	{p = 0.5, n = Vector3.new(0, -1, 0)};
+	{p = 0.5, n = Vector3.new(0, 0, -1)};
+	{p = 0, n = Vector3.new(0, math.sqrt(0.5), math.sqrt(0.5))};
+	{p = 0, n = Vector3.new(-math.sqrt(0.5), math.sqrt(0.5), 0)};
 }
 
 --Intersection of a sphereray and a plane
@@ -202,7 +202,8 @@ local function solvemeshsphereray(rawmesh, cframe, scale, origin, direction, rad
 										end
 
 										if abcgood then
-											return cframe * abcpos,
+											return
+												cframe * abcpos,
 												abcdist,
 												cframe * abchit,
 												cframe:VectorToWorldSpace(abcnorm)
@@ -213,7 +214,8 @@ local function solvemeshsphereray(rawmesh, cframe, scale, origin, direction, rad
 						end
 
 						if abgood then
-							return cframe * abpos,
+							return
+								cframe * abpos,
 								abdist,
 								cframe * abhit,
 								cframe:VectorToWorldSpace(abnorm)
@@ -224,7 +226,8 @@ local function solvemeshsphereray(rawmesh, cframe, scale, origin, direction, rad
 		end
 
 		if agood then
-			return cframe * apos,
+			return
+				cframe * apos,
 				adist,
 				cframe * ahit,
 				cframe:VectorToWorldSpace(anorm)

@@ -8,7 +8,7 @@ function Cast.Solve(Point)
 	return Point.LastPosition, Point.Attachment.WorldPosition - Point.LastPosition
 end
 
-function Cast.LastPosition(Point, _)
+function Cast.LastPosition(Point)
 	Point.LastPosition = Point.Attachment.WorldPosition
 end
 
