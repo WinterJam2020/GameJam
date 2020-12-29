@@ -1,6 +1,14 @@
-local Container = Instance.new("Model")
-Container.Name = "Gates"
-Container.Parent = workspace
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Resources = ReplicatedStorage.Resources
+local Constants = Resources:LoadLibrary("Constants")
+
+local PATH_WIDTH = Constants.SKI_PATH.PATH_WIDTH + 4
+local NUM_GATES = Constants.SKI_PATH.NUM_GATES
+
+local GatesContainer = Instance.new("Folder")
+GatesContainer.Name = "Gates"
+GatesContainer.Parent = workspace
 
 local Part = Instance.new("Part")
 Part.Anchored = true
@@ -10,19 +18,16 @@ Part.Size = Vector3.new(3, 4, 1)
 Part.TopSurface = Enum.SurfaceType.Smooth
 Part.BottomSurface = Enum.SurfaceType.Smooth
 
-local SEGMENTS = 50
-local PATH_WIDTH = 44
-
 local function generateGates(spline, rightOffset)
-	for i = 0, SEGMENTS - 1 do
-		local cf = spline:GetArcRotCFrame(i / (SEGMENTS - 1))
+	for i = 0, NUM_GATES - 1 do
+		local cf = spline:GetArcRotCFrame(i / (NUM_GATES - 1))
 		local p = Part:Clone()
 		p.CFrame = cf + cf.UpVector * 4 + cf.RightVector * rightOffset
-		p.Parent = Container
+		p.Parent = GatesContainer
 	end
 end
 
 return function(spline)
-	generateGates(spline,  PATH_WIDTH / 2) -- right
+	generateGates(spline, PATH_WIDTH / 2) -- right
 	generateGates(spline, -PATH_WIDTH / 2) -- left
 end
