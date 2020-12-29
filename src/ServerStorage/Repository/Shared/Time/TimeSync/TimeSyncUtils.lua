@@ -21,10 +21,27 @@ function TimeSyncUtils.PromiseClockSynced(Clock)
 	end), "Disconnect")
 
 	ClockPromise:Finally(function()
-		ClockJanitor = ClockJanitor:Destroy()
+		ClockJanitor:Destroy()
 	end)
 
 	return ClockPromise
+end
+
+function TimeSyncUtils.PromiseClockSynced2(Clock)
+	if Clock:IsSynced() then
+		return Promise.Resolve(Clock)
+	end
+
+	local SyncedEvent = assert(Clock.SyncedEvent, "Somehow master clock isn't synced")
+	local ClockJanitor = Janitor.new()
+
+	return Promise.Defer(function(Resolve)
+		ClockJanitor:Add(SyncedEvent:Connect(function()
+			if Clock:IsSynced() then
+				Resolve(Clock)
+			end
+		end), "Disconnect")
+	end):FinallyCall(ClockJanitor.Destroy, ClockJanitor)
 end
 
 return TimeSyncUtils

@@ -59,7 +59,7 @@ function SpritesheetHandler.GetScaledImageLabel(Index: string, Style: string): I
 	end
 end
 
-function SpritesheetHandler.GetImageButton(Index, Style)
+function SpritesheetHandler.GetImageButton(Index, Style): ImageButton
 	return GetImageInstance("ImageButton", Index, Style)
 end
 

@@ -8,24 +8,24 @@ local Scheduler = Resources:LoadLibrary("Scheduler")
 local MasterClock = {ClassName = "MasterClock"}
 MasterClock.__index = MasterClock
 
-function MasterClock.new(remoteEvent, remoteFunction)
+function MasterClock.new(RemoteEvent, RemoteFunction)
 	local self = setmetatable({
-		_remoteEvent = remoteEvent or error("No remoteEvent");
-		_remoteFunction = remoteFunction or error("No remoteFunction");
+		RemoteEvent = RemoteEvent or error("No RemoteEvent");
+		RemoteFunction = RemoteFunction or error("No RemoteFunction");
 	}, MasterClock)
 
-	self._remoteFunction.OnServerInvoke = function(_, timeThree)
-		return self:_handleDelayRequest(timeThree)
+	function self.RemoteFunction.OnServerInvoke(_, TimeThree)
+		return self:_HandleDelayRequest(TimeThree)
 	end
 
-	self._remoteEvent.OnServerEvent:Connect(function(player)
-		self._remoteEvent:FireClient(player, tick())
+	self.RemoteEvent.OnServerEvent:Connect(function(Player)
+		self.RemoteEvent:FireClient(Player, tick())
 	end)
 
 	Scheduler.Spawn(function()
 		while true do
-			Scheduler.Wait(5)
-			self:_forceSync()
+			wait(5)
+			self:_ForceSync()
 		end
 	end)
 
@@ -43,16 +43,16 @@ end
 MasterClock.GetTime = tick
 
 --- Starts the sync process with all slave clocks.
-function MasterClock:_forceSync()
-	local timeOne = tick()
-	self._remoteEvent:FireAllClients(timeOne)
+function MasterClock:_ForceSync()
+	local TimeOne = tick()
+	self.RemoteEvent:FireAllClients(TimeOne)
 end
 
 --- Client sends back message to get the SM_Difference.
 -- @return slaveMasterDifference
-function MasterClock._handleDelayRequest(_, timeThree)
-	local timeFour = tick()
-	return timeFour - timeThree -- -offset + SM Delay
+function MasterClock._HandleDelayRequest(_, TimeThree)
+	local TimeFour = tick()
+	return TimeFour - TimeThree -- -offset + SM Delay
 end
 
 return MasterClock

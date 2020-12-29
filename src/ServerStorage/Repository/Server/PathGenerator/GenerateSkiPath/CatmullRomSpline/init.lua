@@ -58,7 +58,7 @@ local function CFrameToQuaternion(cf)
 			local recip=0.5/s
 			return {(m10-m01)*recip,(m02+m20)*recip,(m21+m12)*recip,s/2}
 		else
-			return {nil,nil,nil,nil}
+			return table.create(4, nil)
 		end
 	end
 end
@@ -246,7 +246,7 @@ function Path.new(pts)
 	--Accepts a number in [0, 1] representing a point on the path.
 	local function getLocationOnPath(val)
 		-- t is percent of length to next spline
-		-- spline is 
+		-- spline is
 		local spline, t
 		for i, v in ipairs(ranges) do
 			if v > val or i == num_ranges then
@@ -311,7 +311,7 @@ function RotPath.new(pts)
 		prev_a = prev_b
 		prev_b = v
 	end
-	
+
 	-- extrapolate to get (n + 1)th point
 	local sb
 	if loops then
@@ -331,11 +331,11 @@ function RotPath.new(pts)
 		ranges[i] = csum / length
 	end
 	local num_ranges = #ranges
-	
+
 	--Accepts a number in [0, 1] representing a point on the path.
 	local function getLocationOnPath(val)
 		-- t is percent of length to next spline
-		-- spline is 
+		-- spline is
 		local spline, t
 		for i, v in ipairs(ranges) do
 			if v > val or i == num_ranges then
@@ -344,10 +344,10 @@ function RotPath.new(pts)
 				break
 			end
 		end
-		
+
 		return spline, t
 	end
-	
+
 	local function GetPointOnPath(val)
 		local spline, t = getLocationOnPath(val)
 		return spline:Solve(t)
@@ -357,7 +357,7 @@ function RotPath.new(pts)
 		local spline, t = getLocationOnPath(val)
 		return spline:SolveNorm(t)
 	end
-	
+
 	local function GetRotCFrameOnPath(val)
 		local spline, t = getLocationOnPath(val)
 		local cfOnPath = spline:SolveNorm(t)

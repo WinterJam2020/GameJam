@@ -148,6 +148,6 @@ return function()
 		part1.Anchored = true
 		part1.Parent = workspace
 	end
-	
+
 	return HeightMapSpline
 end
