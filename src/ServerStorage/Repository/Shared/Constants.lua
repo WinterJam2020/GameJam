@@ -53,4 +53,15 @@ return Table.Lock({
 	ASSERTION_MESSAGES = {
 		INVALID_ARGUMENT = "invalid argument #%d to '%s' (%s expected, got %s)"; -- 1, "message", "type", "expectedType"
 	};
+
+	SKI_PATH = {
+		TERRAIN_WIDTH = 100;
+		PATH_WIDTH = 40;
+		NUM_GATES = 50;
+		SCALE_FACTOR = 100; -- scales up the ski path 100x
+		MAX_BANK_ANGLE = math.rad(60);
+		WEDGE_DEPTH = 4; -- terrain depth in studs
+		DEBUG = false;
+	}
+
 }, nil, script.Name)
