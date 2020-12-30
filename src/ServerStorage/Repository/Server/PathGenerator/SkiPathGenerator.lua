@@ -60,7 +60,7 @@ local PathGenerator = {
 
 function PathGenerator:Initialize()
 	print("initializing path generator")
-	self.Janitor = Janitor.new()	
+	self.Janitor = Janitor.new()
 end
 
 function PathGenerator:Generate()
@@ -199,20 +199,20 @@ function PathGenerator:Generate()
 		end
 	end
 
-	self.Props = Props
+	self.Props = self.Janitor:Add(Props)
 	self.SkiChain = SkiChain
 	self.SkiChainCFrames = SkiChainCFrames
-	self.Janitor:Add(Props)
 	self.Janitor:Add(function()
 		self.SkiChain = nil
 		self.SkiChainCFrames = nil
 	end)
+
 	return SkiChain, SkiChainCFrames
 end
 
 function PathGenerator:Clear()
 	self.Janitor:Cleanup()
-	workspace.Terrain:Clear()
+	Workspace.Terrain:Clear()
 end
 
 return PathGenerator

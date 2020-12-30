@@ -1,11 +1,17 @@
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local CollectionService = game:GetService("CollectionService")
 
 local Resources = require(ReplicatedStorage.Resources)
+local CatchFactory = Resources:LoadLibrary("CatchFactory")
 local Constants = Resources:LoadLibrary("Constants")
+local Postie = Resources:LoadLibrary("Postie")
+local Promise = Resources:LoadLibrary("Promise")
+local Services = Resources:LoadLibrary("Services")
 local SyncedPoller = Resources:LoadLibrary("SyncedPoller")
 local ValueObject = Resources:LoadLibrary("ValueObject")
+
+local Workspace: Workspace = Services.Workspace
+local Players: Players = Services.Players
+local CollectionService: CollectionService = Services.CollectionService
 
 local ServerHandler = {
 	Constants = nil;
@@ -16,6 +22,8 @@ local ServerHandler = {
 	PlayerData = {};
 	PlayerDataHandler = nil;
 	TimeSyncService = nil;
+	SkiPathGenerator = nil;
+	SkiPathRemote = nil;
 }
 
 local SERVER_EVENTS = {
@@ -29,14 +37,32 @@ function ServerHandler:Initialize()
 	self.ParticleEngine = Resources:LoadLibrary("ParticleEngine"):Initialize()
 	self.TimeSyncService = Resources:LoadLibrary("TimeSyncService"):Initialize()
 	self.PlayerDataHandler = Resources:LoadLibrary("PlayerDataHandler"):Initialize()
+	self.SkiPathGenerator = Resources:LoadServer("SkiPathGenerator")
 
+	self.SkiPathRemote = Resources:GetRemoteFunction(Constants.REMOTE_NAMES.SKI_PATH_REMOTE_FUNCTION_NAME)
 	self.GameEvent = Resources:GetRemoteEvent("GameEvent")
 	self.GameFunction = Resources:GetRemoteFunction("GameFunction")
+
+	self.SkiPathGenerator:Initialize()
 
 	self.GameEvent.OnServerEvent:Connect(function(Player: Player, FunctionCall: number, ...)
 		local Function = SERVER_EVENTS[FunctionCall]
 		if Function then
 			Function(Player, ...)
+		end
+	end)
+
+	local Baseplate = Workspace:FindFirstChild("Baseplate")
+	if Baseplate then
+		Baseplate:Destroy()
+	end
+
+	self.SkiChain, self.SkiChainCFrames = self.SkiPathGenerator:Generate()
+	Promise.Delay(5):Then(function()
+		self.SkiPathGenerator:Clear()
+		self.SkiPathGenerator:Generate()
+		function self.SkiPathRemote.OnServerInvoke()
+			return self.SkiChainCFrames
 		end
 	end)
 
@@ -66,14 +92,30 @@ function ServerHandler:StartGameLoop()
 				self.GameInProgress.Value = true
 				for _, Player: Player in ipairs(ReadyPlayers) do
 					CollectionService:RemoveTag(Player, "ReadyPlayers")
-					Player:LoadCharacter()
+					-- Player:LoadCharacter()
+					self.GameEvent:FireClient(Player, Constants.SPAWN_CHARACTER, self.SkiChainCFrames)
+					self.GameEvent:FireClient(Player, Constants.START_SKIING)
 					self.PlayerData[Player] = {
 						StartTime = time();
 						EndTime = 0;
+						Progress = 0;
 						HasFinished = false;
 					}
 
 					-- Check if player finished skiing
+					local CountdownTime = 0
+					local CountdownPoller
+					CountdownPoller = SyncedPoller.new(0.5, function(_, ElapsedTime)
+						CountdownTime += ElapsedTime
+						if CountdownTime >= 60 then
+							CountdownPoller:Destroy()
+						else
+							for EnteredPlayer, _PlayerData in next, self.PlayerData do
+								local _, Alpha = Postie.InvokeClient(EnteredPlayer, "GetProgress", 1)
+								print(EnteredPlayer.Name, "-", Alpha)
+							end
+						end
+					end)
 
 					-- if player finished skiing then update the data table
 

@@ -36,7 +36,7 @@ local function CFrameUpAt(pos: Vector3, up: Vector3, look: Vector3) -- CFrame.lo
 end
 
 ---- Objects
-local CharacterController = {}
+local CharacterController = {ClassName = "CharacterController"}
 CharacterController.__index = CharacterController
 
 function CharacterController.new(skiChainCFrames)
@@ -73,10 +73,9 @@ function CharacterController:SetCameraCFrame(cframe)
 end
 
 function CharacterController:Destroy()
-	self.Janitor:Cleanup()
-	for k, _ in pairs(self) do
-		self[k] = nil
-	end
+	self.Janitor:Destroy()
+	table.clear(self)
+	setmetatable(self, nil)
 end
 
 function CharacterController:Step(deltaTime)
@@ -135,4 +134,4 @@ function CharacterController:Step(deltaTime)
 	self.RootCFrame = newRootCFrame
 end
 
-return true
+return CharacterController

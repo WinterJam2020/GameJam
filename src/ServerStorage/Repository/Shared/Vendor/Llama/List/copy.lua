@@ -1,12 +1,8 @@
-
 local function copy(list)
-	local listType = type(list)
-	assert(listType == "table", "expected a table for first argument, got " .. listType)
-
-	local new = {}
-
-	for i = 1, #list do
-		new[i] = list[i]
+	assert(type(list) == "table", "expected a table for first argument, got " .. typeof(list))
+	local new = table.create(#list)
+	for index, value in ipairs(new) do
+		new[index] = value
 	end
 
 	return new

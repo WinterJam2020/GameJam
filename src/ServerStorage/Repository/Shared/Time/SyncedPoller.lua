@@ -7,23 +7,54 @@ local HOUR_DIFFERENCE = math.floor((os.time() - tick()) / 900 + 0.5) * 900
 local SyncedPoller = {ClassName = "SyncedPoller"}
 SyncedPoller.__index = SyncedPoller
 
+-- local print = function(a, p)
+-- 	if p then
+-- 		print(p, a)
+-- 	else
+-- 		print(a)
+-- 	end
+
+-- 	return a
+-- end
+
+-- local function SyncedPollerLoop(self, Interval, Function, IsFromController, UseWait)
+-- 	local WaitFunction = UseWait and wait or Scheduler.Wait2
+
+-- 	while true do
+-- 		-- if self._Paused then
+-- 		-- 	while self._Paused do
+-- 		-- 		self._BindableEvent.Event:Wait()
+-- 		-- 	end
+-- 		-- end
+
+-- 		local CurrentTime = tick() + HOUR_DIFFERENCE
+-- 		local ElapsedTime = IsFromController and print(WaitFunction(Interval - CurrentTime % Interval), "ElapsedTime:") or WaitFunction(Interval - CurrentTime % Interval)
+-- 		local TimeElapsed = CurrentTime + ElapsedTime
+
+-- 		if self._Paused then
+-- 			self._BindableEvent.Event:Wait()
+-- 		end
+
+-- 		if self._Running then
+-- 			Function(TimeElapsed, ElapsedTime)
+-- 		else
+-- 			break
+-- 		end
+-- 	end
+-- end
+
 local function SyncedPollerLoop(self, Interval, Function)
 	while true do
 		if self._Paused then
 			self._BindableEvent.Event:Wait()
 		end
 
-		-- if self._Paused then
-		-- 	while self._Paused do
-		-- 		self._BindableEvent.Event:Wait()
-		-- 	end
-		-- end
-
 		local CurrentTime = tick() + HOUR_DIFFERENCE
-		local TimeElapsed = CurrentTime + Scheduler.Wait2(Interval - CurrentTime % Interval)
+		local ElapsedTime = Scheduler.Wait2(Interval - CurrentTime % Interval)
+		local TimeElapsed = CurrentTime + ElapsedTime
 
 		if self._Running then
-			Function(TimeElapsed)
+			Function(TimeElapsed, ElapsedTime)
 		else
 			break
 		end

@@ -1,3 +1,4 @@
+-- Scheduler
 --!nocheck
 -- Scheduler
 -- pobammer
@@ -12,6 +13,8 @@ local Heartbeat = RunService.Heartbeat
 local Scheduler = {}
 
 local First, Connection
+
+type FunctionCall = () -> nil
 
 function Scheduler.Delay(DelayTime, Function, ...)
 	if DelayTime == nil or not (DelayTime >= 0.029) or DelayTime == math.huge then
@@ -55,6 +58,8 @@ function Scheduler.Delay(DelayTime, Function, ...)
 						FunctionToCall:Fire(os.clock() - Current.StartTime)
 					end
 				else
+					-- shut up error
+					local _: FunctionCall = FunctionToCall
 					local BindableEvent = Instance.new("BindableEvent")
 					if Arguments then
 						BindableEvent.Event:Connect(function()

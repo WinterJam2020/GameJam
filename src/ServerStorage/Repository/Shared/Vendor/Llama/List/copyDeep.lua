@@ -1,15 +1,11 @@
-
 local function copyDeep(list)
-	local listType = type(list)
-	assert(listType == "table", "expected a table for first argument, got " .. listType)
-
-	local new = {}
-
-	for i = 1, #list do
-		if type(list[i]) == "table" then
-			new[i] = copyDeep(list[i])
+	assert(type(list) == "table", "expected a table for first argument, got " .. typeof(list))
+	local new = table.create(#list)
+	for index, value in ipairs(new) do
+		if type(value) == "table" then
+			new[index] = copyDeep(value)
 		else
-			new[i] = list[i]
+			new[index] = value
 		end
 	end
 

@@ -2,6 +2,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Resources = require(ReplicatedStorage.Resources)
 local CatchFactory = Resources:LoadLibrary("CatchFactory")
+local CharacterControllerClass = Resources:LoadClient("CharacterControllerClass")
 local ClientReducer = Resources:LoadLibrary("ClientReducer")
 local Constants = Resources:LoadLibrary("Constants")
 local Janitor = Resources:LoadLibrary("Janitor")
@@ -15,11 +16,8 @@ local RoactRodux = Resources:LoadLibrary("RoactRodux")
 local Rodux = Resources:LoadLibrary("Rodux")
 local Services = Resources:LoadLibrary("Services")
 local ValueObject = Resources:LoadLibrary("ValueObject")
-local CharacterControllerClass = Resources:LoadClient("CharacterControllerClass")
 
 local RunService: RunService = Services.RunService
-
-local GameEvent = Resources:GetRemoteEvent("GameEvent")
 
 local ClientHandler = {
 	App = nil;
@@ -122,7 +120,7 @@ local CLIENT_EVENTS = {
 }
 
 function ClientHandler:Initialize()
-	self.GameEvent = GameEvent
+	self.GameEvent = Resources:GetRemoteEvent("GameEvent")
 	self.CanMount = ValueObject.new(false)
 	self.LocalPlayer = Services.Players.LocalPlayer
 	self.TimeSyncService = Resources:LoadLibrary("TimeSyncService"):Initialize()
@@ -155,10 +153,12 @@ function ClientHandler:Initialize()
 		end)
 	end):Catch(CatchFactory("PromiseChild"))
 
-	Postie.SetCallback("GetProgress", function()
+	Postie.SetFunction("GetProgress", function()
 		local characterController = self.CharacterController
 		if characterController then
 			return characterController.Alpha
+		else
+			return -1
 		end
 	end)
 
@@ -242,7 +242,7 @@ function ClientHandler:Despawn()
 end
 
 function ClientHandler:StartSkiing()
-	local characterController = self.CharacterController
+	local characterController = assert(self.CharacterController, "CharacterController doesn't exist!")
 	self.CharacterJanitor:Add(RunService.Heartbeat:Connect(function(deltaTime)
 		characterController:Step(deltaTime)
 	end))
