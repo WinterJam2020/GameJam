@@ -73,6 +73,8 @@ function ServerHandler:StartGameLoop()
 					}
 
 					-- Check if player finished skiing
+
+					-- if player finished skiing then update the data table
 				end
 			end
 		end)
