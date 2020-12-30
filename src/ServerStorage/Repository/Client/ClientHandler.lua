@@ -102,6 +102,20 @@ local CLIENT_EVENTS = {
 			type = "ResetAll",
 		})
 	end;
+
+	[Constants.SPAWN_CHARACTER] = function(self, skiChain)
+		self:Spawn(skiChain)
+	end;
+	[Constants.DESPAWN_CHARACTER] = function(self)
+		self:Despawn()
+	end;
+	[Constants.START_SKIING] = function(self)
+		self:StartSkiing()
+	end;
+	[Constants.STOP_SKIING] = function(self)
+		self:StopSkiing()
+	end;
+	
 }
 
 function ClientHandler:Initialize()
@@ -207,21 +221,18 @@ function ClientHandler:Spawn(skiChain)
 	end
 	self.CharacterController = CharacterControllerClass.new(skiChain)
 end
-
 function ClientHandler:Despawn()
 	if self.CharacterController then
 		self.CharacterController:Destroy()
 	end
 	self.CharacterController = nil
 end
-
 function ClientHandler:StartSkiing()
 	local characterController = self.CharacterController
 	self.CharacterJanitor:Add(RunService.Heartbeat:Connect(function(deltaTime)
 		characterController:Step(deltaTime)
 	end))
 end
-
 function ClientHandler:StopSkiing()
 	self.CharacterJanitor:Cleanup()
 end
