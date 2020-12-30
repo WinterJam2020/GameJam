@@ -1,11 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Resources = require(ReplicatedStorage.Resources)
 local Constants = Resources:LoadShared("Constants").SKI_PATH
-local Services = Resources:LoadLibrary("Services")
-
-local Container = Instance.new("Model")
-Container.Name = "Markers"
-Container.Parent = Services.Workspace
 
 local Part = Instance.new("Part")
 Part.Anchored = true
@@ -20,7 +15,7 @@ local PATH_WIDTH = Constants.PATH_WIDTH
 local HORIZONTAL_MARKER_DENSITY = 5
 local VERTICAL_OFFSET = 1.8
 
-local function generateMarkers(spline, rightOffset)
+local function generateMarkers(spline, container, rightOffset)
 	local nextCFrame = spline:GetArcRotCFrame(0)
 	for i = 0, SEGMENTS - 1 do
 		local cf = nextCFrame
@@ -34,24 +29,29 @@ local function generateMarkers(spline, rightOffset)
 		nextCFrame = nextCF
 
 		local p = Part:Clone()
+		p.Name = "SideMarker"
 		p.CFrame = CFrame.lookAt(pos, nextPos, cf.UpVector) + (nextPos - pos) / 2
 		p.Size = Vector3.new(1, 1, (nextPos - pos).Magnitude)
-		p.Parent = Container
+		p.Parent = container
 	end
 end
 
-local function generateHorizontalMarkers(spline)
+local function generateHorizontalMarkers(spline, container)
 	for i = 0, SEGMENTS/HORIZONTAL_MARKER_DENSITY - 1 do
 		local cf = spline:GetArcRotCFrame(i / (SEGMENTS/HORIZONTAL_MARKER_DENSITY - 1))
 		local part = Part:Clone()
+		part.Name = "HorizontalMarker"
 		part.CFrame = cf + cf.UpVector * VERTICAL_OFFSET
 		part.Size = Vector3.new(PATH_WIDTH, 1, 1)
-		part.Parent = Container
+		part.Parent = container
 	end
 end
 
-return function(spline)
-	generateMarkers(spline, PATH_WIDTH / 2) -- right
-	generateMarkers(spline, -PATH_WIDTH / 2) -- left
-	generateHorizontalMarkers(spline)
+return function(spline, parent)
+	local container = Instance.new("Model")
+	container.Name = "Markers"
+	container.Parent = parent
+	generateMarkers(spline, container, PATH_WIDTH / 2) -- right
+	generateMarkers(spline, container, -PATH_WIDTH / 2) -- left
+	generateHorizontalMarkers(spline, container)
 end

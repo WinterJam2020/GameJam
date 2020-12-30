@@ -4,8 +4,10 @@ local Resources = require(ReplicatedStorage.Resources)
 local Constants = Resources:LoadShared("Constants").SKI_PATH
 local DrawTriangle = Resources:LoadServer("DrawTriangle")
 local Services = Resources:LoadLibrary("Services")
-
 local Workspace: Workspace = Services.Workspace
+
+local GenerateMarkers = Resources:LoadLibrary("GenerateMarkers")
+local GenerateGates = Resources:LoadLibrary("GenerateGates")
 
 local Terrain = Workspace.Terrain
 local WIDTH = Constants.TERRAIN_WIDTH
@@ -88,6 +90,13 @@ local function DrawSkiPath(spline)
 		DrawTerrainWedge(cf0, cf1, size0, size1, pt.DebugColor)
 		DrawTerrainWedge(cfa, cfb, sizea, sizeb, pt.DebugColor)
 	end
+
+	local container = Instance.new("Model")
+	container.Name = "SkiPathProps"
+	container.Parent = workspace
+	GenerateMarkers(spline, container)
+	GenerateGates(spline, container)
+	return container
 end
 
 return DrawSkiPath
