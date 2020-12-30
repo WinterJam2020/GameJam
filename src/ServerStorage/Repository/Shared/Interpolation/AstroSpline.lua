@@ -7,23 +7,26 @@
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Resources = require(ReplicatedStorage.Resources)
+local Debug = Resources:LoadLibrary("Debug")
+local t = Resources:LoadLibrary("t")
 
 local RIEMANN_STEP = 1e-2
 local EPSILON = 1e-4
 -- local DT = Vector3.new(1, 1, 1) * RIEMANN_STEP
 
-local t = Resources:LoadLibrary("t")
 local CatmullRomSpline = {}
 local VectorSplineMetatable = {}
 local CFrameSplineMetatable = {}
 VectorSplineMetatable.__index = VectorSplineMetatable
-CFrameSplineMetatable.__index = function(self, index)
+CFrameSplineMetatable.__index = function(_, index)
 	if CFrameSplineMetatable[index] then
 		return CFrameSplineMetatable[index]
 	else
 		return VectorSplineMetatable[index]
 	end
 end
+
+local assert = Debug.Assert
 
 ---- Spherical quadrangle interpolation (SQUAD) (by fractality)
 local function InvLogProduct(w0, x0, y0, z0, w1, x1, y1, z1)
@@ -110,25 +113,37 @@ local function Squad(q0, q1, q2, q3, alpha)
 end
 local function CFrameToQuaternion(cframe)
 	local _, _, _, m00, m01, m02, m10, m11, m12, m20, m21, m22 = cframe:GetComponents()
-	local trace= m00 + m11 + m22
+	local trace = m00 + m11 + m22
 	if trace > 0 then
 		local s = math.sqrt(1 + trace)
 		local recip = 0.5 / s
-		return {s * 0.5,(m21 - m12) * recip, (m02 - m20) * recip,(m10 - m01) * recip}
+
+		local array = table.create(4)
+		array[1], array[2], array[3], array[4] = s / 2, (m21 - m12) * recip, (m02 - m20) * recip, (m10 - m01) * recip
+		return array
 	else
 		local big = math.max(m00, m11, m22)
 		if big == m00 then
 			local s = math.sqrt(1 + m00 - m11 - m22)
 			local recip = 0.5 / s
-			return {(m21 - m12) * recip, s / 2, (m10 + m01) * recip, (m02 + m20) * recip}
+
+			local array = table.create(4)
+			array[1], array[2], array[3], array[4] = (m21 - m12) * recip, s / 2, (m10 + m01) * recip, (m02 + m20) * recip
+			return array
 		elseif big == m11 then
 			local s = math.sqrt(1 - m00 + m11 - m22)
 			local recip = 0.5 / s
-			return {(m02 - m20) * recip, (m10 + m01) * recip, s / 2, (m21 + m12) * recip}
+
+			local array = table.create(4)
+			array[1], array[2], array[3], array[4] = (m02 - m20) * recip, (m10 + m01) * recip, s / 2, (m21 + m12) * recip
+			return array
 		elseif big == m22 then
 			local s = math.sqrt(1 - m00 - m11 + m22 )
 			local recip = 0.5 / s
-			return {(m10 - m01) * recip, (m02 + m20) * recip, (m21 + m12) * recip, s / 2}
+
+			local array = table.create(4)
+			array[1], array[2], array[3], array[4] = (m10 - m01) * recip, (m02 + m20) * recip, (m21 + m12) * recip, s / 2
+			return array
 		else
 			return table.create(4, nil)
 		end
@@ -241,6 +256,7 @@ function VectorSplineMetatable:Solve(alpha)
 	if self.ClassName == "CFrameSpline" then
 		p0, p1, p2, p3 = p0.Position, p1.Position, p2.Position, p3.Position
 	end
+
 	local t0, t1, t2, t3 = 0, self.t1, self.t2, self.t3
 	local s = t1 + alpha * (t2 - t1) -- s instead of t because t is the typechecker :(
 
@@ -354,10 +370,12 @@ function CatmullRomSpline.Chain.new(points, tau)
 			lastControlPoint = points[numPoints - 1]:Lerp(lastPoint, 2)
 		end
 	elseif typeof(firstPoint) == "CFrame" then
-		if firstPoint.Position:FuzzyEq(lastPoint.Position) -- loops
+		if
+			firstPoint.Position:FuzzyEq(lastPoint.Position) -- loops
 			and firstPoint.XVector:FuzzyEq(lastPoint.XVector)
 			and firstPoint.YVector:FuzzyEq(lastPoint.YVector)
-			and firstPoint.ZVector:FuzzyEq(lastPoint.ZVector) then
+			and firstPoint.ZVector:FuzzyEq(lastPoint.ZVector)
+		then
 			firstControlPoint, lastControlPoint = points[numPoints - 1], points[2]
 		else
 			firstControlPoint = points[2]:Lerp(firstPoint, 2)
@@ -451,11 +469,14 @@ function CatmullRomSpline.Chain:_GetSplineFromAlpha(alpha)
 	end
 end
 function CatmullRomSpline.Chain:_GetArcLengthAlpha(alpha)
-	if alpha == 0 or alpha == 1 then return alpha end
+	if alpha == 0 or alpha == 1 then
+		return alpha
+	end
 
+	local length = self.Length
 	local spline, _, splineInterval = self:_GetSplineFromAlpha(alpha)
-	local goalLength = self.Length * alpha
-	local runningLength = self.Length * splineInterval.Start
+	local goalLength = length * alpha
+	local runningLength = length * splineInterval.Start
 	local lastPosition = spline:Solve(0)
 
 	for i = 1, 1 / RIEMANN_STEP do
