@@ -58,17 +58,18 @@ local function IsInstanceGuid(Key: string)
 	return string.sub(Key, 1, #INSTANCE_GUID_PREFIX) == INSTANCE_GUID_PREFIX
 end
 
-local Replica = {}
+local Replica = {
+	Array = require(script.Replicants.Array);
+	Map = require(script.Replicants.Map);
+	FactoredOr = require(script.Replicants.FactoredOr);
+	FactoredNor = require(script.Replicants.FactoredNor);
+	FactoredSum = require(script.Replicants.FactoredSum);
+}
+
 local Registry = {}
 local InstanceGuidMap = {}
 local GuidInstanceMap = {}
 local InstanceGuidTrackers = {}
-
-Replica.Array = require(script.Replicants.Array)
-Replica.Map = require(script.Replicants.Map)
-Replica.FactoredOr = require(script.Replicants.FactoredOr)
-Replica.FactoredNor = require(script.Replicants.FactoredNor)
-Replica.FactoredSum = require(script.Replicants.FactoredSum)
 
 function Replica.Register(KeyRef, RegisteredReplicant)
 	local Key
@@ -161,13 +162,11 @@ function Replica.Unregister(KeyRef)
 				CollectionService:RemoveTag(KeyRef, COLLECTION_TAG)
 
 				if InstanceGuidTrackers[KeyRef] ~= nil then
-					InstanceGuidTrackers[KeyRef]:Disconnect()
-					InstanceGuidTrackers[KeyRef] = nil
+					InstanceGuidTrackers[KeyRef] = InstanceGuidTrackers[KeyRef]:Disconnect()
 				end
 			end
 
-			Registry[Key]:Destroy()
-			Registry[Key] = nil
+			Registry[Key] = Registry[Key]:Destroy()
 			Replica.ReplicantUnregistered:Fire(RegisteredReplicant, KeyRef)
 		end
 	else
@@ -279,17 +278,13 @@ if RunService:IsClient() then
 				local RegisteredReplicant = Registry[Key]
 				if RegisteredReplicant ~= nil then
 					Replica.ReplicantWillUnregister:Fire(RegisteredReplicant, Key)
-
-					RegisteredReplicant:Destroy()
-					Registry[Key] = nil
-
+					Registry[Key] = RegisteredReplicant:Destroy()
 					Replica.ReplicantUnregistered:Fire(RegisteredReplicant, Key)
 				end
 			else
 				local StillInBuffer = CollectionBuffer[Key]
 				if StillInBuffer then
-					StillInBuffer:Destroy()
-					CollectionBuffer[Key] = nil
+					CollectionBuffer[Key] = StillInBuffer:Destroy()
 				else
 					local RegisteredReplicant = Registry[Key]
 					if RegisteredReplicant then
@@ -299,10 +294,7 @@ if RunService:IsClient() then
 						GuidInstanceMap[Key] = nil
 
 						Replica.ReplicantWillUnregister:Fire(RegisteredReplicant, Key)
-
-						Registry[Key]:Destroy()
-						Registry[Key] = nil
-
+						Registry[Key] = Registry[Key]:Destroy()
 						Replica.ReplicantUnregistered:Fire(RegisteredReplicant, Object)
 					end
 				end
@@ -372,8 +364,10 @@ else
 
 	Replica.ReplicantRegistered:Connect(function(RegisteredReplicant, KeyRef)
 		local Key
-		if type(KeyRef) == "string"
-			or type(KeyRef) == "number" then
+		if
+			type(KeyRef) == "string"
+			or type(KeyRef) == "number"
+		then
 			Key = KeyRef
 		elseif typeof(KeyRef) == "Instance" then
 			Key = InstanceGuidMap[KeyRef]

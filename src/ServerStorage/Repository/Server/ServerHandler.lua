@@ -6,6 +6,7 @@ local CollectionService = game:GetService("CollectionService")
 local Resources = require(ReplicatedStorage.Resources)
 local Constants = Resources:LoadLibrary("Constants")
 local SyncedPoller = Resources:LoadLibrary("SyncedPoller")
+local ValueObject = Resources:LoadLibrary("ValueObject")
 
 local ServerHandler = {
 	Constants = nil;
@@ -13,8 +14,9 @@ local ServerHandler = {
 	TimeSyncService = nil;
 	PlayerDataHandler = nil;
 	GameEvent = nil;
-
 	GameLoop = nil;
+	GameInProgress = ValueObject.new(false);
+	PlayerData = {};
 }
 
 local SERVER_EVENTS = {
@@ -37,6 +39,12 @@ function ServerHandler:Initialize()
 		end
 	end)
 
+	Players.PlayerRemoving:Connect(function(Player)
+		if self.PlayerData[Player] then
+			self.PlayerData[Player] = nil
+		end
+	end)
+
 	return self
 end
 
@@ -45,9 +53,25 @@ function ServerHandler:StartGameLoop()
 		self.GameLoop.Paused = false
 	else
 		self.GameLoop = SyncedPoller.new(1, function()
+			if self.GameInProgress.Value then
+				self.GameLoop.Paused = true
+				self.GameInProgress.Changed:Wait()
+				self.GameLoop.Paused = false
+				table.clear(self.PlayerData)
+			end
+
 			local ReadyPlayers = CollectionService:GetTagged("ReadyPlayers")
-			if #ReadyPlayers > 1 then
-				return true
+			if #ReadyPlayers > 0 then
+				self.GameInProgress.Value = true
+				for _, Player: Player in ipairs(ReadyPlayers) do
+					CollectionService:RemoveTag(Player, "ReadyPlayers")
+					Player:LoadCharacter()
+					self.PlayerData[Player] = {
+						StartTime = time();
+						EndTime = 0;
+						HasFinished = false;
+					}
+				end
 			end
 		end)
 	end

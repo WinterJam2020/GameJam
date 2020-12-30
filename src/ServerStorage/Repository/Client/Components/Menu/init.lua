@@ -3,6 +3,7 @@ local RunService = game:GetService("RunService")
 
 local Resources = require(ReplicatedStorage.Resources)
 local Constants = Resources:LoadLibrary("Constants")
+-- local Debug = Resources:LoadLibrary("Debug")
 local Flipper = Resources:LoadLibrary("Flipper")
 local Janitor = Resources:LoadLibrary("Janitor")
 local Padding = Resources:LoadLibrary("Padding")
@@ -11,6 +12,8 @@ local Roact = Resources:LoadLibrary("Roact")
 local Scale = Resources:LoadLibrary("Scale")
 local SwShButton = Resources:LoadLibrary("SwShButton")
 local ValueObject = Resources:LoadLibrary("ValueObject")
+local RoactRodux = Resources:LoadLibrary("RoactRodux")
+
 local GameEvent = Resources:GetRemoteEvent("GameEvent")
 
 local Menu = Roact.Component:extend("Menu")
@@ -36,6 +39,9 @@ function Menu:init(props)
 	self:setState({
 		visible = props.Visible,
 	})
+
+	-- print(Debug.TableToString(self.props, true, "self.props"))
+	-- print(Debug.TableToString(self.state, true, "self.state"))
 end
 
 function Menu:willUnmount()
@@ -123,7 +129,7 @@ function Menu:render()
 								visible = false,
 							})
 
-							if not RunService:IsStudio() then
+							if RunService:IsRunning() then
 								GameEvent:FireServer(Constants.READY_PLAYER)
 							end
 						end)
@@ -332,18 +338,19 @@ function Menu:render()
 			}),
 		}),
 	})
-
-	-- return Roact.createElement("Frame", {
-	-- 	AnchorPoint = Vector2.new(0.5, 0.5),
-	-- 	Position = UDim2.fromScale(0.5, 0.5),
-	-- 	Size = UDim2.fromScale(1, 1),
-	-- 	BackgroundTransparency = 1,
-	-- }, {
-	-- 	UIScale = Roact.createElement(Scale, {
-	-- 		Scale = 1,
-	-- 		Size = Vector2.new(1920, 1080),
-	-- 	})
-	-- })
 end
 
-return Menu
+return RoactRodux.connect(function(state)
+	return {
+		Visible = state.MenuVisible,
+	}
+end, function(dispatch)
+	return {
+		SetLoaded = function(isLoaded)
+			dispatch({
+				type = "Loaded",
+				IsLoaded = isLoaded,
+			})
+		end,
+	}
+end)(Menu)
