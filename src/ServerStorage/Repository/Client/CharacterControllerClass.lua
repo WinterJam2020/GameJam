@@ -7,6 +7,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Resources = require(ReplicatedStorage.Resources)
 local Constants = Resources:LoadShared("Constants")
 -- local Arrow = Resources:LoadShared("Arrow")
+local Janitor = Resources:LoadLibrary("Janitor")
+local Postie = Resources:LoadLibrary("Postie")
 
 local Player = Players.LocalPlayer
 local Mouse = Player:GetMouse()
@@ -45,15 +47,20 @@ function CharacterController.new(skiChain)
 	root.CFrame = startCFrame * ROOT_PART_OFFSET
 	rig.Parent = workspace
 
-	return setmetatable({
+	local self = {
 		Alpha = 0,
+		Janitor = Janitor.new(),
 		Rig = rig,
 		Root = root,
 		RootCFrame = root.CFrame,
 		SkiChain = skiChain,
 		SkiChainCFrame = startCFrame,
 		Velocity = Vector3.new()
-	}, CharacterController)
+	}
+
+	self.Janitor:Add(rig)
+
+	return setmetatable(self, CharacterController)
 end
 
 function CharacterController:SetRootCFrame(cframe)
@@ -65,7 +72,7 @@ function CharacterController:SetCameraCFrame(cframe)
 end
 
 function CharacterController:Destroy()
-	self.Rig:Destroy()
+	self.Janitor:Cleanup()
 	for k, _ in pairs(self) do
 		self[k] = nil
 	end

@@ -8,6 +8,7 @@ local Constants = Resources:LoadLibrary("Constants")
 local Janitor = Resources:LoadLibrary("Janitor")
 local MainMenu = Resources:LoadLibrary("MainMenu")
 local ParticleEngine = Resources:LoadLibrary("ParticleEngine")
+local Postie = Resources:LoadLibrary("Postie")
 local Promise = Resources:LoadLibrary("Promise")
 local PromiseChild = Resources:LoadLibrary("PromiseChild")
 local Roact = Resources:LoadLibrary("Roact")
@@ -151,6 +152,13 @@ function ClientHandler:Initialize()
 			end)
 		end)
 	end):Catch(CatchFactory("PromiseChild"))
+
+	Postie.SetCallback("GetProgress", function()
+		local characterController = self.CharacterController
+		if characterController then
+			return characterController.Alpha
+		end
+	end)
 
 	return self
 end
