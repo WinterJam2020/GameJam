@@ -71,6 +71,8 @@ function ServerHandler:StartGameLoop()
 						EndTime = 0;
 						HasFinished = false;
 					}
+
+					-- Check if player finished skiing
 				end
 			end
 		end)
