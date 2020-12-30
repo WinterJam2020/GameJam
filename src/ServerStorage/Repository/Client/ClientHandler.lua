@@ -2,9 +2,10 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Resources = require(ReplicatedStorage.Resources)
+local Constants = Resources:LoadLibrary("Constants")
 local CatchFactory = Resources:LoadLibrary("CatchFactory")
 local ClientReducer = Resources:LoadLibrary("ClientReducer")
-local Menu = Resources:LoadLibrary("Menu")
+local MainMenu = Resources:LoadLibrary("MainMenu")
 local ParticleEngine = Resources:LoadLibrary("ParticleEngine")
 local Promise = Resources:LoadLibrary("Promise")
 local PromiseChild = Resources:LoadLibrary("PromiseChild")
@@ -12,9 +13,11 @@ local Roact = Resources:LoadLibrary("Roact")
 local RoactRodux = Resources:LoadLibrary("RoactRodux")
 local Rodux = Resources:LoadLibrary("Rodux")
 local ValueObject = Resources:LoadLibrary("ValueObject")
+local GameEvent = Resources:GetRemoteEvent("GameEvent")
 
 local ClientHandler = {
 	App = nil;
+	GameEvent = nil;
 	CanMount = nil;
 	LocalPlayer = nil;
 	MainGui = nil;
@@ -24,7 +27,44 @@ local ClientHandler = {
 	TimeSyncService = nil;
 }
 
+local CLIENT_EVENTS = {
+	[Constants.DISPLAY_LEADERBOARD] = function(self, Entries)
+		self.Store:dispatch({
+			type = "LeaderboardEntries",
+			LeaderboardEntries = Entries,
+		}):dispatch({
+			type = "LeaderboardVisible",
+			IsLeaderboardVisible = true,
+		})
+	end;
+
+	[Constants.HIDE_LEADERBOARD] = function(self)
+		self.Store:dispatch({
+			type = "LeaderboardEntries",
+			LeaderboardEntries = {},
+		}):dispatch({
+			type = "LeaderboardVisible",
+			IsLeaderboardVisible = false,
+		})
+	end;
+
+	[Constants.SHOW_MENU] = function(self)
+		self.Store:dispatch({
+			type = "MenuVisible",
+			IsMenuVisible = true,
+		})
+	end;
+
+	[Constants.HIDE_MENU] = function(self)
+		self.Store:dispatch({
+			type = "MenuVisible",
+			IsMenuVisible = false,
+		})
+	end;
+}
+
 function ClientHandler:Initialize()
+	self.GameEvent = GameEvent
 	self.CanMount = ValueObject.new(false)
 	self.LocalPlayer = Players.LocalPlayer
 	self.TimeSyncService = Resources:LoadLibrary("TimeSyncService"):Initialize()
@@ -35,15 +75,24 @@ function ClientHandler:Initialize()
 			self.ParticleEngine = ParticleEngine:Initialize(MainGui)
 			self.ParticleEngineHelper = Resources:LoadLibrary("ParticleEngineHelper")
 		end):Catch(CatchFactory("PromiseChild")):Finally(function()
-			self.Store = Rodux.Store.new(ClientReducer)
+			self.Store = Rodux.Store.new(ClientReducer, nil, {
+				Rodux.loggerMiddleware,
+			})
+
 			self.App = Roact.createElement(RoactRodux.StoreProvider, {
 				store = self.Store,
 			}, {
-				Main = Roact.createElement(Menu),
+				Main = Roact.createElement(MainMenu),
 			})
 
 			self.CanMount.Value = true
 			Resources:LoadClient("CharacterController")
+			self.GameEvent.OnClientEvent:Connect(function(FunctionCall, ...)
+				local Function = CLIENT_EVENTS[FunctionCall]
+				if Function then
+					Function(self, ...)
+				end
+			end)
 		end)
 	end):Catch(CatchFactory("PromiseChild"))
 
@@ -53,6 +102,47 @@ end
 function ClientHandler:Mount()
 	assert(self.CanMount.Value, "Cannot mount!")
 	self.RoactTree = Roact.mount(self.App, self.MainGui, "MAIN")
+
+	Promise.Delay(2):Then(function()
+		print("time to show")
+		self.Store:dispatch({
+			type = "MenuVisible",
+			IsMenuVisible = false,
+		}):dispatch({
+			type = "LeaderboardVisible",
+			IsLeaderboardVisible = true,
+		}):dispatch({
+			type = "LeaderboardEntries",
+			LeaderboardEntries = {
+				{
+					Time = 150,
+					Username = "pobammer",
+				},
+				{
+					Time = 151,
+					Username = "e_yv",
+				},
+				{
+					Time = 149,
+					Username = "movsb",
+				},
+			},
+		})
+
+		Promise.Delay(1):Then(function()
+			self.Store:dispatch({
+				type = "LeaderboardEntries",
+				LeaderboardEntries = {},
+			}):dispatch({
+				type = "LeaderboardVisible",
+				IsLeaderboardVisible = false,
+			}):dispatch({
+				type = "MenuVisible",
+				IsMenuVisible = true,
+			})
+		end)
+	end)
+
 	return self
 end
 

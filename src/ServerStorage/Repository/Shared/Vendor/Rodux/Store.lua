@@ -86,6 +86,7 @@ function Store:dispatch(action)
 
 		self._state = self._reducer(self._state, action)
 		self._mutatedSinceFlush = true
+		return self
 	else
 		error(string.format("actions of type %q are not permitted", typeof(action)), 2)
 	end

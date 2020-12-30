@@ -1,9 +1,12 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Resources = require(ReplicatedStorage.Resources)
 
+local AutomatedScrollingFrameComponent = Resources:LoadLibrary("AutomatedScrollingFrameComponent")
 local LeaderboardEntry = Resources:LoadLibrary("LeaderboardEntry")
 local Llama = Resources:LoadLibrary("Llama")
 local Roact = Resources:LoadLibrary("Roact")
+local Scale = Resources:LoadLibrary("Scale")
+local t = Resources:LoadLibrary("t")
 
 local Leaderboard = Roact.Component:extend("Leaderboard")
 Leaderboard.defaultProps = {
@@ -13,7 +16,18 @@ Leaderboard.defaultProps = {
 			Username = "Bob",
 		},
 	},
+
+	Visible = true,
 }
+
+Leaderboard.validateProps = t.interface({
+	Entries = t.array(t.interface({
+		Time = t.number,
+		Username = t.string,
+	})),
+
+	Visible = t.boolean,
+})
 
 function Leaderboard:init()
 	self.sortFunction = function(a, b)
@@ -30,6 +44,11 @@ function Leaderboard:render()
 			SortOrder = Enum.SortOrder.LayoutOrder,
 			VerticalAlignment = Enum.VerticalAlignment.Top,
 		}),
+
+		UIScale = Roact.createElement(Scale, {
+			Scale = 0.85,
+			Size = Vector2.new(850, 850),
+		}),
 	}
 
 	local entries = Llama.List.sort(self.props.Entries, self.sortFunction)
@@ -41,7 +60,13 @@ function Leaderboard:render()
 		})
 	end
 
-	return Roact.createElement("Frame", {})
+	return Roact.createElement(AutomatedScrollingFrameComponent, {
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		BackgroundTransparency = 1,
+		Position = UDim2.fromScale(0.5, 0.5),
+		Size = UDim2.fromScale(1, 1),
+		Visible = self.props.Visible,
+	}, children)
 end
 
 return Leaderboard

@@ -7,6 +7,7 @@ local DEFAULT_STATE = {
 	MenuVisible = true,
 	TimerVisible = false,
 	LeaderboardVisible = false,
+	LeaderboardEntries = {},
 }
 
 local function ClientReducer(State, Action)
@@ -26,6 +27,10 @@ local function ClientReducer(State, Action)
 	elseif Action.type == "LeaderboardVisible" then
 		return Llama.Dictionary.extend(State, {
 			LeaderboardVisible = Action.IsLeaderboardVisible,
+		})
+	elseif Action.type == "LeaderboardEntries" then
+		return Llama.Dictionary.extend(State, {
+			LeaderboardEntries = Action.LeaderboardEntries,
 		})
 	elseif Action.type == "ResetAll" then
 		return DEFAULT_STATE

@@ -36,9 +36,9 @@ function Menu:init(props)
 		end
 	end), "Disconnect")
 
-	self:setState({
-		visible = props.Visible,
-	})
+	-- self:setState({
+	-- 	visible = props.Visible,
+	-- })
 
 	-- print(Debug.TableToString(self.props, true, "self.props"))
 	-- print(Debug.TableToString(self.state, true, "self.state"))
@@ -54,7 +54,7 @@ function Menu:render()
 	return Roact.createElement("Frame", {
 		BackgroundTransparency = 1,
 		Size = UDim2.fromScale(1, 1),
-		Visible = self.state.visible,
+		Visible = self.props.Visible,
 	}, {
 		UIPageLayout = Roact.createElement("UIPageLayout", {
 			Animated = true,
@@ -124,10 +124,13 @@ function Menu:render()
 						Promise.FromEvent(self.pageRef:getValue().Stopped, function()
 							return true
 						end):Then(function()
-							print("done")
-							self:setState({
-								visible = false,
-							})
+							if self.props.StartButtonFunction then
+								self.props.StartButtonFunction()
+							end
+
+							-- self:setState({
+							-- 	visible = false,
+							-- })
 
 							if RunService:IsRunning() then
 								GameEvent:FireServer(Constants.READY_PLAYER)
@@ -340,17 +343,19 @@ function Menu:render()
 	})
 end
 
-return RoactRodux.connect(function(state)
-	return {
-		Visible = state.MenuVisible,
-	}
-end, function(dispatch)
-	return {
-		SetLoaded = function(isLoaded)
-			dispatch({
-				type = "Loaded",
-				IsLoaded = isLoaded,
-			})
-		end,
-	}
-end)(Menu)
+return Menu
+
+-- return RoactRodux.connect(function(state)
+-- 	return {
+-- 		Visible = state.MenuVisible,
+-- 	}
+-- end, function(dispatch)
+-- 	return {
+-- 		SetLoaded = function(isLoaded)
+-- 			dispatch({
+-- 				type = "Loaded",
+-- 				IsLoaded = isLoaded,
+-- 			})
+-- 		end,
+-- 	}
+-- end)(Menu)
