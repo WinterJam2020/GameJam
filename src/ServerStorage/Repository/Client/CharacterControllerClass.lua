@@ -9,7 +9,6 @@ local Constants = Resources:LoadShared("Constants")
 -- local Arrow = Resources:LoadShared("Arrow")
 local Janitor = Resources:LoadLibrary("Janitor")
 local SplineModule = Resources:LoadLibrary("AstroSpline")
-local ClientHandler = Resources:LoadClient("ClientHandler")
 
 local Player = Players.LocalPlayer
 local Mouse = Player:GetMouse()
@@ -106,7 +105,7 @@ function CharacterController:Step(deltaTime)
 			elseif nextAlpha > 1 then
 				print("done skiing")
 				self.Alpha = 1
-				ClientHandler:StopSkiing()
+				Resources("ClientHandler"):StopSkiing()
 				return
 			end
 			local nextDistanceToSpline = (skiChain:GetPosition(nextAlpha) - newPosition).Magnitude

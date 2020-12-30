@@ -157,8 +157,6 @@ function ClientHandler:Initialize()
 		local characterController = self.CharacterController
 		if characterController then
 			return characterController.Alpha
-		else
-			return -1
 		end
 	end)
 
