@@ -18,6 +18,7 @@ local GameEvent = Resources:GetRemoteEvent("GameEvent")
 
 local Menu = Roact.Component:extend("Menu")
 Menu.defaultProps = {
+	MenuLayoutOrder = 0,
 	Visible = true,
 }
 
@@ -44,6 +45,12 @@ function Menu:init()
 
 	-- print(Debug.TableToString(self.props, true, "self.props"))
 	-- print(Debug.TableToString(self.state, true, "self.state"))
+end
+
+function Menu:willUpdate(nextProps)
+	if nextProps.MenuLayoutOrder ~= self.props.MenuLayoutOrder then
+		self.displayValue.Value = nextProps.MenuLayoutOrder
+	end
 end
 
 function Menu:willUnmount()

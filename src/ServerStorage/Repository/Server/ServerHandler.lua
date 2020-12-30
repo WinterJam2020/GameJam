@@ -4,6 +4,7 @@ local Resources = require(ReplicatedStorage.Resources)
 local CatchFactory = Resources:LoadLibrary("CatchFactory")
 local Constants = Resources:LoadLibrary("Constants")
 local Postie = Resources:LoadLibrary("Postie")
+local Promise = Resources:LoadLibrary("Promise")
 local Services = Resources:LoadLibrary("Services")
 local SyncedPoller = Resources:LoadLibrary("SyncedPoller")
 local ValueObject = Resources:LoadLibrary("ValueObject")
@@ -93,36 +94,87 @@ function ServerHandler:StartGameLoop()
 					self.PlayerData[Player] = {
 						StartTime = time();
 						EndTime = 0;
-						Progress = 0;
 						HasFinished = false;
 					}
-
-					-- Check if player finished skiing
-					local CountdownTime = 0
-					local CountdownPoller
-					CountdownPoller = SyncedPoller.new(0.5, function(_, ElapsedTime)
-						CountdownTime += ElapsedTime
-						if CountdownTime >= 60 then
-							CountdownPoller:Destroy()
-						else
-							for EnteredPlayer, _PlayerData in next, self.PlayerData do
-								Postie.PromiseInvokeClient(EnteredPlayer, "GetProgress", 1):Then(function(Alpha: number)
-									print("Alpha -", tostring(Alpha))
-									-- if Alpha then
-										-- print(EnteredPlayer.Name, "-", Alpha, "(" .. IsClose(Alpha, 1) .. ")")
-									-- end
-								end):Catch(CatchFactory("Postie.PromiseInvokeClient"))
-							end
-						end
-					end)
-
-					-- if player finished skiing then update the data table
-
-					-- once every player is finished, show leaderboard
-
-					-- give nice delay then reset
-					-- might do something like Promise.Delay(5):ThenCall(self.GameEvent.FireAllClients, self.GameEvent, Constants._____) or something
 				end
+
+				-- Check if player finished skiing
+				local ShouldContinue = Instance.new("BindableEvent")
+				local CountdownTime = 0
+				local CountdownPoller
+				CountdownPoller = SyncedPoller.new(0.5, function(_, ElapsedTime)
+					CountdownTime += ElapsedTime
+					if CountdownTime >= 60 then
+						ShouldContinue:Fire()
+						CountdownPoller:Destroy()
+					else
+						for Player, PlayerData in next, self.PlayerData do
+							if PlayerData.HasFinished then
+								continue
+							end
+
+							Postie.PromiseInvokeClient(Player, "GetProgress", 5):Then(function(Alpha: number)
+								if Alpha == 1 then
+									PlayerData.HasFinished = true
+									PlayerData.EndTime = time()
+								end
+							end):Catch(CatchFactory("Postie.PromiseInvokeClient"))
+						end
+					end
+				end)
+
+				ShouldContinue.Event:Wait()
+				ShouldContinue:Destroy()
+
+				self.GameEvent:FireAllClients(Constants.IS_COUNTDOWN_ACTIVE, false)
+				self.GameEvent:FireAllClients(Constants.HIDE_COUNTDOWN)
+
+				local Entries = {}
+				local Length = 0
+
+				for Player, PlayerData in next, self.PlayerData do
+					-- print(Resources("Fmt")("Player: {}\n{}", Player.Name, Resources("Debug").TableToString(PlayerData, true, "PlayerData")))
+					Length += 1
+					if PlayerData.HasFinished then
+						local DataStore = self.PlayerDataHandler:GetDataStore(Player)
+						local CurrentTime = PlayerData.EndTime - PlayerData.StartTime
+
+						DataStore:Update(function(CurrentData)
+							if CurrentData.BestTime < CurrentTime then
+								CurrentData.BestTime = CurrentTime
+							end
+
+							return CurrentData
+						end)
+
+						Entries[Length] = {
+							Time = CurrentTime;
+							Username = Player.Name;
+						}
+					else
+						Entries[Length] = {
+							Time = 60;
+							Username = Player.Name;
+						}
+					end
+				end
+
+				self.GameEvent:FireAllClients(Constants.DISPLAY_LEADERBOARD, Entries)
+				Promise.Delay(5):Wait()
+				print("Hiding leaderboard")
+				self.GameEvent:FireAllClients(Constants.HIDE_LEADERBOARD)
+				Promise.Delay(5):Wait()
+				print("Despawning")
+				self.GameEvent:FireAllClients(Constants.DESPAWN_CHARACTER)
+				Promise.Delay(1):Wait()
+				self.GameEvent:FireAllClients(Constants.SHOW_MENU)
+
+				-- if player finished skiing then update the data table
+
+				-- once every player is finished, show leaderboard
+
+				-- give nice delay then reset
+				-- might do something like Promise.Delay(5):ThenCall(self.GameEvent.FireAllClients, self.GameEvent, Constants._____) or something
 			end
 		end)
 	end

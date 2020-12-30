@@ -35,6 +35,13 @@ function Leaderboard:init()
 	end
 end
 
+-- function Leaderboard:didUpdate(oldProps)
+-- 	if self.props.Event ~= oldProps.Event or self.props.Function ~= oldProps.Function then
+-- 		self.connection:Disconnect()
+-- 		self.connection = self.props.Event:Connect(self.props.Function)
+-- 	end
+-- end
+
 function Leaderboard:render()
 	local children = {
 		UIListLayout = Roact.createElement("UIListLayout", {

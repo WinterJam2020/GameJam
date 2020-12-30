@@ -1,7 +1,7 @@
 local function copyDeep(list)
 	assert(type(list) == "table", "expected a table for first argument, got " .. typeof(list))
 	local new = table.create(#list)
-	for index, value in ipairs(new) do
+	for index, value in ipairs(list) do
 		if type(value) == "table" then
 			new[index] = copyDeep(value)
 		else
