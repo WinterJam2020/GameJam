@@ -5,29 +5,29 @@
 local DataStoreServiceRetriever = require(script.Parent.Parent.DataStoreServiceRetriever)
 local Promise = require(script.Parent.Parent.Promise)
 
-local Standard = {}
+local Standard = {ClassName = "Standard"}
 Standard.__index = Standard
 
 function Standard:Get()
-	return Promise.Defer(function(resolve)
-		resolve(self.dataStore:GetAsync(self.userId))
+	return Promise.Defer(function(Resolve)
+		Resolve(self.dataStore:GetAsync(self.userId))
 	end)
 end
 
-function Standard:Set(value)
-	return Promise.Defer(function(resolve)
+function Standard:Set(Value)
+	return Promise.Defer(function(Resolve)
 		self.dataStore:UpdateAsync(self.userId, function()
-			return value
+			return Value
 		end)
 
-		resolve()
+		Resolve()
 	end)
 end
 
 function Standard.new(dataStore2)
 	return setmetatable({
-		dataStore = DataStoreServiceRetriever.Get():GetDataStore(dataStore2.Name);
-		userId = dataStore2.UserId;
+		dataStore = DataStoreServiceRetriever.Get():GetDataStore(dataStore2.Name),
+		userId = dataStore2.UserId,
 	}, Standard)
 end
 

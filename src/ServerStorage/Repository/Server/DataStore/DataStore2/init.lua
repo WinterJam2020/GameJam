@@ -27,16 +27,20 @@
 	coinStore:Get()
 --]]
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 local RunService = game:GetService("RunService")
 
-local Constants = require(script.Constants)
+local Resources = require(ReplicatedStorage.Resources)
+local Enumeration = Resources:LoadLibrary("Enumerations")
 local IsPlayer = require(script.IsPlayer)
 local Promise = require(script.Promise)
 local SavingMethods = require(script.SavingMethods)
 local Settings = require(script.Settings)
 local TableUtil = require(script.TableUtil)
 local Verifier = require(script.Verifier)
+
+-- Enumeration.SaveFailure = {"BeforeSaveError", "DataStoreFailure", "InvalidData"}
 
 local SaveInStudioObject = ServerStorage:FindFirstChild("SaveInStudio")
 local SaveInStudio = SaveInStudioObject and SaveInStudioObject.Value
@@ -268,7 +272,7 @@ function DataStore:Save()
 	if success then
 		print("saved", self.Name)
 	else
-		error(result)
+		error(tostring(result), 2)
 	end
 end
 
@@ -280,12 +284,12 @@ end
 function DataStore:SaveAsync()
 	return Promise.Defer(function(resolve, reject)
 		if not self.valueUpdated then
-			warn(string.format("Data store %s was not saved as it was not updated.", self.Name))
+			warn(string.format("DataStore %s was not saved as it was not updated.", self.Name))
 			return resolve(false)
 		end
 
 		if RunService:IsStudio() and not SaveInStudio then
-			warn(string.format("Data store %s attempted to save in studio while SaveInStudio is false.", self.Name))
+			warn(string.format("DataStore %s attempted to save in studio while SaveInStudio is false.", self.Name))
 			if not SaveInStudioObject then
 				warn("You can set the value of this by creating a BoolValue named SaveInStudio in ServerStorage.")
 			end
@@ -294,7 +298,7 @@ function DataStore:SaveAsync()
 		end
 
 		if self.backup then
-			warn("This data store is a backup store, and thus will not be saved.")
+			warn("This DataStore is a backup store, and thus will not be saved.")
 			return resolve(false)
 		end
 
@@ -307,13 +311,13 @@ function DataStore:SaveAsync()
 				if success then
 					save = result
 				else
-					return reject(result, Constants.SaveFailure.BeforeSaveError)
+					return reject(result, Enumeration.SaveFailure.BeforeSaveError)
 				end
 			end
 
 			local problem = Verifier.testValidity(save)
 			if problem then
-				return reject(problem, Constants.SaveFailure.InvalidData)
+				return reject(problem, Enumeration.SaveFailure.InvalidData)
 			end
 
 			return self.savingMethod:Set(save):Then(function()
@@ -507,12 +511,12 @@ function DataStore2.new(dataStoreName, player)
 		end)
 
 		local combinedStore = setmetatable({
-			combinedName = dataStoreName;
-			combinedStore = dataStore;
+			combinedName = dataStoreName,
+			combinedStore = dataStore,
 		}, {
 			__index = function(_, key)
 				return CombinedDataStore[key] or dataStore[key]
-			end;
+			end,
 		})
 
 		if not DataStoreCache[player] then
@@ -524,16 +528,16 @@ function DataStore2.new(dataStoreName, player)
 	end
 
 	local dataStore = {
-		Name = dataStoreName;
-		UserId = player.UserId;
-		callbacks = {};
-		beforeInitialGet = {};
-		afterSave = {};
-		bindToClose = {};
+		Name = dataStoreName,
+		UserId = player.UserId,
+		callbacks = {},
+		beforeInitialGet = {},
+		afterSave = {},
+		bindToClose = {},
+		savingMethod = nil,
 	}
 
 	dataStore.savingMethod = SavingMethods[Settings.SavingMethod].new(dataStore)
-
 	setmetatable(dataStore, DataStoreMetatable)
 
 	local event, fired = Instance.new("BindableEvent"), false
@@ -584,6 +588,10 @@ function DataStore2.new(dataStoreName, player)
 	return dataStore
 end
 
-DataStore2.Constants = Constants
+function DataStore2.__call(_, ...)
+	return DataStore2.new(...)
+end
+
+DataStore2.Constants = Enumeration
 
 return setmetatable(DataStore2, DataStore2)

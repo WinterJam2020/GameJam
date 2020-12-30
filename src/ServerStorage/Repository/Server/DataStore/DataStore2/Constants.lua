@@ -4,8 +4,8 @@ local Symbol = Resources:LoadLibrary("Symbol")
 
 return {
 	SaveFailure = {
-		BeforeSaveError = Symbol("BeforeSaveError");
-		DataStoreFailure = Symbol("DataStoreFailure");
-		InvalidData = Symbol("InvalidData");
-	};
+		BeforeSaveError = Symbol("BeforeSaveError"),
+		DataStoreFailure = Symbol("DataStoreFailure"),
+		InvalidData = Symbol("InvalidData"),
+	},
 }

@@ -5,6 +5,33 @@ local Enumeration = Resources:LoadLibrary("Enumeration")
 Enumeration.DataStoreHandler = {"ForceLoad", "Steal", "Repeat", "Cancel"}
 Enumeration.RectangleMode = {"AllCorners", "SingleEdge", "SingleCorner"}
 
+Enumeration.SaveFailure = {"BeforeSaveError", "DataStoreFailure", "InvalidData"}
+
+Enumeration.BehaviorTreeStatus = {"Success", "Fail", "Running"}
+Enumeration.BlackboardQueryType = {"True", "False", "Nil", "NotNil"}
+
+Enumeration.NodeType = {
+	"Task";
+	"Blackboard";
+	"Tree";
+
+	"AlwaysSucceed";
+	"AlwaysFail";
+	"Invert";
+
+	"Repeat";
+	"While";
+
+	"Sequence";
+	"Selector";
+	"Random";
+	"Root";
+
+	"Succeed";
+	"Fail";
+	"RepeatStart";
+}
+
 Enumeration.EasingFunction = {
 	"Standard";
 	"Deceleration";

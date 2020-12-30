@@ -22,6 +22,8 @@ LeaderboardEntry.validateProps = t.interface({
 	Username = t.string,
 })
 
+local Roact_createElement = Roact.createElement
+
 function LeaderboardEntry:init(props)
 	PlayerPromise.PromiseUserIdFromName(props.Username):Then(function(userId)
 		PlayerPromise.PromiseUserThumbnail(userId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100x100):Then(function(thumbnail)
@@ -34,16 +36,16 @@ function LeaderboardEntry:init(props)
 end
 
 function LeaderboardEntry:render()
-	return Roact.createElement("Frame", {
+	return Roact_createElement("Frame", {
 		BackgroundColor3 = self.props.BackgroundColor3,
 		LayoutOrder = self.props.LayoutOrder,
 		Size = UDim2.new(0.95, 0, 0, self.props.Height),
 	}, {
-		UICorner = Roact.createElement("UICorner", {
+		UICorner = Roact_createElement("UICorner", {
 			CornerRadius = UDim.new(1, 0),
 		}),
 
-		UIGradient = Roact.createElement("UIGradient", {
+		UIGradient = Roact_createElement("UIGradient", {
 			Color = ColorSequence.new({
 				ColorSequenceKeypoint.new(0, self.props.GradientColor3),
 				ColorSequenceKeypoint.new(0.99, self.props.GradientColor3),
@@ -53,31 +55,31 @@ function LeaderboardEntry:render()
 			Rotation = 45,
 		}),
 
-		Contents = Roact.createElement("Frame", {
+		Contents = Roact_createElement("Frame", {
 			AnchorPoint = Vector2.new(0.5, 0.5),
 			BackgroundTransparency = 1,
 			Position = UDim2.fromScale(0.5, 0.5),
 			Size = UDim2.fromScale(0.95, 0.85),
 		}, {
-			UIListLayout = Roact.createElement("UIListLayout", {
+			UIListLayout = Roact_createElement("UIListLayout", {
 				FillDirection = Enum.FillDirection.Horizontal,
 				HorizontalAlignment = Enum.HorizontalAlignment.Center,
 				SortOrder = Enum.SortOrder.LayoutOrder,
 				VerticalAlignment = Enum.VerticalAlignment.Center,
 			}),
 
-			PlayerInfo = Roact.createElement("Frame", {
+			PlayerInfo = Roact_createElement("Frame", {
 				BackgroundTransparency = 1,
 				Size = UDim2.fromScale(0.65, 1),
 			}, {
-				UIListLayout = Roact.createElement("UIListLayout", {
+				UIListLayout = Roact_createElement("UIListLayout", {
 					FillDirection = Enum.FillDirection.Horizontal,
 					HorizontalAlignment = Enum.HorizontalAlignment.Left,
 					SortOrder = Enum.SortOrder.LayoutOrder,
 					VerticalAlignment = Enum.VerticalAlignment.Center,
 				}),
 
-				PlayerRank = Roact.createElement("TextLabel", {
+				PlayerRank = Roact_createElement("TextLabel", {
 					BackgroundTransparency = 1,
 					Size = UDim2.fromScale(1, 1),
 					SizeConstraint = Enum.SizeConstraint.RelativeYY,
@@ -87,7 +89,7 @@ function LeaderboardEntry:render()
 					TextScaled = true,
 				}),
 
-				PlayerIcon = Roact.createElement("ImageLabel", {
+				PlayerIcon = Roact_createElement("ImageLabel", {
 					BackgroundTransparency = 1,
 					Size = UDim2.fromScale(1, 1),
 					SizeConstraint = Enum.SizeConstraint.RelativeYY,
@@ -95,13 +97,13 @@ function LeaderboardEntry:render()
 					Image = self.state.thumbnail,
 				}),
 
-				Gap = Roact.createElement("Frame", {
+				Gap = Roact_createElement("Frame", {
 					BackgroundTransparency = 1,
 					LayoutOrder = 3,
 					Size = UDim2.fromScale(0.025, 1),
 				}),
 
-				PlayerName = Roact.createElement("TextLabel", {
+				PlayerName = Roact_createElement("TextLabel", {
 					BackgroundTransparency = 1,
 					Font = Enum.Font.Oswald,
 					LayoutOrder = 4,
@@ -115,7 +117,7 @@ function LeaderboardEntry:render()
 				}),
 			}),
 
-			PlayerTime = Roact.createElement("TextLabel", {
+			PlayerTime = Roact_createElement("TextLabel", {
 				BackgroundTransparency = 1,
 				Font = Enum.Font.RobotoMono, -- Oswald would be preferred, but it isn't monospace. ):
 				LayoutOrder = 1,

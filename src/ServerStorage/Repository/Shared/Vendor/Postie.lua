@@ -3,6 +3,7 @@ local HttpService = game:GetService("HttpService")
 local RunService = game:GetService("RunService")
 
 local Resources = require(ReplicatedStorage.Resources)
+local Promise = Resources:LoadLibrary("Promise")
 local Scheduler = Resources:LoadLibrary("Scheduler")
 local Table = Resources:LoadLibrary("Table")
 local t = Resources:LoadLibrary("t")
@@ -66,6 +67,46 @@ function Postie.InvokeClient(Player: Player, Id: string, Timeout: number, ...)
 
 	Sent:FireClient(Player, Id, Uuid, ...)
 	return BindableEvent.Event:Wait()
+end
+
+function Postie.PromiseInvokeClient(Player: Player, Id: string, Timeout: number, ...)
+	local TypeSuccess, TypeError = InvokeClientTuple(Player, Id, Timeout)
+	if not TypeSuccess then
+		return Promise.Reject(TypeError, 2)
+	end
+
+	if not IS_SERVER then
+		return Promise.Reject("Postie.InvokeClient can only be called from the server", 2)
+	end
+
+	local Arguments = table.pack(...)
+	return Promise.Defer(function(Resolve, _, OnCancel)
+		local BindableEvent = Instance.new("BindableEvent")
+		local IsResumed = false
+		local Position = #Listeners + 1
+		local Uuid = HttpService:GenerateGUID(false)
+
+		Listeners[Position] = function(PlayerWhoFired, SignalUuid, ...)
+			if PlayerWhoFired ~= Player or SignalUuid ~= Uuid then
+				return false
+			else
+				IsResumed = true
+				Table_FastRemove(Listeners, Position)
+				BindableEvent:Fire(true, ...)
+				return true
+			end
+		end
+
+		OnCancel(function()
+			if not IsResumed then
+				Table_FastRemove(Listeners, Position)
+				BindableEvent:Fire(false)
+			end
+		end)
+
+		Sent:FireClient(Player, Id, Uuid, table.unpack(Arguments, 1, Arguments.n))
+		return Resolve(BindableEvent.Event:Wait())
+	end):Timeout(Timeout)
 end
 
 --[[**

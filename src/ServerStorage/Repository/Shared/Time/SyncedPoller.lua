@@ -8,7 +8,7 @@ local SyncedPoller = {ClassName = "SyncedPoller"}
 SyncedPoller.__index = SyncedPoller
 
 local function SyncedPollerLoop(self, Interval, Function)
-	while 1 do
+	while true do
 		if self._Paused then
 			self._BindableEvent.Event:Wait()
 		end

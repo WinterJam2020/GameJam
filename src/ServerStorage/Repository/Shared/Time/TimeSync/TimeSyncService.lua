@@ -39,6 +39,8 @@ function TimeSyncService:Initialize()
 	else
 		error("Bad RunService state")
 	end
+
+	return self
 end
 
 function TimeSyncService:IsSynced()

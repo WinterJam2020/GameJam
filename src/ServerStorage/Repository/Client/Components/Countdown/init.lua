@@ -82,23 +82,25 @@ function Countdown:willUnmount()
 	end
 end
 
+local Roact_createElement = Roact.craeteElement
+
 function Countdown:render()
 	local transparency = RoactFlipper.GetBinding(self.motor):map(function(value)
 		return 1 - value
 	end)
 
-	return self.props.UseGradientProgress and Roact.createElement("Frame", {
+	return self.props.UseGradientProgress and Roact_createElement("Frame", {
 		AnchorPoint = self.props.AnchorPoint,
 		BackgroundTransparency = 1,
 		Position = self.props.Position,
 		Size = self.props.Size,
 	}, {
-		TimerFrame = Roact.createElement(RoundedRectangle, {
+		TimerFrame = Roact_createElement(RoundedRectangle, {
 			Radius = 18,
 			Size = UDim2.fromScale(1, 1),
 			Transparency = transparency,
 		}, {
-			UIGradient = Roact.createElement("UIGradient", {
+			UIGradient = Roact_createElement("UIGradient", {
 				Color = ColorSequence.new({
 					ColorSequenceKeypoint.new(0, self.props.GradientColor3),
 					ColorSequenceKeypoint.new(0.99, self.props.GradientColor3),
@@ -109,20 +111,20 @@ function Countdown:render()
 				Offset = self.offset,
 			}),
 
-			Contents = Roact.createElement("Frame", {
+			Contents = Roact_createElement("Frame", {
 				AnchorPoint = Vector2.new(0.5, 0.5),
 				BackgroundTransparency = 1,
 				Position = UDim2.fromScale(0.5, 0.5),
 				Size = UDim2.fromScale(0.85, 0.85),
 			}, {
-				UIListLayout = Roact.createElement("UIListLayout", {
+				UIListLayout = Roact_createElement("UIListLayout", {
 					FillDirection = Enum.FillDirection.Horizontal,
 					HorizontalAlignment = Enum.HorizontalAlignment.Center,
 					SortOrder = Enum.SortOrder.LayoutOrder,
 					VerticalAlignment = Enum.VerticalAlignment.Center,
 				}),
 
-				CountdownTime = Roact.createElement("TextLabel", {
+				CountdownTime = Roact_createElement("TextLabel", {
 					BackgroundTransparency = 1,
 					Text = self.timeRemaining:map(math.ceil),
 					Font = Enum.Font.GothamBold,
@@ -134,18 +136,18 @@ function Countdown:render()
 				}),
 			}),
 		}),
-	}) or Roact.createElement("Frame", {
+	}) or Roact_createElement("Frame", {
 		AnchorPoint = self.props.AnchorPoint,
 		BackgroundTransparency = 1,
 		Position = self.props.Position,
 		Size = self.props.Size,
 	}, {
-		TimerFrame = Roact.createElement(RoundedRectangle, {
+		TimerFrame = Roact_createElement(RoundedRectangle, {
 			Radius = 18,
 			Size = UDim2.fromScale(1, 1),
 			Transparency = transparency,
 		}, {
-			UIGradient = Roact.createElement("UIGradient", {
+			UIGradient = Roact_createElement("UIGradient", {
 				Color = ColorSequence.new({
 					ColorSequenceKeypoint.new(0, self.props.GradientColor3),
 					ColorSequenceKeypoint.new(0.99, self.props.GradientColor3),
@@ -155,20 +157,20 @@ function Countdown:render()
 				Rotation = 45,
 			}),
 
-			Contents = Roact.createElement("Frame", {
+			Contents = Roact_createElement("Frame", {
 				AnchorPoint = Vector2.new(0.5, 0.5),
 				BackgroundTransparency = 1,
 				Position = UDim2.fromScale(0.5, 0.5),
 				Size = UDim2.fromScale(0.85, 0.85),
 			}, {
-				UIListLayout = Roact.createElement("UIListLayout", {
+				UIListLayout = Roact_createElement("UIListLayout", {
 					FillDirection = Enum.FillDirection.Horizontal,
 					HorizontalAlignment = Enum.HorizontalAlignment.Center,
 					SortOrder = Enum.SortOrder.LayoutOrder,
 					VerticalAlignment = Enum.VerticalAlignment.Center,
 				}),
 
-				CountdownTime = Roact.createElement("TextLabel", {
+				CountdownTime = Roact_createElement("TextLabel", {
 					BackgroundTransparency = 1,
 					Text = self.timeRemaining:map(math.ceil),
 					Font = Enum.Font.GothamBold,
@@ -180,7 +182,7 @@ function Countdown:render()
 					TextScaled = true,
 				}),
 
-				RadialProgress = Roact.createElement(RadialProgress, {
+				RadialProgress = Roact_createElement(RadialProgress, {
 					Image = "rbxassetid://5409990484",
 					ImageTransparency = transparency,
 					ImageSize = Vector2.new(36, 36),

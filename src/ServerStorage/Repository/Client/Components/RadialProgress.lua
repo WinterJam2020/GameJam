@@ -14,6 +14,8 @@ RadialProgress.defaultProps = {
 	Clockwise = true,
 }
 
+local Roact_createElement = Roact.createElement
+
 function RadialProgress:render()
 	local imageSize = self.props.ImageSize
 
@@ -29,7 +31,7 @@ function RadialProgress:render()
 		return value > 0.5
 	end)
 
-	return Roact.createElement("Frame", {
+	return Roact_createElement("Frame", {
 		AnchorPoint = self.props.AnchorPoint,
 		BackgroundTransparency = 1,
 		Position = self.props.Position,
@@ -38,7 +40,7 @@ function RadialProgress:render()
 		SizeConstraint = self.props.SizeConstraint,
 		Size = self.props.Size,
 	}, {
-		Left = Roact.createElement("ImageLabel", {
+		Left = Roact_createElement("ImageLabel", {
 			BackgroundTransparency = 1,
 			Image = self.props.Image,
 			ImageColor3 = self.props.ImageColor3,
@@ -47,7 +49,7 @@ function RadialProgress:render()
 			Size = UDim2.fromScale(0.5, 1),
 			Visible = not self.props.Clockwise or isOverHalf,
 		}, {
-			Gradient = Roact.createElement("UIGradient", {
+			Gradient = Roact_createElement("UIGradient", {
 				Enabled = self.props.Clockwise and true or isUnderHalf,
 				Offset = Vector2.new(0.5, 0),
 				Rotation = gradientRotation,
@@ -55,7 +57,7 @@ function RadialProgress:render()
 			}),
 		}),
 
-		Right = Roact.createElement("ImageLabel", {
+		Right = Roact_createElement("ImageLabel", {
 			BackgroundTransparency = 1,
 			Image = self.props.Image,
 			ImageColor3 = self.props.ImageColor3,
@@ -66,7 +68,7 @@ function RadialProgress:render()
 			Size = UDim2.fromScale(0.5, 1),
 			Visible = self.props.Clockwise or isOverHalf,
 		}, {
-			Gradient = Roact.createElement("UIGradient", {
+			Gradient = Roact_createElement("UIGradient", {
 				Enabled = self.props.Clockwise and isUnderHalf or true,
 				Offset = Vector2.new(-0.5, 0),
 				Rotation = gradientRotation,

@@ -103,7 +103,7 @@ local function Squad(q0, q1, q2, q3, alpha)
 		q2w, q2x, q2y, q2z = -q2w, -q2x, -q2y, -q2z
 		dq = -dq
 	end
-	
+
 	local w0, x0, y0, z0 = Slerp(alpha, q1w, q1x, q1y, q1z, q2w, q2x, q2y, q2z, dq)
 	local w1, x1, y1, z1 = Slerp(alpha, p0w, p0x, p0y, p0z, p1w, p1x, p1y, p1z, dp)
 	return Slerp(2*alpha*(1 - alpha), w0, x0, y0, z0, w1, x1, y1, z1, w0*w1 + x0*x1 + y0*y1 + z0*z1)
@@ -130,7 +130,7 @@ local function CFrameToQuaternion(cframe)
 			local recip = 0.5 / s
 			return {(m10 - m01) * recip, (m02 + m20) * recip, (m21 + m12) * recip, s / 2}
 		else
-			return {nil, nil, nil, nil}
+			return table.create(4, nil)
 		end
 	end
 end
@@ -164,7 +164,7 @@ function CatmullRomSpline.Spline.new(p0, p1, p2, p3, tau)
 		local t1 = (p1 - p0).Magnitude ^ tau + t0
 		local t2 = (p2 - p1).Magnitude ^ tau + t1
 		local t3 = (p3 - p2).Magnitude ^ tau + t2
-		
+
 		local self = setmetatable({
 			ClassName = "VectorSpline",
 			p0 = p0,
@@ -173,17 +173,18 @@ function CatmullRomSpline.Spline.new(p0, p1, p2, p3, tau)
 			p3 = p3,
 			t1 = t1,
 			t2 = t2,
-			t3 = t3
+			t3 = t3,
+			Length = nil,
 		}, VectorSplineMetatable)
+
 		self.Length = self:GetLength()
-		
 		return self
 	elseif typeof(p0) == "CFrame" then
 		local t0 = 0
 		local t1 = (p1.Position - p0.Position).Magnitude ^ tau + t0
 		local t2 = (p2.Position - p1.Position).Magnitude ^ tau + t1
 		local t3 = (p3.Position - p2.Position).Magnitude ^ tau + t2
-		
+
 		local self = setmetatable({
 			ClassName = "CFrameSpline",
 			p0 = p0,
@@ -192,10 +193,11 @@ function CatmullRomSpline.Spline.new(p0, p1, p2, p3, tau)
 			p3 = p3,
 			t1 = t1,
 			t2 = t2,
-			t3 = t3
+			t3 = t3,
+			Length = nil,
 		}, CFrameSplineMetatable)
+
 		self.Length = self:GetLength()
-		
 		return self
 	end
 end
@@ -206,6 +208,7 @@ function VectorSplineMetatable:SolveTangent(alpha)
 	if self.ClassName == "CFrameSpline" then
 		p0, p1, p2, p3 = p0.Position, p1.Position, p2.Position, p3.Position
 	end
+
 	local t0, t1, t2, t3 = 0, self.t1, self.t2, self.t3
 	local s = t1 + alpha * (t2 - t1) -- s instead of t because t is the typechecker :(
 
@@ -227,7 +230,7 @@ function VectorSplineMetatable:SolveTangent(alpha)
 	local b1p = (t2*a1p - t0*a2p + a2 - a1 + s*(a2p - a1p)) / d4
 	local b2p = (t3*a2p - t1*a3p + a3 - a2 + s*(a3p - a2p)) / d5
 	local cp  = (t2*b1p - t1*b2p + b2 - b1 + s*(b2p - b1p)) / d2
-	
+
 	return cp
 end
 
@@ -284,30 +287,30 @@ function VectorSplineMetatable:GetCurvature(alpha)
 	end
 	local t0, t1, t2, t3 = 0, self.t1, self.t2, self.t3
 	local s = t1 + alpha * (t2 - t1) -- s instead of t because t is the typechecker :(
-	
+
 	local d1 = t1 - t0
 	local d2 = t2 - t1
 	local d3 = t3 - t2
 	local d4 = t2 - t0
 	local d5 = t3 - t1
-	
+
 	local a1 = (p0 * (t1 - s) + p1 * (s - t0)) / d1
 	local a2 = (p1 * (t2 - s) + p2 * (s - t1)) / d2
 	local a3 = (p2 * (t3 - s) + p3 * (s - t2)) / d3
 	local b1 = (a1 * (t2 - s) + a2 * (s - t0)) / d4
 	local b2 = (a2 * (t3 - s) + a3 * (s - t1)) / d5
-	
+
 	local a1p = (p1 - p0) / d1
 	local a2p = (p2 - p1) / d2
 	local a3p = (p3 - p2) / d3
 	local b1p = (t2*a1p - t0*a2p + a2 - a1 + s*(a2p - a1p)) / d4
 	local b2p = (t3*a2p - t1*a3p + a3 - a2 + s*(a3p - a2p)) / d5
 	local cp  = (t2*b1p - t1*b2p + b2 - b1 + s*(b2p - b1p)) / d2
-	
+
 	local b1pp = 2 * (a2p - a1p) / d4
 	local b2pp = 2 * (a3p - a2p) / d5
 	local cpp  = (t2*b1pp - t1*b2pp + 2*b2p - 2*b1p + s*(b2pp - b1pp)) / d2
-	
+
 	-- local tangent = cp.Unit
 	local tangentp = (cpp / cp.Magnitude) - (cp * cp:Dot(cpp)) / cp.Magnitude^3
 
@@ -361,7 +364,7 @@ function CatmullRomSpline.Chain.new(points, tau)
 			lastControlPoint = points[numPoints - 1]:Lerp(lastPoint, 2)
 		end
 	end
-	
+
 	local splines = table.create(numPoints - 1)
 	local chainLength
 	if numPoints == 2 then
@@ -404,7 +407,7 @@ function CatmullRomSpline.Chain.new(points, tau)
 			chainLength += spline.Length
 		end
 	end
-	
+
 	local splineIntervals = table.create(numPoints - 1)
 	local splineFromAlphaCache = table.create(100)
 	local runningChainLength = 0
@@ -418,11 +421,11 @@ function CatmullRomSpline.Chain.new(points, tau)
 		}
 		local endAlpha = math.floor(intervalEnd * 100) - math.ceil(intervalStart * 100)
 		for alpha = 0, endAlpha do
-			alpha = math.ceil(intervalStart * 100) / 100 + alpha / 100
-			splineFromAlphaCache[string.format("%.2f", alpha)] = i
+			local newAlpha = math.ceil(intervalStart * 100) / 100 + alpha / 100
+			splineFromAlphaCache[string.format("%.2f", newAlpha)] = i
 		end
 	end
-	
+
 	return setmetatable({
 		ClassName = splines[1].ClassName .. "Chain",
 		Length = chainLength,
@@ -449,12 +452,12 @@ function CatmullRomSpline.Chain:_GetSplineFromAlpha(alpha)
 end
 function CatmullRomSpline.Chain:_GetArcLengthAlpha(alpha)
 	if alpha == 0 or alpha == 1 then return alpha end
-	
+
 	local spline, _, splineInterval = self:_GetSplineFromAlpha(alpha)
 	local goalLength = self.Length * alpha
 	local runningLength = self.Length * splineInterval.Start
 	local lastPosition = spline:Solve(0)
-	
+
 	for i = 1, 1 / RIEMANN_STEP do
 		i *= RIEMANN_STEP
 		local thisPosition = spline:Solve(i)

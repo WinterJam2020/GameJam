@@ -89,8 +89,9 @@ return function()
 			(i / 3) * 5 * Length,
 			0,
 			math.random() * 40 - 20
-			))
+		))
 	end
+
 	local ArcSpline = SplineModule.Chain.new(ArcPoints, 1)
 
 	---- Height map cframes
@@ -112,7 +113,10 @@ return function()
 	---- Bank height map cframes
 	local numHeightMapCFrames = #SkiPathCFrames
 	for i, cf in ipairs(SkiPathCFrames) do
-		if i == 1 or i == numHeightMapCFrames then continue end
+		if i == 1 or i == numHeightMapCFrames then
+			continue
+		end
+
 		local nextPoint = SkiPathCFrames[i + 1].Position
 		local lastPoint = SkiPathCFrames[i - 1].Position
 		local toLast = ((lastPoint - cf.Position) * PROJ_VEC).Unit
@@ -120,7 +124,7 @@ return function()
 		local cross = toNext:Cross(toLast)
 		local dot = toNext:Dot(toLast)
 		local angle = math.acos(math.clamp(dot, -1, 1))
-		local rot = math.sign(cross.Y) * (math.pi - angle) * (MAX_BANK_ANGLE / math.pi)
+		local rot = math.sign(cross.Y) * (3.1415926535898 - angle) * (MAX_BANK_ANGLE / 3.1415926535898)
 		SkiPathCFrames[i] = cf * CFrame.Angles(0, 0, rot)
 	end
 
@@ -142,7 +146,7 @@ return function()
 			part.Anchored = true
 			part.Parent = workspace
 		end
-		
+
 		for _, cf in ipairs(SkiPathCFrames) do
 			local part = Instance.new("Part")
 			part.BrickColor = BrickColor.new("Bright green")
@@ -151,7 +155,7 @@ return function()
 			part.Anchored = true
 			part.Parent = workspace
 		end
-		
+
 		local points = {}
 		for i = 0, 200 - 1 do
 			i /= (200 / 1)
@@ -170,7 +174,7 @@ return function()
 			--part1.Size = Vector3.new(1, 1, 1) / 2
 			--part1.Anchored = true
 			--part1.Parent = workspace
-			
+
 			local point2 = SkiPath:GetArcPosition(i)
 			table.insert(points, point2)
 			local part2 = Instance.new("Part")
@@ -181,6 +185,6 @@ return function()
 			part2.Parent = workspace
 		end
 	end
-	
+
 	return SkiPath, SkiPathCFrames
 end

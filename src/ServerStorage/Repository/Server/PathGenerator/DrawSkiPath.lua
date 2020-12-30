@@ -37,7 +37,7 @@ end
 
 local function DrawSkiPath(spline)
 	local pathPoints = {}
-	
+
 	for i = 0, 1000 - 1 do
 		i /= (1000 - 1)
 		local cf = spline:GetArcRotCFrame(i)
@@ -63,7 +63,10 @@ local function DrawSkiPath(spline)
 	end
 	local numPathPoints = #pathPoints
 	for i, pt in ipairs(pathPoints) do
-		if i == numPathPoints then break end
+		if i == numPathPoints then
+			break
+		end
+
 		local nxt = pathPoints[i + 1]
 		-- local midpoint = (pt.CFrame.Position + nxt.CFrame.Position) / 2
 

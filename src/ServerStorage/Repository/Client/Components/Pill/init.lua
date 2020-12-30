@@ -16,6 +16,8 @@ Pill.defaultProps = {
 	ZIndex = 2,
 }
 
+local Roact_createElement = Roact.createElement
+
 function Pill:render()
 	local size = self.props.Size
 	local diameter = size.Y
@@ -26,7 +28,7 @@ function Pill:render()
 	-- 	addedScale = diameter.Scale / width.Scale / 2
 	-- end
 
-	return Roact.createElement("Frame", {
+	return Roact_createElement("Frame", {
 		AnchorPoint = self.props.AnchorPoint,
 		BackgroundTransparency = 1,
 		LayoutOrder = self.props.LayoutOrder,
@@ -34,25 +36,25 @@ function Pill:render()
 		Size = size,
 		ZIndex = self.props.ZIndex,
 	}, {
-		PillHolder = Roact.createElement("Frame", {
+		PillHolder = Roact_createElement("Frame", {
 			AnchorPoint = Vector2.new(0.5, 0.5),
 			BackgroundTransparency = 1,
 			Position = UDim2.fromScale(0.5, 0.5),
 			Size = UDim2.new(1 - diameter.Scale, -diameter.Offset, 1, 0),
 			ZIndex = self.props.ZIndex,
 		}, Llama.Dictionary.join({
-			PillBacking = Roact.createElement("Frame", {
+			PillBacking = Roact_createElement("Frame", {
 				BackgroundColor3 = self.props.BackgroundColor3,
 				BorderSizePixel = 0,
 				Size = UDim2.fromScale(1, 1),
 				ZIndex = self.props.ZIndex,
 			}, {
-				UISizeConstraint = Roact.createElement("UISizeConstraint", {
+				UISizeConstraint = Roact_createElement("UISizeConstraint", {
 					MaxSize = Vector2.new(math.huge, math.huge),
 					MinSize = Vector2.new(),
 				}),
 
-				LeftHalfCircle = Roact.createElement("ImageLabel", {
+				LeftHalfCircle = Roact_createElement("ImageLabel", {
 					AnchorPoint = Vector2.new(1, 0.5),
 					BackgroundTransparency = 1,
 					Image = "rbxassetid://633244888",
@@ -64,7 +66,7 @@ function Pill:render()
 					ZIndex = self.props.ZIndex,
 				}),
 
-				RightHalfCircle = Roact.createElement("ImageLabel", {
+				RightHalfCircle = Roact_createElement("ImageLabel", {
 					AnchorPoint = Vector2.new(0, 0.5),
 					BackgroundTransparency = 1,
 					Image = "rbxassetid://633244888",
@@ -79,7 +81,7 @@ function Pill:render()
 			}),
 		}, self.props[Roact.Children])),
 
-		PillShadow = self.props.CreateShadow and Roact.createElement("ImageLabel", {
+		PillShadow = self.props.CreateShadow and Roact_createElement("ImageLabel", {
 			BackgroundTransparency = 1,
 			Image = "rbxassetid://1304004290",
 			ImageTransparency = self.props.ShadowTransparency,
@@ -91,12 +93,12 @@ function Pill:render()
 			Position = UDim2.fromScale(0.5, 0.55),
 			Size = UDim2.new(1 - diameter.Scale, -diameter.Offset, 2, 0),
 		}, {
-			UISizeConstraint = Roact.createElement("UISizeConstraint", {
+			UISizeConstraint = Roact_createElement("UISizeConstraint", {
 				MaxSize = Vector2.new(math.huge, math.huge),
 				MinSize = Vector2.new(),
 			}),
 
-			LeftShadow = Roact.createElement("ImageLabel", {
+			LeftShadow = Roact_createElement("ImageLabel", {
 				AnchorPoint = Vector2.new(1, 0.5),
 				BackgroundTransparency = 1,
 				Image = "rbxassetid://1304004290",
@@ -108,7 +110,7 @@ function Pill:render()
 				ZIndex = self.props.ShadowZIndex,
 			}),
 
-			RightShadow = Roact.createElement("ImageLabel", {
+			RightShadow = Roact_createElement("ImageLabel", {
 				AnchorPoint = Vector2.new(0, 0.5),
 				BackgroundTransparency = 1,
 				Image = "rbxassetid://1304004290",
@@ -123,7 +125,7 @@ function Pill:render()
 		}) or nil,
 	})
 
-	-- return Roact.createElement("Frame", {
+	-- return Roact_createElement("Frame", {
 	-- 	AnchorPoint = self.props.AnchorPoint,
 	-- 	BackgroundTransparency = 1,
 	-- 	LayoutOrder = self.props.LayoutOrder,
@@ -131,11 +133,11 @@ function Pill:render()
 	-- 	Size = size,
 	-- 	ZIndex = self.props.ZIndex,
 	-- }, {
-	-- 	PillContainer = Roact.createElement("Frame", {
+	-- 	PillContainer = Roact_createElement("Frame", {
 	-- 		BackgroundTransparency = 1,
 	-- 		Size = UDim2.fromScale(1, 1),
 	-- 	}, {
-	-- 		PillBacking = Roact.createElement("ImageLabel", {
+	-- 		PillBacking = Roact_createElement("ImageLabel", {
 	-- 			BackgroundTransparency = 1,
 	-- 			Image = "rbxassetid://633244888",
 	-- 			ImageColor3 = self.props.BackgroundColor3,
@@ -147,7 +149,7 @@ function Pill:render()
 	-- 		}, self.props[Roact.Children]),
 	-- 	}),
 
-	-- 	PillShadow = self.props.CreateShadow and Roact.createElement("ImageLabel", {
+	-- 	PillShadow = self.props.CreateShadow and Roact_createElement("ImageLabel", {
 	-- 		AnchorPoint = Vector2.new(0.5, 0.5),
 	-- 		BackgroundTransparency = 1,
 	-- 		Image = "rbxassetid://707852973",
@@ -161,7 +163,7 @@ function Pill:render()
 	-- 	}) or nil,
 	-- })
 
-	-- return Roact.createElement("ImageLabel", {
+	-- return Roact_createElement("ImageLabel", {
 	-- 	AnchorPoint = self.props.AnchorPoint,
 	-- 	BackgroundTransparency = 1,
 	-- 	Image = "rbxassetid://633244888",
@@ -174,7 +176,7 @@ function Pill:render()
 	-- 	SliceScale = 1024,
 	-- 	ZIndex = self.props.ZIndex,
 	-- }, {
-	-- 	PillShadow = self.props.CreateShadow and Roact.createElement("ImageLabel", {
+	-- 	PillShadow = self.props.CreateShadow and Roact_createElement("ImageLabel", {
 	-- 		AnchorPoint = Vector2.new(0.5, 0.5),
 	-- 		BackgroundTransparency = 1,
 	-- 		ImageTransparency = self.props.ShadowTransparency,

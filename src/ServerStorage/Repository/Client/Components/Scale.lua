@@ -17,7 +17,7 @@ Scale.defaultProps = {
 }
 
 t.validateProps = t.interface({
-	Size = t.UDim2, -- ?
+	Size = t.Vector2, -- ?
 	Scale = t.number,
 })
 

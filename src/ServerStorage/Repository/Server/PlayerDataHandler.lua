@@ -5,65 +5,105 @@ local RunService = game:GetService("RunService")
 
 local Resources = require(ReplicatedStorage.Resources)
 local CatchFactory = Resources:LoadLibrary("CatchFactory")
-local Enumeration = Resources:LoadLibrary("Enumerations")
-local ProfileService = Resources:LoadLibrary("ProfileService")
--- local SyncedPoller = Resources:LoadLibrary("SyncedPoller")
-local Typer = Resources:LoadLibrary("Typer")
+local DataStore2 = Resources:LoadLibrary("DataStore2")
+local GetTimeString = Resources:LoadLibrary("GetTimeString")
+local Promise = Resources:LoadLibrary("Promise")
+local PromiseChild = Resources:LoadLibrary("PromiseChild")
 
-local PlayerDataHandler = {
-	Profiles = {};
-	DefaultData = {
-		HighScore = 0;
-		Points = 0;
-		Inventory = {BasicSkis = true};
-	};
+local PlayerDataHandler = {}
+
+local TIME_STRING = "Best Time " .. utf8.char(9202)
+local POINTS_STRING = "Points " .. utf8.char(127894)
+
+type PlayerData = {
+	BestTime: number,
+	Points: number,
+	SkiColor: string,
+}
+
+local DEFAULT_PLAYER_DATA: PlayerData = {
+	BestTime = 0;
+	Points = 0;
+	SkiColor = "Blue";
 }
 
 function PlayerDataHandler:Initialize()
-	self.GameStore = ProfileService.GetProfileStore(
+	DataStore2.Combine(
 		"WinterGame" .. (RunService:IsStudio() and "Build" or "Release"),
-		self.DefaultData
+		"GameData"
 	)
 
 	local function PlayerAdded(Player: Player)
 		CollectionService:AddTag(Player, "PlayerDataConnected")
-		self.GameStore:LoadProfileAsync(tostring(Player.UserId), Enumeration.DataStoreHandler.ForceLoad):Then(function(Profile)
-			if Profile then
-				Profile:Reconcile()
-				Profile:ListenToRelease(function()
-					self.Profiles[Player] = nil
-					Player:Kick("Saved your data.")
-				end)
+		local GameData = DataStore2.new("GameData", Player)
 
-				if Player:IsDescendantOf(Players) then
-					self.Profiles[Player] = Profile
-				else
-					Profile:Release()
-				end
-			else
-				Player:Kick("Couldn't load your data.")
+		PromiseChild(Player, "PlayerGui", 5):Then(function(PlayerGui: PlayerGui)
+			local MainGui = Instance.new("ScreenGui")
+			MainGui.Name = "MainGui"
+			MainGui.Parent = PlayerGui
+		end):Catch(CatchFactory("PromiseChild"))
+
+		GameData:GetTableAsync(DEFAULT_PLAYER_DATA):Then(function(PlayerData: PlayerData)
+			if Player:IsDescendantOf(Players) then
+				local Leaderstats = Instance.new("Folder")
+				Leaderstats.Name = "leaderstats"
+
+				local Configuration = Instance.new("Folder")
+				Configuration.Name = "Configuration"
+
+				local BestTime = Instance.new("StringValue")
+				BestTime.Name = TIME_STRING
+				BestTime.Value = GetTimeString(PlayerData.BestTime)
+				BestTime.Parent = Leaderstats
+
+				local Points = Instance.new("IntValue")
+				Points.Name = POINTS_STRING
+				Points.Value = PlayerData.Points
+				Points.Parent = Leaderstats
+
+				local SkiColor = Instance.new("StringValue")
+				SkiColor.Name = "SkiColor"
+				SkiColor.Value = PlayerData.SkiColor
+				SkiColor.Parent = Configuration
+
+				Configuration.Parent = Leaderstats
+				Leaderstats.Parent = Player
 			end
-		end):Catch(function(Error)
-			CatchFactory("GameStore::LoadProfileAsync")(Error)
-			Player:Kick(tostring(Error))
-		end):Finally(function()
-			local Leaderstats = Instance.new("Folder")
-			Leaderstats.Name = "leaderstats"
+		end):Catch(CatchFactory("SavedPlayerData:GetTableAsync")):Finally(function()
+			if Player:IsDescendantOf(Players) then
+				PromiseChild(Player, "leaderstats", 5):Then(function(Leaderstats: Folder)
+					local Array = table.create(3)
+					Array[1], Array[2], Array[3] = PromiseChild(Leaderstats, TIME_STRING, 5), PromiseChild(Leaderstats, POINTS_STRING, 5), PromiseChild(Leaderstats, "Configuration", 5)
 
-			Leaderstats.Parent = Player
+					Promise.All(Array):Spread(function(BestTime: StringValue, Points: IntValue, Configuration: Folder)
+						PromiseChild(Configuration, "SkiColor", 5):Then(function(SkiColor: StringValue)
+							local PlayerDataMap = {
+								BestTime = function(CurrentValue: number)
+									BestTime.Value = GetTimeString(CurrentValue)
+								end;
+
+								Points = function(CurrentValue: number)
+									Points.Value = CurrentValue
+								end;
+
+								SkiColor = function(CurrentValue: string)
+									SkiColor.Value = CurrentValue
+								end;
+							}
+
+							GameData:OnUpdate(function(PlayerData: PlayerData)
+								for StatName, StatValue in next, PlayerData do
+									PlayerDataMap[StatName](StatValue)
+								end
+							end)
+						end):Catch(CatchFactory("PromiseChild"))
+					end):Catch(CatchFactory("Promise.All"))
+				end):Catch(CatchFactory("PromiseChild"))
+			end
 		end)
 	end
 
-	local function PlayerRemoving(Player: Player)
-		local Profile = self.Profiles[Player]
-		if Profile then
-			Profile:Release()
-		end
-	end
-
 	Players.PlayerAdded:Connect(PlayerAdded)
-	Players.PlayerRemoving:Connect(PlayerRemoving)
-
 	for _, Player in ipairs(Players:GetPlayers()) do
 		if not CollectionService:HasTag(Player, "PlayerDataConnected") then
 			PlayerAdded(Player)
@@ -73,36 +113,8 @@ function PlayerDataHandler:Initialize()
 	return self
 end
 
-function PlayerDataHandler:SetPoints(Player: Player, Points: number)
-	local Profile = self.Profiles[Player]
-	if Profile then
-		Profile.Data.Points = Points
-	end
+function PlayerDataHandler:GetDataStore(Player: Player)
+	return DataStore2("GameData", Player)
 end
-
-function PlayerDataHandler:SetHighScore(Player: Player, HighScore: number)
-	local Profile = self.Profiles[Player]
-	if Profile then
-		Profile.Data.HighScore = HighScore
-	end
-end
-
-function PlayerDataHandler:IncrementPoints(Player: Player, IncrementBy: number)
-	local Profile = self.Profiles[Player]
-	if Profile then
-		Profile.Data.Points += IncrementBy
-	end
-end
-
-function PlayerDataHandler:IncrementHighScore(Player: Player, IncrementBy: number)
-	local Profile = self.Profiles[Player]
-	if Profile then
-		Profile.Data.HighScore += IncrementBy
-	end
-end
-
-PlayerDataHandler.Get = Typer.AssignSignature(2, Typer.InstanceWhichIsAPlayer, function(self, Player)
-	return self.Profiles[Player]
-end)
 
 return PlayerDataHandler

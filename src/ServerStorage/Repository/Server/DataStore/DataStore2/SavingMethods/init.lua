@@ -1,4 +1,4 @@
 return {
-	Standard = require(script.Standard);
-	OrderedBackups = require(script.OrderedBackups);
+	Standard = require(script.Standard),
+	OrderedBackups = require(script.OrderedBackups),
 }

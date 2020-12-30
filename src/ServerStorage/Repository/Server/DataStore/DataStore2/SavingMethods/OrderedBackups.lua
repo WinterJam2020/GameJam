@@ -20,7 +20,7 @@
 local DataStoreServiceRetriever = require(script.Parent.Parent.DataStoreServiceRetriever)
 local Promise = require(script.Parent.Parent.Promise)
 
-local OrderedBackups = {}
+local OrderedBackups = {ClassName = "OrderedBackups"}
 OrderedBackups.__index = OrderedBackups
 
 function OrderedBackups:Get()
@@ -62,9 +62,9 @@ function OrderedBackups.new(dataStore2)
 	local dataStoreKey = dataStore2.Name .. "/" .. dataStore2.UserId
 
 	return setmetatable({
-		dataStore2 = dataStore2;
-		dataStore = dataStoreService:GetDataStore(dataStoreKey);
-		orderedDataStore = dataStoreService:GetOrderedDataStore(dataStoreKey);
+		dataStore2 = dataStore2,
+		dataStore = dataStoreService:GetDataStore(dataStoreKey),
+		orderedDataStore = dataStoreService:GetOrderedDataStore(dataStoreKey),
 	}, OrderedBackups)
 end
 

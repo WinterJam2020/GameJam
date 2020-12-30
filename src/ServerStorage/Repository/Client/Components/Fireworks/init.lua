@@ -34,14 +34,16 @@ function Fireworks:init()
 	self.particlePositions = particlePositions
 end
 
+local Roact_createElement = Roact.createElement
+
 function Fireworks:render()
-	return Roact.createElement(Counter, {
+	return Roact_createElement(Counter, {
 		Render = function(counter)
 			local particles = {}
 
 			if self.props.UseImage then
 				for index, particlePositions in ipairs(self.particlePositions) do
-					particles["Particle" .. index] = Roact.createElement("ImageLabel", {
+					particles["Particle" .. index] = Roact_createElement("ImageLabel", {
 						BackgroundTransparency = 1,
 						BorderSizePixel = 0,
 						Image = self.props.ParticleImage,
@@ -63,11 +65,11 @@ function Fireworks:render()
 						end),
 
 						Size = self.props.ParticleSize,
-					}, table.create(1, Roact.createElement("UIAspectRatioConstraint")))
+					}, table.create(1, Roact_createElement("UIAspectRatioConstraint")))
 				end
 			else
 				for index, particlePositions in ipairs(self.particlePositions) do
-					particles["Particle" .. index] = Roact.createElement("Frame", {
+					particles["Particle" .. index] = Roact_createElement("Frame", {
 						BackgroundColor3 = self.props.ColorGenerator(),
 						BorderSizePixel = 0,
 						BackgroundTransparency = counter:map(function(t)
@@ -87,11 +89,11 @@ function Fireworks:render()
 						end),
 
 						Size = self.props.ParticleSize,
-					}, table.create(1, Roact.createElement("UIAspectRatioConstraint")))
+					}, table.create(1, Roact_createElement("UIAspectRatioConstraint")))
 				end
 			end
 
-			return Roact.createElement("Frame", {
+			return Roact_createElement("Frame", {
 				BackgroundTransparency = 1,
 				Size = UDim2.fromScale(1, 1),
 			}, particles)
