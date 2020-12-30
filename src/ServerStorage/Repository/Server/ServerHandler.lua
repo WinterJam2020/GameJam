@@ -30,7 +30,9 @@ function ServerHandler:Initialize()
 	self.ParticleEngine = Resources:LoadLibrary("ParticleEngine"):Initialize()
 	self.TimeSyncService = Resources:LoadLibrary("TimeSyncService"):Initialize()
 	self.PlayerDataHandler = Resources:LoadLibrary("PlayerDataHandler"):Initialize()
+
 	self.GameEvent = Resources:GetRemoteEvent("GameEvent")
+	self.GameFunction = Resources:GetRemoteFunction("GameFunction")
 
 	self.GameEvent.OnServerEvent:Connect(function(Player, FunctionCall, ...)
 		local Function = SERVER_EVENTS[FunctionCall]
@@ -75,6 +77,10 @@ function ServerHandler:StartGameLoop()
 					-- Check if player finished skiing
 
 					-- if player finished skiing then update the data table
+
+					-- once every player is finished, show leaderboard
+
+					-- give nice delay then reset
 				end
 			end
 		end)

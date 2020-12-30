@@ -14,6 +14,8 @@ return Table.Lock({
 	DISPLAY_LEADERBOARD = 6;
 	READY_PLAYER = 7;
 
+	GET_SPLINE_ALPHA = 8;
+
 	CONFIGURATION = {
 		RAGDOLL_TAG_NAME = "PlayerRagdoll";
 
@@ -65,5 +67,4 @@ return Table.Lock({
 		WEDGE_DEPTH = 4; -- terrain depth in studs
 		DEBUG = false;
 	}
-
 }, nil, script.Name)

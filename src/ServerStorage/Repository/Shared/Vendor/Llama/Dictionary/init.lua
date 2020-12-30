@@ -1,5 +1,6 @@
 
 local Dictionary = {
+	assign = require(script.assign),
 	copy = require(script.copy),
 	copyDeep = require(script.copyDeep),
 	count = require(script.count),
