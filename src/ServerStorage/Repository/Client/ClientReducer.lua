@@ -9,6 +9,7 @@ local DEFAULT_STATE = {
 	LeaderboardEntries = {},
 	LeaderboardVisible = false,
 	Loaded = false,
+	MenuLayoutOrder = 0,
 	MenuVisible = true,
 	TimerVisible = false,
 
@@ -54,6 +55,10 @@ local function ClientReducer(State, Action)
 	elseif Action.type == "CountdownActive" then
 		return Llama.Dictionary.extend(State, {
 			CountdownActive = Action.IsCountdownActive,
+		})
+	elseif Action.type == "MenuLayoutOrder" then
+		return Llama.Dictionary.extend(State, {
+			MenuLayoutOrder = Action.MenuLayoutOrder,
 		})
 	elseif Action.type == "ResetAll" then
 		return DEFAULT_STATE

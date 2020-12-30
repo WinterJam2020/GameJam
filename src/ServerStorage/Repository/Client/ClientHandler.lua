@@ -58,6 +58,9 @@ local CLIENT_EVENTS = {
 		self.Store:dispatch({
 			type = "MenuVisible",
 			IsMenuVisible = true,
+		}):dispatch({
+			type = "MenuLayoutOrder",
+			MenuLayoutOrder = 0,
 		})
 	end;
 
