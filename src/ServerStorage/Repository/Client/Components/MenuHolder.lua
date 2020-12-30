@@ -11,10 +11,6 @@ function MenuHolder:init(props)
 	})
 end
 
-function MenuHolder:didMount()
-	print("DID FUCKING MOUNT")
-end
-
 function MenuHolder:render()
 	return Roact.createElement("Frame", {
 		Size = UDim2.fromScale(1, 1),
