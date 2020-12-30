@@ -1,5 +1,10 @@
 --!nocheck
 
+--[[
+	superceded by CharacterControllerClass but not sure if I'll need
+	this since I changed some of the math and didn't test it on the new one
+]]
+
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
