@@ -68,4 +68,20 @@ function ClientHandler:Unmount()
 	return self
 end
 
+function ClientHandler:Spawn()
+	
+end
+
+function ClientHandler:Despawn()
+
+end
+
+function ClientHandler:StartSkiing()
+
+end
+
+function ClientHandler:StopSkiing()
+
+end
+
 return ClientHandler
