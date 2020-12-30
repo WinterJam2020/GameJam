@@ -169,46 +169,46 @@ function ClientHandler:Mount()
 	assert(self.CanMount.Value, "Cannot mount!")
 	self.RoactTree = Roact.mount(self.App, self.MainGui, "SkiUi")
 
-	-- TODO: Comment this out
-	Promise.Delay(2):Then(function()
-		print("time to show")
-		self.Store:dispatch({
-			type = "MenuVisible",
-			IsMenuVisible = false,
-		}):dispatch({
-			type = "LeaderboardVisible",
-			IsLeaderboardVisible = true,
-		}):dispatch({
-			type = "LeaderboardEntries",
-			LeaderboardEntries = {
-				{
-					Time = 150,
-					Username = "pobammer",
-				},
-				{
-					Time = 151,
-					Username = "e_yv",
-				},
-				{
-					Time = 149,
-					Username = "movsb",
-				},
-			},
-		})
+	-- -- TODO: Comment this out
+	-- Promise.Delay(2):Then(function()
+	-- 	print("time to show")
+	-- 	self.Store:dispatch({
+	-- 		type = "MenuVisible",
+	-- 		IsMenuVisible = false,
+	-- 	}):dispatch({
+	-- 		type = "LeaderboardVisible",
+	-- 		IsLeaderboardVisible = true,
+	-- 	}):dispatch({
+	-- 		type = "LeaderboardEntries",
+	-- 		LeaderboardEntries = {
+	-- 			{
+	-- 				Time = 150,
+	-- 				Username = "pobammer",
+	-- 			},
+	-- 			{
+	-- 				Time = 151,
+	-- 				Username = "e_yv",
+	-- 			},
+	-- 			{
+	-- 				Time = 149,
+	-- 				Username = "movsb",
+	-- 			},
+	-- 		},
+	-- 	})
 
-		Promise.Delay(1):Then(function()
-			self.Store:dispatch({
-				type = "LeaderboardEntries",
-				LeaderboardEntries = {},
-			}):dispatch({
-				type = "LeaderboardVisible",
-				IsLeaderboardVisible = false,
-			}):dispatch({
-				type = "MenuVisible",
-				IsMenuVisible = true,
-			})
-		end)
-	end)
+	-- 	Promise.Delay(1):Then(function()
+	-- 		self.Store:dispatch({
+	-- 			type = "LeaderboardEntries",
+	-- 			LeaderboardEntries = {},
+	-- 		}):dispatch({
+	-- 			type = "LeaderboardVisible",
+	-- 			IsLeaderboardVisible = false,
+	-- 		}):dispatch({
+	-- 			type = "MenuVisible",
+	-- 			IsMenuVisible = true,
+	-- 		})
+	-- 	end)
+	-- end)
 
 	return self
 end
