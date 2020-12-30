@@ -58,13 +58,9 @@ function ServerHandler:Initialize()
 	end
 
 	self.SkiChain, self.SkiChainCFrames = self.SkiPathGenerator:Generate()
-	Promise.Delay(5):Then(function()
-		self.SkiPathGenerator:Clear()
-		self.SkiPathGenerator:Generate()
-		function self.SkiPathRemote.OnServerInvoke()
-			return self.SkiChainCFrames
-		end
-	end)
+	function self.SkiPathRemote.OnServerInvoke()
+		return self.SkiChainCFrames
+	end
 
 	Players.PlayerRemoving:Connect(function(Player: Player)
 		if self.PlayerData[Player] then
