@@ -2,6 +2,14 @@
 	"name": "project",
 	"tree": {
 		"$className": "DataModel",
+		"Players": {
+			"$className": "Players",
+			"$ignoreUnknownInstances": true,
+			"$properties": {
+				"CharacterAutoLoads": false
+			}
+		},
+
 		"ReplicatedStorage": {
 			"$className": "ReplicatedStorage",
 			"$ignoreUnknownInstances": true,
