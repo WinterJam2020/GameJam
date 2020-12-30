@@ -1,9 +1,11 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
 local Resources = require(ReplicatedStorage.Resources)
 local CatchFactory = Resources:LoadLibrary("CatchFactory")
 local ClientReducer = Resources:LoadLibrary("ClientReducer")
 local Constants = Resources:LoadLibrary("Constants")
+local Janitor = Resources:LoadLibrary("Janitor")
 local MainMenu = Resources:LoadLibrary("MainMenu")
 local ParticleEngine = Resources:LoadLibrary("ParticleEngine")
 local Promise = Resources:LoadLibrary("Promise")
@@ -13,6 +15,8 @@ local RoactRodux = Resources:LoadLibrary("RoactRodux")
 local Rodux = Resources:LoadLibrary("Rodux")
 local Services = Resources:LoadLibrary("Services")
 local ValueObject = Resources:LoadLibrary("ValueObject")
+
+local CharacterControllerClass = Resources:LoadClient("CharacterControllerClass")
 
 local GameEvent = Resources:GetRemoteEvent("GameEvent")
 
@@ -26,6 +30,8 @@ local ClientHandler = {
 	RoactTree = nil;
 	Store = nil;
 	TimeSyncService = nil;
+	CharacterController = nil;
+	CharacterJanitor = nil;
 }
 
 local CLIENT_EVENTS = {
@@ -103,6 +109,7 @@ function ClientHandler:Initialize()
 	self.CanMount = ValueObject.new(false)
 	self.LocalPlayer = Services.Players.LocalPlayer
 	self.TimeSyncService = Resources:LoadLibrary("TimeSyncService"):Initialize()
+	self.CharacterJanitor = Janitor.new()
 
 	PromiseChild(self.LocalPlayer, "PlayerGui", 5):Then(function(PlayerGui: PlayerGui)
 		PromiseChild(PlayerGui, "MainGui", 60):Then(function(MainGui: ScreenGui)
@@ -121,7 +128,7 @@ function ClientHandler:Initialize()
 			})
 
 			self.CanMount.Value = true
-			Resources:LoadClient("CharacterController")
+			-- Resources:LoadClient("CharacterController")
 			self.GameEvent.OnClientEvent:Connect(function(FunctionCall, ...)
 				local Function = CLIENT_EVENTS[FunctionCall]
 				if Function then
@@ -194,20 +201,29 @@ function ClientHandler:Unmount()
 	return self
 end
 
-function ClientHandler:Spawn()
-	
+function ClientHandler:Spawn(skiChain)
+	if self.CharacterController then
+		self.CharacterController:Destroy()
+	end
+	self.CharacterController = CharacterControllerClass.new(skiChain)
 end
 
 function ClientHandler:Despawn()
-
+	if self.CharacterController then
+		self.CharacterController:Destroy()
+	end
+	self.CharacterController = nil
 end
 
 function ClientHandler:StartSkiing()
-
+	local characterController = self.CharacterController
+	self.CharacterJanitor:Add(RunService.Heartbeat:Connect(function(deltaTime)
+		characterController:Step(deltaTime)
+	end))
 end
 
 function ClientHandler:StopSkiing()
-
+	self.CharacterJanitor:Cleanup()
 end
 
 return ClientHandler
