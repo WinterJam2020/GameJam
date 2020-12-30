@@ -57,67 +57,126 @@ local function CFrameUpAt(pos, up, look)
 	return CFrame.fromMatrix(pos, right, up, -lookProjected)
 end
 
-coroutine.wrap(function()
-	while true do
-		local dt = RunService.Heartbeat:Wait()
-		dt *= 0.4
+RunService.Heartbeat:Connect(function(deltaTime)
+	local dt = deltaTime * 0.4
+	-- step velocity and position
+	local groundLook = GroundCFrame.LookVector
+	local gravityForce = Vector3.new(0, -GRAVITY, 0)
+	local gravityForceParallel = gravityForce:Dot(groundLook) * groundLook
+	local velocity = Velocity + gravityForceParallel * dt
+	Velocity = velocity:Dot(groundLook) * groundLook
+	local newPosition = GroundCFrame.Position + Velocity * dt
 
-		-- step velocity and position
-		local groundLook = GroundCFrame.LookVector
-		local gravityForce = Vector3.new(0, -GRAVITY, 0)
-		local gravityForceParallel = gravityForce:Dot(groundLook) * groundLook
-		local velocity = Velocity + gravityForceParallel * dt
-		Velocity = velocity:Dot(groundLook) * groundLook
-		local newPosition = GroundCFrame.Position + Velocity * dt
-
-		-- get closest point on spline
-		local isMovingForward = Velocity:Dot(SplineCFrame.LookVector) > 0
-		local alpha = SkiChainAlpha
-		for power = 3, 6 do
-			local alphaIncrement = isMovingForward and 10 ^ -power or -10 ^ -power
-			local increments = 0
-			local distanceToSpline = (SkiChain:GetPosition(alpha) - newPosition).Magnitude
-			while increments < 20 do
-				local nextAlpha = alpha + alphaIncrement
-				if nextAlpha < 0 or nextAlpha > 1 then
-					break
-				end
-				local nextDistanceToSpline = (SkiChain:GetPosition(nextAlpha) - newPosition).Magnitude
-				--Arrow("checking " .. power, newPosition, SkiChain:GetPosition(nextAlpha), Color3.fromHSV(power / 6, 1, 1))
-				if nextDistanceToSpline > distanceToSpline then
-					break
-				end
-				increments += 1
-				alpha = nextAlpha
-				distanceToSpline = nextDistanceToSpline
+	-- get closest point on spline
+	local isMovingForward = Velocity:Dot(SplineCFrame.LookVector) > 0
+	local alpha = SkiChainAlpha
+	for power = 3, 6 do
+		local alphaIncrement = isMovingForward and 10 ^ -power or -10 ^ -power
+		local increments = 0
+		local distanceToSpline = (SkiChain:GetPosition(alpha) - newPosition).Magnitude
+		while increments < 20 do
+			local nextAlpha = alpha + alphaIncrement
+			if nextAlpha < 0 or nextAlpha > 1 then
+				break
 			end
+			local nextDistanceToSpline = (SkiChain:GetPosition(nextAlpha) - newPosition).Magnitude
+			--Arrow("checking " .. power, newPosition, SkiChain:GetPosition(nextAlpha), Color3.fromHSV(power / 6, 1, 1))
+			if nextDistanceToSpline > distanceToSpline then
+				break
+			end
+			increments += 1
+			alpha = nextAlpha
+			distanceToSpline = nextDistanceToSpline
 		end
-
-		-- move character
-		SkiChainAlpha = alpha
-		SplineCFrame = SkiChain:GetRotCFrame(SkiChainAlpha)
-		local newPositionOnSpline = newPosition
-			- (newPosition - SplineCFrame.Position):Dot(SplineCFrame.UpVector)
-			* SplineCFrame.UpVector
-		local distanceToSplineOnSpline = (newPositionOnSpline - SplineCFrame.Position).Magnitude
-		distanceToSplineOnSpline = math.clamp(distanceToSplineOnSpline, 0, 50)
-		local isOnRightSideOfSpline = (newPosition - SplineCFrame.Position).Unit:Dot(SplineCFrame.RightVector) > 0
-		if not isOnRightSideOfSpline then
-			distanceToSplineOnSpline *= -1
-		end
-
-		MouseX = 2 * Mouse.X / Mouse.ViewSizeX - 1
-		GroundCFrame = CFrameUpAt(
-			SplineCFrame.Position + SplineCFrame.RightVector * distanceToSplineOnSpline,
-			SplineCFrame.UpVector,
-			GroundCFrame.LookVector
-		) * CFrame.Angles(0, MouseX * -math.rad(MAX_CARVE_ANGLE) / 10, 0)
-		RootPart.CFrame = GroundCFrame + GroundCFrame.UpVector * ROOT_PART_HEIGHT
-
-		--local cameraCFrame = SkiChain:GetRotCFrame(math.clamp(SkiChainAlpha - 0.002, 0, 1))
-		--Camera.CFrame = cameraCFrame + cameraCFrame.UpVector * ROOT_PART_HEIGHT * 2
-		Camera.CFrame = RootPart.CFrame + RootPart.CFrame.LookVector * -10
 	end
-end)()
+
+	-- move character
+	SkiChainAlpha = alpha
+	SplineCFrame = SkiChain:GetRotCFrame(SkiChainAlpha)
+	local newPositionOnSpline = newPosition
+		- (newPosition - SplineCFrame.Position):Dot(SplineCFrame.UpVector)
+		* SplineCFrame.UpVector
+	local distanceToSplineOnSpline = (newPositionOnSpline - SplineCFrame.Position).Magnitude
+	distanceToSplineOnSpline = math.clamp(distanceToSplineOnSpline, 0, 50)
+	local isOnRightSideOfSpline = (newPosition - SplineCFrame.Position).Unit:Dot(SplineCFrame.RightVector) > 0
+	if not isOnRightSideOfSpline then
+		distanceToSplineOnSpline *= -1
+	end
+
+	MouseX = 2 * Mouse.X / Mouse.ViewSizeX - 1
+	GroundCFrame = CFrameUpAt(
+		SplineCFrame.Position + SplineCFrame.RightVector * distanceToSplineOnSpline,
+		SplineCFrame.UpVector,
+		GroundCFrame.LookVector
+	) * CFrame.Angles(0, MouseX * -math.rad(MAX_CARVE_ANGLE) / 10, 0)
+	RootPart.CFrame = GroundCFrame + GroundCFrame.UpVector * ROOT_PART_HEIGHT
+
+	--local cameraCFrame = SkiChain:GetRotCFrame(math.clamp(SkiChainAlpha - 0.002, 0, 1))
+	--Camera.CFrame = cameraCFrame + cameraCFrame.UpVector * ROOT_PART_HEIGHT * 2
+	Camera.CFrame = RootPart.CFrame + RootPart.CFrame.LookVector * -10
+end)
+
+-- coroutine.wrap(function()
+-- 	while true do
+-- 		local dt = RunService.Heartbeat:Wait()
+-- 		dt *= 0.4
+
+-- 		-- step velocity and position
+-- 		local groundLook = GroundCFrame.LookVector
+-- 		local gravityForce = Vector3.new(0, -GRAVITY, 0)
+-- 		local gravityForceParallel = gravityForce:Dot(groundLook) * groundLook
+-- 		local velocity = Velocity + gravityForceParallel * dt
+-- 		Velocity = velocity:Dot(groundLook) * groundLook
+-- 		local newPosition = GroundCFrame.Position + Velocity * dt
+
+-- 		-- get closest point on spline
+-- 		local isMovingForward = Velocity:Dot(SplineCFrame.LookVector) > 0
+-- 		local alpha = SkiChainAlpha
+-- 		for power = 3, 6 do
+-- 			local alphaIncrement = isMovingForward and 10 ^ -power or -10 ^ -power
+-- 			local increments = 0
+-- 			local distanceToSpline = (SkiChain:GetPosition(alpha) - newPosition).Magnitude
+-- 			while increments < 20 do
+-- 				local nextAlpha = alpha + alphaIncrement
+-- 				if nextAlpha < 0 or nextAlpha > 1 then
+-- 					break
+-- 				end
+-- 				local nextDistanceToSpline = (SkiChain:GetPosition(nextAlpha) - newPosition).Magnitude
+-- 				--Arrow("checking " .. power, newPosition, SkiChain:GetPosition(nextAlpha), Color3.fromHSV(power / 6, 1, 1))
+-- 				if nextDistanceToSpline > distanceToSpline then
+-- 					break
+-- 				end
+-- 				increments += 1
+-- 				alpha = nextAlpha
+-- 				distanceToSpline = nextDistanceToSpline
+-- 			end
+-- 		end
+
+-- 		-- move character
+-- 		SkiChainAlpha = alpha
+-- 		SplineCFrame = SkiChain:GetRotCFrame(SkiChainAlpha)
+-- 		local newPositionOnSpline = newPosition
+-- 			- (newPosition - SplineCFrame.Position):Dot(SplineCFrame.UpVector)
+-- 			* SplineCFrame.UpVector
+-- 		local distanceToSplineOnSpline = (newPositionOnSpline - SplineCFrame.Position).Magnitude
+-- 		distanceToSplineOnSpline = math.clamp(distanceToSplineOnSpline, 0, 50)
+-- 		local isOnRightSideOfSpline = (newPosition - SplineCFrame.Position).Unit:Dot(SplineCFrame.RightVector) > 0
+-- 		if not isOnRightSideOfSpline then
+-- 			distanceToSplineOnSpline *= -1
+-- 		end
+
+-- 		MouseX = 2 * Mouse.X / Mouse.ViewSizeX - 1
+-- 		GroundCFrame = CFrameUpAt(
+-- 			SplineCFrame.Position + SplineCFrame.RightVector * distanceToSplineOnSpline,
+-- 			SplineCFrame.UpVector,
+-- 			GroundCFrame.LookVector
+-- 		) * CFrame.Angles(0, MouseX * -math.rad(MAX_CARVE_ANGLE) / 10, 0)
+-- 		RootPart.CFrame = GroundCFrame + GroundCFrame.UpVector * ROOT_PART_HEIGHT
+
+-- 		--local cameraCFrame = SkiChain:GetRotCFrame(math.clamp(SkiChainAlpha - 0.002, 0, 1))
+-- 		--Camera.CFrame = cameraCFrame + cameraCFrame.UpVector * ROOT_PART_HEIGHT * 2
+-- 		Camera.CFrame = RootPart.CFrame + RootPart.CFrame.LookVector * -10
+-- 	end
+-- end)()
 
 return true
