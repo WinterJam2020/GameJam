@@ -55,12 +55,14 @@
 				- Example pic: https://cdn.discordapp.com/attachments/711758878995513364/783523673704628294/unknown.png
 --]]
 
+-- I was going to use behavior trees for the logic behind handling rounds but NO TIME!!!!!!
 
 local CollectionService = game:GetService("CollectionService")
 local RunService = game:GetService("RunService")
 local IsStudio = RunService:IsRunning() and RunService:IsStudio()
 
 local BehaviorTree = {
+	ClassName = "BehaviorTree";
 	SharedBlackboards = {}; -- Dictionary for shared blackboards using the blackboard's string index as key
 }
 
