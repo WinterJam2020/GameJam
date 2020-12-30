@@ -122,11 +122,24 @@ function CharacterController:Step(deltaTime)
 	local skiChainCFrame = skiChain:GetRotCFrame(alpha)
 	local skiChainPosition = skiChainCFrame.Position
 	local skiChainUp = skiChainCFrame.UpVector
-	newPosition += skiChainUp * (newPosition - skiChainPosition):Dot(-skiChainUp) -- project onto spline
-	local splineToProjectedPosition = newPosition - skiChainPosition
-	newPosition = skiChainPosition
-		+ splineToProjectedPosition.Unit
-		* math.min(splineToProjectedPosition.Magnitude, TERRAIN_WIDTH / 2) -- limit to terrain width
+	-- newPosition -= skiChainUp * (newPosition - skiChainPosition):Dot(skiChainUp) -- project onto spline
+	-- local splineToProjectedPosition = newPosition - skiChainPosition
+	-- newPosition = skiChainPosition
+	-- 	+ splineToProjectedPosition.Unit
+	-- 	* math.min(splineToProjectedPosition.Magnitude, TERRAIN_WIDTH / 2) -- limit to terrain width
+
+	local newPositionOnSpline = newPosition
+		- (newPosition - skiChainPosition):Dot(skiChainUp)
+		* skiChainUp
+	local distanceToSplineOnSpline = (newPositionOnSpline - skiChainPosition).Magnitude
+	distanceToSplineOnSpline = math.clamp(distanceToSplineOnSpline, 0, TERRAIN_WIDTH / 2)
+	local isOnRightSideOfSpline = (newPosition - skiChainPosition).Unit:Dot(skiChainCFrame.RightVector) > 0
+	if not isOnRightSideOfSpline then
+		distanceToSplineOnSpline *= -1
+	end
+	newPosition = skiChainPosition + skiChainCFrame.RightVector * distanceToSplineOnSpline
+
+	
 	local mouseX = 2 * Mouse.X / Mouse.ViewSizeX - 1 -- [-1, 1]
 	local newRootCFrame = CFrameUpAt(newPosition, skiChainUp, rootLook)
 		* CFrame.Angles(0, mouseX * -math.rad(MAX_CARVE_ANGLE) / 10, 0)
