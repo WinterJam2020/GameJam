@@ -92,7 +92,7 @@ function Postie.PromiseInvokeClient(Player: Player, Id: string, Timeout: number,
 			else
 				IsResumed = true
 				Table_FastRemove(Listeners, Position)
-				BindableEvent:Fire(true, ...)
+				BindableEvent:Fire(...)
 				return true
 			end
 		end

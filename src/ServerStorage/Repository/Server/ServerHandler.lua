@@ -4,7 +4,6 @@ local Resources = require(ReplicatedStorage.Resources)
 local CatchFactory = Resources:LoadLibrary("CatchFactory")
 local Constants = Resources:LoadLibrary("Constants")
 local Postie = Resources:LoadLibrary("Postie")
-local Promise = Resources:LoadLibrary("Promise")
 local Services = Resources:LoadLibrary("Services")
 local SyncedPoller = Resources:LoadLibrary("SyncedPoller")
 local ValueObject = Resources:LoadLibrary("ValueObject")
@@ -107,8 +106,12 @@ function ServerHandler:StartGameLoop()
 							CountdownPoller:Destroy()
 						else
 							for EnteredPlayer, _PlayerData in next, self.PlayerData do
-								local _, Alpha = Postie.InvokeClient(EnteredPlayer, "GetProgress", 1)
-								print(EnteredPlayer.Name, "-", Alpha)
+								Postie.PromiseInvokeClient(EnteredPlayer, "GetProgress", 1):Then(function(Alpha: number)
+									print("Alpha -", tostring(Alpha))
+									-- if Alpha then
+										-- print(EnteredPlayer.Name, "-", Alpha, "(" .. IsClose(Alpha, 1) .. ")")
+									-- end
+								end):Catch(CatchFactory("Postie.PromiseInvokeClient"))
 							end
 						end
 					end)
