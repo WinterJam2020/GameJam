@@ -1,11 +1,13 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 
 local Resources = require(ReplicatedStorage.Resources)
 local Constants = Resources:LoadLibrary("Constants")
 local Scheduler = Resources:LoadLibrary("Scheduler")
+local Services = Resources:LoadLibrary("Services")
 local TweenService = Resources:LoadLibrary("TweenService")
 local Typer = Resources:LoadLibrary("Typer")
+
+local RunService: RunService = Services.Services
 
 local TweenEvent = Resources:GetRemoteEvent("TweenEvent")
 

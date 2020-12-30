@@ -1,5 +1,4 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 
 local Resources = require(ReplicatedStorage.Resources)
 local CatchFactory = Resources:LoadLibrary("CatchFactory")
@@ -16,8 +15,9 @@ local RoactRodux = Resources:LoadLibrary("RoactRodux")
 local Rodux = Resources:LoadLibrary("Rodux")
 local Services = Resources:LoadLibrary("Services")
 local ValueObject = Resources:LoadLibrary("ValueObject")
-
 local CharacterControllerClass = Resources:LoadClient("CharacterControllerClass")
+
+local RunService: RunService = Services.RunService
 
 local GameEvent = Resources:GetRemoteEvent("GameEvent")
 
@@ -107,16 +107,18 @@ local CLIENT_EVENTS = {
 	[Constants.SPAWN_CHARACTER] = function(self, skiChain)
 		self:Spawn(skiChain)
 	end;
+
 	[Constants.DESPAWN_CHARACTER] = function(self)
 		self:Despawn()
 	end;
+
 	[Constants.START_SKIING] = function(self)
 		self:StartSkiing()
 	end;
+
 	[Constants.STOP_SKIING] = function(self)
 		self:StopSkiing()
 	end;
-	
 }
 
 function ClientHandler:Initialize()
@@ -227,20 +229,25 @@ function ClientHandler:Spawn(skiChain)
 	if self.CharacterController then
 		self.CharacterController:Destroy()
 	end
+
 	self.CharacterController = CharacterControllerClass.new(skiChain)
 end
+
 function ClientHandler:Despawn()
 	if self.CharacterController then
 		self.CharacterController:Destroy()
 	end
+
 	self.CharacterController = nil
 end
+
 function ClientHandler:StartSkiing()
 	local characterController = self.CharacterController
 	self.CharacterJanitor:Add(RunService.Heartbeat:Connect(function(deltaTime)
 		characterController:Step(deltaTime)
 	end))
 end
+
 function ClientHandler:StopSkiing()
 	self.CharacterJanitor:Cleanup()
 end

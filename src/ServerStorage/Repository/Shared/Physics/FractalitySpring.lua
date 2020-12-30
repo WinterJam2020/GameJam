@@ -19,7 +19,7 @@
 --     vector __sub(vector, vector)
 ------------------------------------------------------------------------
 
-local Spring = {}
+local Spring = {ClassName = "FractalitySpring"}
 Spring.__index = Spring
 
 local EPS = 1e-4

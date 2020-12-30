@@ -171,6 +171,7 @@ function Key.__index:Disconnect()
 		table.clear(Existing.Connections)
 		Existing.BindableEvent, Existing.Connections, Existing[1] = Existing.BindableEvent:Destroy(), nil, nil
 	end
+
 	self.Storage[self.KeyValue] = nil
 end
 

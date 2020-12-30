@@ -1,12 +1,14 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 
 local Resources = require(ReplicatedStorage.Resources)
 local EasingFunctions = Resources:LoadLibrary("EasingFunctions")
 local Enumeration = Resources:LoadLibrary("Enumerations")
 local Lerps = Resources:LoadLibrary("Lerps")
+local Services = Resources:LoadLibrary("Services")
 local Table = Resources:LoadLibrary("Table")
 local Typer = Resources:LoadLibrary("Typer")
+
+local RunService: RunService = Services.Services
 
 local Heartbeat = RunService.Heartbeat
 local RenderStepped = RunService.RenderStepped

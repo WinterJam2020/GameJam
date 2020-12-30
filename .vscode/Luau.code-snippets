@@ -53,6 +53,25 @@
 		],
 	},
 
+	"Roact Story": {
+		"prefix": ["roactstory", "story"],
+		"description": "Creates a new Roact story",
+		"body": [
+			"local ReplicatedStorage = game:GetService(\"ReplicatedStorage\")",
+			"local Resources = require(ReplicatedStorage.Resources)",
+			"local ${1:ComponentName} = require(script.Parent)",
+			"local Roact = Resources:LoadLibrary(\"Roact\")",
+			"",
+			"return function(Target)",
+			"\tlocal Tree = Roact.mount(Roact.createElement($1), Target, \"$1Story\")",
+			"",
+			"\treturn function()",
+			"\t\tRoact.unmount(Tree)",
+			"\tend",
+			"end",
+		],
+	},
+
 	"Module": {
 		"prefix": "module",
 		"description": "Creates a module.",

@@ -1,11 +1,13 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
 
 local Resources = require(ReplicatedStorage.Resources)
 local EasingFunctions = require(script.EasingFunctions)
 local Lerps = require(script.Lerps)
+local Services = Resources:LoadLibrary("Services")
 local t = Resources:LoadLibrary("t")
+
+local RunService: RunService = Services.RunService
+local TweenService: TweenService = Services.TweenService
 
 local DEFAULT_PRIORITY = 0
 local NEGATIVE_HUGE = -math.huge
@@ -194,13 +196,13 @@ end
 	Not useful for 99.99% of people. Made specifically for a different module.
 	@returns nothing useful
 **--]]
-function TweenApi.TweenCreate(Object, Time, _EasingStyle, _EasingDirection, Properties, Priority)
+function TweenApi.TweenCreate(Object, Time, EasingStyle, EasingDirection, Properties, Priority)
 	Priority = Priority or DEFAULT_PRIORITY
-	return coroutine.create(Interpolate), {Object, Properties, Time, (_EasingDirection or "Out") .. (_EasingStyle or "Linear"), Priority}
+	return coroutine.create(Interpolate), {Object, Properties, Time, (EasingDirection or "Out") .. (EasingStyle or "Linear"), Priority}
 end
 
-local __EasingStyles = {Linear = 0, Sine = 1, Back = 2, Quad = 3, Quart = 4, Quint = 5, Bounce = 6, Elastic = 7, Exponential = 8, Circular = 9, Cubic = 10}
-local __EasingDirections = {In = 0, Out = 1, InOut = 2}
+local EasingStyles = {Linear = 0, Sine = 1, Back = 2, Quad = 3, Quart = 4, Quint = 5, Bounce = 6, Elastic = 7, Exponential = 8, Circular = 9, Cubic = 10}
+local EasingDirections = {In = 0, Out = 1, InOut = 2}
 
 --[[**
 	The exact same as vanilla TweenService::GetValue.
@@ -211,8 +213,8 @@ local __EasingDirections = {In = 0, Out = 1, InOut = 2}
 **--]]
 function TweenApi.GetValue(Alpha, EasingStyle, EasingDirection)
 	assert(GetValueTuple(Alpha, EasingStyle, EasingDirection))
-	EasingStyle = type(EasingStyle) == "string" and __EasingStyles[EasingStyle] or EasingStyle
-	EasingDirection = type(EasingDirection) == "string" and __EasingDirections[EasingDirection] or EasingDirection
+	EasingStyle = type(EasingStyle) == "string" and EasingStyles[EasingStyle] or EasingStyle
+	EasingDirection = type(EasingDirection) == "string" and EasingDirections[EasingDirection] or EasingDirection
 	return TweenService:GetValue(Alpha, EasingStyle, EasingDirection)
 end
 
@@ -230,7 +232,7 @@ function TweenApi.RoTween(Object, Length, EasingStyle, EasingDirection, Properti
 
 	local Tween = TweenService:Create(
 		Object,
-		TweenInfo.new(Length, __EasingStyles[EasingStyle], __EasingDirections[EasingDirection]),
+		TweenInfo.new(Length, EasingStyles[EasingStyle], EasingDirections[EasingDirection]),
 		Properties
 	)
 
@@ -253,7 +255,7 @@ function TweenApi.RoTweenAsync(Object, Length, EasingStyle, EasingDirection, Pro
 
 	local Tween = TweenService:Create(
 		Object,
-		TweenInfo.new(Length, __EasingStyles[EasingStyle], __EasingDirections[EasingDirection]),
+		TweenInfo.new(Length, EasingStyles[EasingStyle], EasingDirections[EasingDirection]),
 		Properties
 	)
 

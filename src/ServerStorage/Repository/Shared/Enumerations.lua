@@ -10,6 +10,8 @@ Enumeration.SaveFailure = {"BeforeSaveError", "DataStoreFailure", "InvalidData"}
 Enumeration.BehaviorTreeStatus = {"Success", "Fail", "Running"}
 Enumeration.BlackboardQueryType = {"True", "False", "Nil", "NotNil"}
 
+Enumeration.CameraShakeState = {"FadingIn", "FadingOut", "Sustained", "Inactive"}
+
 Enumeration.NodeType = {
 	"Task";
 	"Blackboard";

@@ -6,15 +6,12 @@
 	cameraShakeInstance = CameraShakeInstance.new(magnitude, roughness, fadeInTime, fadeOutTime)
 --]]
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Resources = require(ReplicatedStorage.Resources)
+local Enumeration = Resources:LoadLibrary("Enumerations")
+
 local CameraShakeInstance = {ClassName = "CameraShakeInstance"}
 CameraShakeInstance.__index = CameraShakeInstance
-
-CameraShakeInstance.CameraShakeState = {
-	FadingIn = 0;
-	FadingOut = 1;
-	Sustained = 2;
-	Inactive = 3;
-}
 
 function CameraShakeInstance.new(magnitude, roughness, fadeInTime, fadeOutTime)
 	fadeInTime = fadeInTime or 0
@@ -128,13 +125,13 @@ end
 
 function CameraShakeInstance:GetState()
 	if self:IsFadingIn() then
-		return CameraShakeInstance.CameraShakeState.FadingIn
+		return Enumeration.CameraShakeState.FadingIn
 	elseif self:IsFadingOut() then
-		return CameraShakeInstance.CameraShakeState.FadingOut
+		return Enumeration.CameraShakeState.FadingOut
 	elseif self:IsShaking() then
-		return CameraShakeInstance.CameraShakeState.Sustained
+		return Enumeration.CameraShakeState.Sustained
 	else
-		return CameraShakeInstance.CameraShakeState.Inactive
+		return Enumeration.CameraShakeState.Inactive
 	end
 end
 

@@ -49,27 +49,27 @@
 --]]
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
-
 local Resources = require(ReplicatedStorage.Resources)
-local Table = Resources:LoadLibrary("Table")
-local FastRemove = Table.FastRemove
+local CameraShakeInstance = require(script.CameraShakeInstance)
+local Enumeration = Resources:LoadLibrary("Enumerations")
+local Services = Resources:LoadLibrary("Services")
 
-local CameraShaker = {ClassName = "CameraShaker"}
+local RunService: RunService = Services.RunService
+
+local CameraShaker = {
+	CameraShakeInstance = CameraShakeInstance;
+	ClassName = "CameraShaker";
+	Presets = require(script.CameraShakePresets);
+}
+
 CameraShaker.__index = CameraShaker
 
 local PROFILE_TAG = "CameraUpdateMovement"
 
 local v3Zero = Vector3.new()
 
-local CameraShakeInstance = require(script.CameraShakeInstance)
-local CameraShakeState = CameraShakeInstance.CameraShakeState
-
 local defaultPosInfluence = Vector3.new(0.15, 0.15, 0.15)
 local defaultRotInfluence = Vector3.new(1, 1, 1)
-
-CameraShaker.CameraShakeInstance = CameraShakeInstance
-CameraShaker.Presets = require(script.CameraShakePresets)
 
 function CameraShaker.new(renderPriority, callback)
 	assert(type(renderPriority) == "number", "RenderPriority must be a number (e.g.: Enum.RenderPriority.Camera.Value)")
@@ -117,10 +117,10 @@ function CameraShaker:Update(dt)
 	-- Update all instances:
 	for i, c in ipairs(instances) do
 		local state = c:GetState()
-		if state == CameraShakeState.Inactive and c.DeleteOnInactive then
+		if state == Enumeration.CameraShakeState.Inactive and c.DeleteOnInactive then
 			length += 1
 			self._removeInstances[length] = i
-		elseif state ~= CameraShakeState.Inactive then
+		elseif state ~= Enumeration.CameraShakeState.Inactive then
 			posAddShake += c:UpdateShake(dt) * c.PositionInfluence
 			rotAddShake += c:UpdateShake(dt) * c.RotationInfluence
 		end
@@ -129,7 +129,7 @@ function CameraShaker:Update(dt)
 	-- Remove dead instances:
 	for i = length, 1, -1 do
 		local instIndex = self._removeInstances[i]
-		FastRemove(instances, instIndex)
+		table.remove(instances, instIndex)
 		self._removeInstances[i] = nil
 	end
 

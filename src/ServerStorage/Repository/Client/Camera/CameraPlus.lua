@@ -1,13 +1,14 @@
-local Workspace = game:GetService("Workspace")
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Resources = require(ReplicatedStorage.Resources)
 local Enumeration = Resources:LoadLibrary("Enumerations")
 local Scheduler = Resources:LoadLibrary("Scheduler")
+local Services = Resources:LoadLibrary("Services")
 local Tween = Resources:LoadLibrary("Tween")
-
 Resources:LoadLibrary("EasingFunctions")
+
+local Workspace: Workspace = Services.Workspace
+local Players: Players = Services.Players
 
 local CurrentCamera = Workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
