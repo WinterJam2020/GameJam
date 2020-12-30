@@ -1,7 +1,13 @@
 --- General character utility code.
 -- @module CharacterUtils
 
-local Players = game:GetService("Players")
+-- local Players = game:GetService("Players")
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Resources = require(ReplicatedStorage.Resources)
+local Services = Resources:LoadLibrary("Services")
+
+local Players = Services.Players
 
 local CharacterUtils = {}
 

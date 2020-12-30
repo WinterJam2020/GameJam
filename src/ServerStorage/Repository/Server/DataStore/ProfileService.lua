@@ -487,7 +487,8 @@ local function StandardProfileUpdateAsyncDataStore(profile_store, profile_key, u
 
 				if type(latest_data) == "table" then
 					-- Case #1: Profile was loaded
-					if type(latest_data.Data) == "table" and
+					if
+						type(latest_data.Data) == "table" and
 						type(latest_data.Metadata) == "table" and
 						type(latest_data.GlobalUpdates) == "table"
 					then
@@ -498,7 +499,8 @@ local function StandardProfileUpdateAsyncDataStore(profile_store, profile_key, u
 						end
 
 						-- Case #2: Profile was not loaded but GlobalUpdate data exists
-					elseif latest_data.Data == nil and
+					elseif
+						latest_data.Data == nil and
 						latest_data.Metadata == nil and
 						type(latest_data.GlobalUpdates) == "table"
 					then

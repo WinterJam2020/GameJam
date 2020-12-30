@@ -77,7 +77,6 @@ HttpPromise.PromisePost = Typer.PromiseAssignSignature(
 
 		Headers = Headers or {}
 		HttpContentType = HttpContentType or Enum.HttpContentType.ApplicationJson
-		Compress = Compress == nil and false or Compress
 
 		if Compress then
 			return Promise.Defer(function(Resolve, Reject)
