@@ -104,8 +104,8 @@ local CLIENT_EVENTS = {
 		})
 	end;
 
-	[Constants.SPAWN_CHARACTER] = function(self, skiChain)
-		self:Spawn(skiChain)
+	[Constants.SPAWN_CHARACTER] = function(self, skiChainCFrames)
+		self:Spawn(skiChainCFrames)
 	end;
 
 	[Constants.DESPAWN_CHARACTER] = function(self)
@@ -225,12 +225,12 @@ function ClientHandler:Unmount()
 	return self
 end
 
-function ClientHandler:Spawn(skiChain)
+function ClientHandler:Spawn(skiChainCFrames)
 	if self.CharacterController then
 		self.CharacterController:Destroy()
 	end
 
-	self.CharacterController = CharacterControllerClass.new(skiChain)
+	self.CharacterController = CharacterControllerClass.new(skiChainCFrames)
 end
 
 function ClientHandler:Despawn()

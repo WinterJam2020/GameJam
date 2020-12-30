@@ -8,7 +8,7 @@ local Resources = require(ReplicatedStorage.Resources)
 local Constants = Resources:LoadShared("Constants")
 -- local Arrow = Resources:LoadShared("Arrow")
 local Janitor = Resources:LoadLibrary("Janitor")
-local Postie = Resources:LoadLibrary("Postie")
+local SplineModule = Resources:LoadLibrary("AstroSpline")
 
 local Player = Players.LocalPlayer
 local Mouse = Player:GetMouse()
@@ -39,7 +39,8 @@ end
 local CharacterController = {}
 CharacterController.__index = CharacterController
 
-function CharacterController.new(skiChain)
+function CharacterController.new(skiChainCFrames)
+	local skiChain = SplineModule.Chain.new(skiChainCFrames)
 	local startCFrame = skiChain:GetRotCFrame(0)
 	local rig = CharacterRig:Clone()
 	local root = rig.PrimaryPart
