@@ -61,8 +61,12 @@ Region functions:
 
 -- i think i hear astro screaming
 
-local Workspace = game:GetService("Workspace")
-local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Resources = require(ReplicatedStorage.Resources)
+local Services = Resources:LoadLibrary("Services")
+
+local Workspace: Workspace = Services.Workspace
+local Players: Players = Services.Players
 
 local function BoxPointCollision(CoordinateFrame, Size, Point)
 	local Relative = CoordinateFrame:PointToObjectSpace(Point)

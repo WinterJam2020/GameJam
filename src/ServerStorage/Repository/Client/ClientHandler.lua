@@ -1,10 +1,9 @@
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Resources = require(ReplicatedStorage.Resources)
-local Constants = Resources:LoadLibrary("Constants")
 local CatchFactory = Resources:LoadLibrary("CatchFactory")
 local ClientReducer = Resources:LoadLibrary("ClientReducer")
+local Constants = Resources:LoadLibrary("Constants")
 local MainMenu = Resources:LoadLibrary("MainMenu")
 local ParticleEngine = Resources:LoadLibrary("ParticleEngine")
 local Promise = Resources:LoadLibrary("Promise")
@@ -12,7 +11,9 @@ local PromiseChild = Resources:LoadLibrary("PromiseChild")
 local Roact = Resources:LoadLibrary("Roact")
 local RoactRodux = Resources:LoadLibrary("RoactRodux")
 local Rodux = Resources:LoadLibrary("Rodux")
+local Services = Resources:LoadLibrary("Services")
 local ValueObject = Resources:LoadLibrary("ValueObject")
+
 local GameEvent = Resources:GetRemoteEvent("GameEvent")
 
 local ClientHandler = {
@@ -100,7 +101,7 @@ local CLIENT_EVENTS = {
 function ClientHandler:Initialize()
 	self.GameEvent = GameEvent
 	self.CanMount = ValueObject.new(false)
-	self.LocalPlayer = Players.LocalPlayer
+	self.LocalPlayer = Services.Players.LocalPlayer
 	self.TimeSyncService = Resources:LoadLibrary("TimeSyncService"):Initialize()
 
 	PromiseChild(self.LocalPlayer, "PlayerGui", 5):Then(function(PlayerGui: PlayerGui)

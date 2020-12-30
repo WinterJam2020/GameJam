@@ -1,17 +1,18 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
-
 local Resources = require(ReplicatedStorage.Resources)
+
 local Constants = Resources:LoadLibrary("Constants")
--- local Debug = Resources:LoadLibrary("Debug")
 local Flipper = Resources:LoadLibrary("Flipper")
 local Janitor = Resources:LoadLibrary("Janitor")
 local Padding = Resources:LoadLibrary("Padding")
 local Promise = Resources:LoadLibrary("Promise")
 local Roact = Resources:LoadLibrary("Roact")
 local Scale = Resources:LoadLibrary("Scale")
+local Services = Resources:LoadLibrary("Services")
 local SwShButton = Resources:LoadLibrary("SwShButton")
 local ValueObject = Resources:LoadLibrary("ValueObject")
+
+local RunService: RunService = Services.RunService
 
 local GameEvent = Resources:GetRemoteEvent("GameEvent")
 

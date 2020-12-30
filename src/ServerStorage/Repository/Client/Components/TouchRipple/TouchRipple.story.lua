@@ -1,6 +1,4 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local TextService = game:GetService("TextService")
-
 local Resources = require(ReplicatedStorage.Resources)
 
 local Flipper = Resources:LoadLibrary("Flipper")
@@ -8,6 +6,9 @@ local FlipperBinding = Resources:LoadLibrary("FlipperBinding")
 local Roact = Resources:LoadLibrary("Roact")
 local SlicedImage = Resources:LoadLibrary("SlicedImage")
 local TouchRipple = require(script.Parent)
+local Services = Resources:LoadLibrary("Services")
+
+local TextService: TextService = Services.TextService
 
 local TextButton = Roact.Component:extend("TextButton")
 TextButton.defaultProps = {

@@ -2,8 +2,12 @@
 -- EgoMoose
 -- December 1, 2020
 
-local Workspace = game:GetService("Workspace")
-local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Resources = require(ReplicatedStorage.Resources)
+local Services = Resources:LoadLibrary("Services")
+
+local Workspace: Workspace = Services.Workspace
+local Players: Players = Services.Players
 
 local CreateGJK = require(script.CreateGJK)
 local Supports = require(script.Supports)

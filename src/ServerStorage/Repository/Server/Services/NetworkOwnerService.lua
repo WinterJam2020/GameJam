@@ -1,4 +1,5 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
 local Resources = require(ReplicatedStorage.Resources)
 local Debug = Resources:LoadLibrary("Debug")
 local Table = Resources:LoadLibrary("Table")

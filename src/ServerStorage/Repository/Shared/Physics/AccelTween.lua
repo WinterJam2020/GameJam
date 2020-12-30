@@ -35,14 +35,13 @@ API:
 ]]
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
-
 local Resources = require(ReplicatedStorage.Resources)
 local Debug = Resources:LoadLibrary("Debug")
+local Services = Resources:LoadLibrary("Services")
 local Table = Resources:LoadLibrary("Table")
 
 local AccelTween = {ClassName = "AccelTween"}
-local TimingFunction = RunService:IsRunning() and time or os.clock
+local TimingFunction = Services.RunService:IsRunning() and time or os.clock
 
 function AccelTween.new(MaxAcceleration)
 	return setmetatable({

@@ -1,9 +1,9 @@
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Resources = require(ReplicatedStorage.Resources)
 local Debug = Resources:LoadLibrary("Debug")
 local Promise = Resources:LoadLibrary("Promise")
+local Services = Resources:LoadLibrary("Services")
 local Typer = Resources:LoadLibrary("Typer")
 
 local Debug_Assert = Debug.Assert
@@ -36,7 +36,7 @@ end)
 
 FriendUtils.PromiseFriendPages = Typer.AssignSignature(Typer.Integer, function(UserId)
 	return Promise.Defer(function(Resolve, Reject)
-		local Success, Pages = pcall(Players.GetFriendsAsync, Players, UserId);
+		local Success, Pages = pcall(Services.Players.GetFriendsAsync, Services.Players, UserId);
 		if not Success then
 			Reject(Pages)
 		elseif not Pages then
@@ -84,8 +84,7 @@ function FriendUtils.PromiseStudioServiceUserId()
 	return Promise.new(function(Resolve, Reject)
 		local UserId
 		local Success, Error = pcall(function()
-			local StudioService = game:GetService("StudioService")
-			UserId = StudioService:GetUserId()
+			UserId = Services.StudioService:GetUserId()
 		end)
 
 		if not Success then
@@ -100,7 +99,7 @@ end
 
 function FriendUtils.PromiseCurrentStudioUserId()
 	return FriendUtils.PromiseStudioServiceUserId():Catch(function()
-		local Player = Players:FindFirstChildOfClass("Player")
+		local Player = Services.Players:FindFirstChildOfClass("Player")
 		if Player then
 			return Player.UserId
 		end

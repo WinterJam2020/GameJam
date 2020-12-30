@@ -1,13 +1,14 @@
 -- EchoReaper
 -- Might use this instead, since Quenty's has no docs.
 
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local CollectionService = game:GetService("CollectionService")
-local RunService = game:GetService("RunService")
-
 local Resources = require(ReplicatedStorage.Resources)
+local Services = Resources:LoadLibrary("Services")
 local Typer = Resources:LoadLibrary("Typer")
+
+local Players: Players = Services.Players
+local CollectionService: CollectionService = Services.CollectionService
+local RunService: RunService = Services.RunService
 
 local RagdollHandler = {}
 

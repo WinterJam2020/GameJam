@@ -1,6 +1,6 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Resources = require(ReplicatedStorage.Resources)
 
+local Resources = require(ReplicatedStorage.Resources)
 local CatchFactory = Resources:LoadLibrary("CatchFactory")
 local FriendUtils = Resources:LoadLibrary("FriendUtils")
 local LeaderboardEntry = require(script.Parent)

@@ -1,5 +1,4 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 
 local Resources = require(ReplicatedStorage.Resources)
 local Flipper = Resources:LoadLibrary("Flipper")
@@ -7,6 +6,9 @@ local RadialProgress = Resources:LoadLibrary("RadialProgress")
 local Roact = Resources:LoadLibrary("Roact")
 local RoactFlipper = Resources:LoadLibrary("RoactFlipper")
 local RoundedRectangle = Resources:LoadLibrary("RoundedRectangle")
+local Services = Resources:LoadLibrary("Services")
+
+local RunService: RunService = Services.RunService
 
 local Countdown = Roact.Component:extend("Countdown")
 Countdown.defaultProps = {

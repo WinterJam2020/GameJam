@@ -1,13 +1,14 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Resources = require(ReplicatedStorage.Resources)
 local Constants = Resources:LoadLibrary("Constants")
+local Services = Resources:LoadLibrary("Services")
 
 local PATH_WIDTH = Constants.SKI_PATH.PATH_WIDTH + 4
 local NUM_GATES = Constants.SKI_PATH.NUM_GATES
 
 local GatesContainer = Instance.new("Folder")
 GatesContainer.Name = "Gates"
-GatesContainer.Parent = workspace
+GatesContainer.Parent = Services.Workspace
 
 local Part = Instance.new("Part")
 Part.Anchored = true

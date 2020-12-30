@@ -1,9 +1,11 @@
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Resources = require(ReplicatedStorage.Resources)
 local Constants = Resources:LoadLibrary("Constants")
 local Debug = Resources:LoadLibrary("Debug")
+local Services = Resources:LoadLibrary("Services")
+
+local Players: Players = Services.Players
 
 local Debug_Assert = Debug.Assert
 local IProperties = Constants.TYPE_CHECKS.IParticleProperties

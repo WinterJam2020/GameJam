@@ -1,4 +1,6 @@
-local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Resources = require(ReplicatedStorage.Resources)
+local Services = Resources:LoadLibrary("Services")
 
 local Signal = require(script.Parent.Signal)
 local NoYield = require(script.Parent.NoYield)
@@ -7,7 +9,7 @@ local Store = {
 	-- This value is exposed as a private value so that the test code can stay in
 	-- sync with what event we listen to for dispatching the Changed event.
 	-- It may not be Heartbeat in the future.
-	_flushEvent = RunService.Heartbeat,
+	_flushEvent = Services.RunService.Heartbeat,
 }
 
 Store.__index = Store

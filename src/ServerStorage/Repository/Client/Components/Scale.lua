@@ -1,12 +1,14 @@
 -- CREDIT: https://devforum.roblox.com/t/what-is-a-good-method-to-properly-scaling-ui/218157/4?u=kampfkarren
 
-local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local GuiService = game:GetService("GuiService")
 
 local Resources = require(ReplicatedStorage.Resources)
 local Roact = Resources:LoadLibrary("Roact")
+local Services = Resources:LoadLibrary("Services")
 local t = Resources:LoadLibrary("t")
+
+local Workspace: Workspace = Services.Workspace
+local GuiService: GuiService = Services.GuiService
 
 local CurrentCamera = Workspace.CurrentCamera
 local TopInset, BottomInset = GuiService:GetGuiInset()

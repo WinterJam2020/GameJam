@@ -1,8 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
-
 local Resources = require(ReplicatedStorage.Resources)
 local FastSignal = Resources:LoadLibrary("FastSignal")
+local Services = Resources:LoadLibrary("Services")
 
 local noop = function() end
 
@@ -26,7 +25,7 @@ end
 
 function BaseMotor:Start()
 	if not self._connection then
-		self._connection = RunService.Heartbeat:Connect(function(deltaTime)
+		self._connection = Services.RunService.Heartbeat:Connect(function(deltaTime)
 			self:Step(deltaTime)
 		end)
 	end

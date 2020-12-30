@@ -1,9 +1,11 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local TextService = game:GetService("TextService")
 
 local Resources = require(ReplicatedStorage.Resources)
 local Roact = Resources:LoadLibrary("Roact")
+local Services = Resources:LoadLibrary("Services")
 local Table = Resources:LoadLibrary("Table")
+
+local TextService: TextService = Services.TextService
 
 local function PerfectTextLabel(props)
 	local newProps = Table.Copy(props)

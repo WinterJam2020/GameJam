@@ -1,10 +1,11 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Resources = require(ReplicatedStorage.Resources)
 local Constants = Resources:LoadShared("Constants").SKI_PATH
+local Services = Resources:LoadLibrary("Services")
 
 local Container = Instance.new("Model")
 Container.Name = "Markers"
-Container.Parent = workspace
+Container.Parent = Services.Workspace
 
 local Part = Instance.new("Part")
 Part.Anchored = true

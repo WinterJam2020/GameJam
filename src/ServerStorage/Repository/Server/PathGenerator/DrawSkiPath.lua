@@ -3,7 +3,11 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Resources = require(ReplicatedStorage.Resources)
 local Constants = Resources:LoadShared("Constants").SKI_PATH
 local DrawTriangle = Resources:LoadServer("DrawTriangle")
-local Terrain = workspace.Terrain
+local Services = Resources:LoadLibrary("Services")
+
+local Workspace: Workspace = Services.Workspace
+
+local Terrain = Workspace.Terrain
 local WIDTH = Constants.TERRAIN_WIDTH
 local WEDGE_DEPTH = Constants.WEDGE_DEPTH
 local DEBUG = Constants.DEBUG
@@ -12,7 +16,7 @@ local DebugContainer
 if DEBUG then
 	DebugContainer = Instance.new("Folder")
 	DebugContainer.Name = "SkiPathContainer"
-	DebugContainer.Parent = workspace
+	DebugContainer.Parent = Workspace
 end
 
 local function DrawTerrainWedge(cf0, cf1, size0, size1, debugColor)
@@ -52,8 +56,10 @@ local function DrawSkiPath(spline)
 				p.BrickColor = BrickColor.Black()
 				debugColor = BrickColor.Black()
 			end
+
 			p.Parent = DebugContainer
 		end
+
 		pathPoints[#pathPoints + 1] = {
 			CFrame = cf,
 			P0 = cf.Position + cf.RightVector * WIDTH/2,

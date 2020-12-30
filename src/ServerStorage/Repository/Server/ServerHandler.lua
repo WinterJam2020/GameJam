@@ -9,13 +9,13 @@ local ValueObject = Resources:LoadLibrary("ValueObject")
 
 local ServerHandler = {
 	Constants = nil;
-	ParticleEngine = nil;
-	TimeSyncService = nil;
-	PlayerDataHandler = nil;
 	GameEvent = nil;
-	GameLoop = nil;
 	GameInProgress = ValueObject.new(false);
+	GameLoop = nil;
+	ParticleEngine = nil;
 	PlayerData = {};
+	PlayerDataHandler = nil;
+	TimeSyncService = nil;
 }
 
 local SERVER_EVENTS = {
@@ -33,14 +33,14 @@ function ServerHandler:Initialize()
 	self.GameEvent = Resources:GetRemoteEvent("GameEvent")
 	self.GameFunction = Resources:GetRemoteFunction("GameFunction")
 
-	self.GameEvent.OnServerEvent:Connect(function(Player, FunctionCall, ...)
+	self.GameEvent.OnServerEvent:Connect(function(Player: Player, FunctionCall: number, ...)
 		local Function = SERVER_EVENTS[FunctionCall]
 		if Function then
 			Function(Player, ...)
 		end
 	end)
 
-	Players.PlayerRemoving:Connect(function(Player)
+	Players.PlayerRemoving:Connect(function(Player: Player)
 		if self.PlayerData[Player] then
 			self.PlayerData[Player] = nil
 		end
@@ -80,6 +80,7 @@ function ServerHandler:StartGameLoop()
 					-- once every player is finished, show leaderboard
 
 					-- give nice delay then reset
+					-- might do something like Promise.Delay(5):ThenCall(self.GameEvent.FireAllClients, self.GameEvent, Constants._____) or something
 				end
 			end
 		end)

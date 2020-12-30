@@ -1,8 +1,10 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local MarketplaceService = game:GetService("MarketplaceService")
 
 local Resources = require(ReplicatedStorage.Resources)
 local Promise = Resources:LoadLibrary("Promise")
+local Services = Resources:LoadLibrary("Services")
+
+local MarketplaceService: MarketplaceService = Services.MarketplaceService
 
 local MarketplacePromise = {}
 
