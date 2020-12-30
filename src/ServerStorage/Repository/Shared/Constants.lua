@@ -28,6 +28,11 @@ return Table.Lock({
 
 	RESET_UI = 17; -- GameEvent:FireAllClients(Constants.RESET_UI)
 
+	SPAWN_CHARACTER = 18;
+	DESPAWN_CHARACTER = 19;
+	START_SKIING = 20;
+	STOP_SKIING = 21;
+
 	CONFIGURATION = {
 		RAGDOLL_TAG_NAME = "PlayerRagdoll";
 
