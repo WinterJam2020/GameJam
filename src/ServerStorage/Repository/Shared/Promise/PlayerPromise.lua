@@ -1,9 +1,11 @@
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Resources = require(ReplicatedStorage.Resources)
 local Promise = Resources:LoadLibrary("Promise")
+local Services = Resources:LoadLibrary("Services")
 local Typer = Resources:LoadLibrary("Typer")
+
+local Players: Players = Services.Players
 
 local PlayerPromise = {}
 

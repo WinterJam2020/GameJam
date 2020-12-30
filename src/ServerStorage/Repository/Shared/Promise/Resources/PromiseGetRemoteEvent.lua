@@ -1,10 +1,9 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
-
 local Resources = require(ReplicatedStorage.Resources)
 local Promise = Resources:LoadLibrary("Promise")
+local Services = Resources:LoadLibrary("Services")
 
-if RunService:IsServer() then
+if Services.RunService:IsServer() then
 	return function(Name: string)
 		return Promise.Resolve(Resources:GetRemoteEvent(Name))
 	end

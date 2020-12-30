@@ -1,8 +1,9 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local CollectionService = game:GetService("CollectionService")
-
 local Resources = require(ReplicatedStorage.Resources)
+local Services = Resources:LoadLibrary("Services")
 local Typer = Resources:LoadLibrary("Typer")
+
+local CollectionService: CollectionService = Services.CollectionService
 
 local BuildConstraints = require(script.BuildConstraints)
 local BuildCollisionFilters = require(script.BuildCollisionFilters)

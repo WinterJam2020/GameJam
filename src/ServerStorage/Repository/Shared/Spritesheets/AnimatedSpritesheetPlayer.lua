@@ -1,10 +1,12 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 
 local Resources = require(ReplicatedStorage.Resources)
 local BaseObject = Resources:LoadLibrary("BaseObject")
 local Debug = Resources:LoadLibrary("Debug")
 local Janitor = Resources:LoadLibrary("Janitor")
+local Services = Resources:LoadLibrary("Services")
+
+local RunService: RunService = Services.RunService
 
 local Debug_Assert = Debug.Assert
 

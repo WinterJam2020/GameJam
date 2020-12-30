@@ -1,10 +1,12 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local GroupService = game:GetService("GroupService")
 
 local Resources = require(ReplicatedStorage.Resources)
 local CatchFactory = Resources:LoadLibrary("CatchFactory")
 local Constants = Resources:LoadLibrary("Constants")
 local Promise = Resources:LoadLibrary("Promise")
+local Services = Resources:LoadLibrary("Services")
+
+local GroupService: GroupService = Services.GroupService
 
 local GroupPromise = {}
 

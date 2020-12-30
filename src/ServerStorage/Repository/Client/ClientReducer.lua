@@ -3,10 +3,18 @@ local Resources = require(ReplicatedStorage.Resources)
 local Llama = Resources:LoadLibrary("Llama")
 
 local DEFAULT_STATE = {
+	CountdownActive = false,
+	CountdownDuration = 60,
+	CountdownVisible = false,
+	LeaderboardEntries = {},
+	LeaderboardVisible = false,
 	Loaded = false,
 	MenuVisible = true,
 	TimerVisible = false,
-	LeaderboardVisible = false,
+
+	CountdownFunction = function()
+		print("DESTROY")
+	end,
 }
 
 local function ClientReducer(State, Action)
@@ -26,6 +34,26 @@ local function ClientReducer(State, Action)
 	elseif Action.type == "LeaderboardVisible" then
 		return Llama.Dictionary.extend(State, {
 			LeaderboardVisible = Action.IsLeaderboardVisible,
+		})
+	elseif Action.type == "LeaderboardEntries" then
+		return Llama.Dictionary.extend(State, {
+			LeaderboardEntries = Action.LeaderboardEntries,
+		})
+	elseif Action.type == "CountdownVisible" then
+		return Llama.Dictionary.extend(State, {
+			CountdownVisible = Action.IsCountdownVisible,
+		})
+	elseif Action.type == "CountdownDuration" then
+		return Llama.Dictionary.extend(State, {
+			CountdownDuration = Action.CountdownDuration,
+		})
+	elseif Action.type == "CountdownFunction" then
+		return Llama.Dictionary.extend(State, {
+			CountdownFunction = Action.CountdownFunction,
+		})
+	elseif Action.type == "CountdownActive" then
+		return Llama.Dictionary.extend(State, {
+			CountdownActive = Action.IsCountdownActive,
 		})
 	elseif Action.type == "ResetAll" then
 		return DEFAULT_STATE

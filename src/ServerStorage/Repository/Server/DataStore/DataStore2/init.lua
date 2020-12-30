@@ -28,17 +28,19 @@
 --]]
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local ServerStorage = game:GetService("ServerStorage")
-local RunService = game:GetService("RunService")
 
 local Resources = require(ReplicatedStorage.Resources)
 local Enumeration = Resources:LoadLibrary("Enumerations")
 local IsPlayer = require(script.IsPlayer)
 local Promise = require(script.Promise)
 local SavingMethods = require(script.SavingMethods)
+local Services = Resources:LoadLibrary("Services")
 local Settings = require(script.Settings)
 local TableUtil = require(script.TableUtil)
 local Verifier = require(script.Verifier)
+
+local ServerStorage: ServerStorage = Services.ServerStorage
+local RunService: RunService = Services.RunService
 
 -- Enumeration.SaveFailure = {"BeforeSaveError", "DataStoreFailure", "InvalidData"}
 

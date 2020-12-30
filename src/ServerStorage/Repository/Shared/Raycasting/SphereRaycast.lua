@@ -1,4 +1,8 @@
-local Workspace = game:GetService("Workspace")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Resources = require(ReplicatedStorage.Resources)
+local Services = Resources:LoadLibrary("Services")
+
+local Workspace: Workspace = Services.Workspace
 
 local testinterval = 16
 local inf = math.huge

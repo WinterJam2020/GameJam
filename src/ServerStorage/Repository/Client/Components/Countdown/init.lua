@@ -1,5 +1,4 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 
 local Resources = require(ReplicatedStorage.Resources)
 local Flipper = Resources:LoadLibrary("Flipper")
@@ -7,17 +6,21 @@ local RadialProgress = Resources:LoadLibrary("RadialProgress")
 local Roact = Resources:LoadLibrary("Roact")
 local RoactFlipper = Resources:LoadLibrary("RoactFlipper")
 local RoundedRectangle = Resources:LoadLibrary("RoundedRectangle")
+local Services = Resources:LoadLibrary("Services")
+
+local RunService: RunService = Services.RunService
 
 local Countdown = Roact.Component:extend("Countdown")
 Countdown.defaultProps = {
-	Active = true,
+	Active = false,
 	Duration = 60,
 	GradientColor3 = Color3.fromRGB(201, 201, 201),
 	Size = UDim2.fromScale(0.25, 0.075),
 
-	UseGradientProgress = false,
+	UseGradientProgress = true,
 	ReverseProgress = true, -- true = right to left, false = left to right
 	Destroy = function()
+		print("destroy")
 	end,
 }
 
@@ -41,21 +44,23 @@ function Countdown:init(props)
 end
 
 function Countdown:didMount()
-	self.motor:SetGoal(Flipper.Spring.new(1, {
-		DampingRatio = 1.2,
-		Frequency = 6,
-	}))
+	if self.props.Active and not self.connection then
+		self.motor:SetGoal(Flipper.Spring.new(1, {
+			DampingRatio = 1.2,
+			Frequency = 6,
+		}))
 
-	local startTime = os.clock()
-	self.connection = RunService.Heartbeat:Connect(function()
-		local timeRemaining = self.activeTime - math.clamp(os.clock() - startTime, 0, self.activeTime)
-		if timeRemaining == 0 and self.props.Active then
-			self:Close()
-			self.connection = self.connection:Disconnect()
-		end
+		local startTime = os.clock()
+		self.connection = RunService.Heartbeat:Connect(function()
+			local timeRemaining = self.activeTime - math.clamp(os.clock() - startTime, 0, self.activeTime)
+			if timeRemaining == 0 and self.props.Active then
+				self:Close()
+				self.connection = self.connection:Disconnect()
+			end
 
-		self.setTimeRemaining(timeRemaining)
-	end)
+			self.setTimeRemaining(timeRemaining)
+		end)
+	end
 end
 
 function Countdown:Close()
@@ -71,6 +76,24 @@ function Countdown:Close()
 end
 
 function Countdown:didUpdate(lastProps)
+	if self.props.Active and not self.connection then
+		self.motor:SetGoal(Flipper.Spring.new(1, {
+			DampingRatio = 1.2,
+			Frequency = 6,
+		}))
+
+		local startTime = os.clock()
+		self.connection = RunService.Heartbeat:Connect(function()
+			local timeRemaining = self.activeTime - math.clamp(os.clock() - startTime, 0, self.activeTime)
+			if timeRemaining == 0 and self.props.Active then
+				self:Close()
+				self.connection = self.connection:Disconnect()
+			end
+
+			self.setTimeRemaining(timeRemaining)
+		end)
+	end
+
 	if self.props.Active ~= lastProps.Active and not self.props.Active then
 		self:Close()
 	end
@@ -82,7 +105,7 @@ function Countdown:willUnmount()
 	end
 end
 
-local Roact_createElement = Roact.craeteElement
+local Roact_createElement = Roact.createElement
 
 function Countdown:render()
 	local transparency = RoactFlipper.GetBinding(self.motor):map(function(value)
@@ -94,6 +117,7 @@ function Countdown:render()
 		BackgroundTransparency = 1,
 		Position = self.props.Position,
 		Size = self.props.Size,
+		Visible = self.props.Visible,
 	}, {
 		TimerFrame = Roact_createElement(RoundedRectangle, {
 			Radius = 18,
@@ -141,6 +165,7 @@ function Countdown:render()
 		BackgroundTransparency = 1,
 		Position = self.props.Position,
 		Size = self.props.Size,
+		Visible = self.props.Visible,
 	}, {
 		TimerFrame = Roact_createElement(RoundedRectangle, {
 			Radius = 18,

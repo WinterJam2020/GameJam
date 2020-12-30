@@ -1,23 +1,30 @@
 -- @author evaera
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Resources = require(ReplicatedStorage.Resources)
+local Services = Resources:LoadLibrary("Services")
+
+local Workspace: Workspace = Services.Workspace
+
 local function arrow(name, from, to, color, scale)
 	color = color or BrickColor.random().Color
 	scale = scale or 1
 
 	if typeof(from) == "Instance" then
+		local _: Instance = from
 		if from:IsA("BasePart") then
-
 			from = from.CFrame
 		elseif from:IsA("Attachment") then
 			from = from.WorldCFrame
 		end
 
 		if to ~= nil then
-			from = from.p
+			from = from.Position
 		end
 	end
 
 	if typeof(to) == "Instance" then
+		local _: Instance = to
 		if to:IsA("BasePart") then
 			to = to.Position
 		elseif to:IsA("Attachment") then
@@ -26,8 +33,8 @@ local function arrow(name, from, to, color, scale)
 	end
 
 	if typeof(from) == "CFrame" and to == nil then
-		local look = from.lookVector
-		to = from.p
+		local look = from.LookVector
+		to = from.Position
 		from = to + (look * -10)
 	end
 
@@ -38,16 +45,16 @@ local function arrow(name, from, to, color, scale)
 
 	assert(typeof(from) == "Vector3" and typeof(to) == "Vector3", "Passed parameters are of invalid types")
 
-	local container = workspace:FindFirstChild("Arrows") or Instance.new("Folder")
+	local container = Workspace:FindFirstChild("Arrows") or Instance.new("Folder")
 	container.Name = "Arrows"
-	container.Parent = workspace
+	container.Parent = Workspace
 
 	local shaft = container:FindFirstChild(name .. "_shaft") or Instance.new("CylinderHandleAdornment")
 
-	shaft.Height = (from - to).magnitude - 2
+	shaft.Height = (from - to).Magnitude - 2
 
 	shaft.CFrame = CFrame.lookAt(
-		((from + to)/2) - ((to - from).unit * 1),
+		((from + to)/2) - ((to - from).Unit * 1),
 		to
 	)
 
@@ -55,7 +62,7 @@ local function arrow(name, from, to, color, scale)
 		shaft.Name = name .. "_shaft"
 		shaft.Color3 = color
 		shaft.Radius = 0.15
-		shaft.Adornee = workspace.Terrain
+		shaft.Adornee = Workspace.Terrain
 		shaft.Transparency = 0
 		shaft.Radius = 0.15 * scale
 		shaft.Transparency = 0
@@ -72,7 +79,7 @@ local function arrow(name, from, to, color, scale)
 	if pointy.Parent == nil then
 		pointy.Name = name .. "_head"
 		pointy.Color3 = color
-		pointy.Radius = 0.5 * scale
+		pointy.Radius = scale / 2
 		pointy.Transparency = 0
 		pointy.Adornee = workspace.Terrain
 		pointy.Height = 2 * scale
@@ -85,7 +92,7 @@ local function arrow(name, from, to, color, scale)
 	pointy.Parent = container
 
 	if scale == 1 then
-		arrow(name .. "_backdrop", from, to, Color3.new(0, 0, 0), 2)
+		arrow(name .. "_backdrop", from, to, Color3.new(), 2)
 	end
 end
 

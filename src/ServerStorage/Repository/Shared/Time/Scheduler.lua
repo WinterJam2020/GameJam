@@ -3,7 +3,11 @@
 -- pobammer
 -- September 11, 2020
 
-local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Resources = require(ReplicatedStorage.Resources)
+local Services = Resources:LoadLibrary("Services")
+
+local RunService: RunService = Services.RunService
 local Heartbeat = RunService.Heartbeat
 local Scheduler = {}
 

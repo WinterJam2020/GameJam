@@ -1,5 +1,4 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
 local Resources = require(ReplicatedStorage.Resources)
 local ClientHandler = Resources:LoadLibrary("ClientHandler"):Initialize()
 

@@ -63,12 +63,6 @@ local function SnowFunction(Particle, _, CurrentTime)
 	end
 end
 
-local function GetVelocity(BasePart: BasePart)
-end
-
-local function CalculateReflectedNormal()
-end
-
 function ParticleEngineHelper.ReflectableSnowParticle(Position, ReflectedNormal)
 	ParticleEngine:Add {
 		Bloom = REFLECTABLE_BLOOM;

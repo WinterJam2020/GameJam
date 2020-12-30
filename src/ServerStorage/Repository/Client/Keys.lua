@@ -1,4 +1,7 @@
-local UserInputService = game:GetService("UserInputService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Resources = require(ReplicatedStorage.Resources)
+local Services = Resources:LoadLibrary("Services")
+local UserInputService: UserInputService = Services.UserInputService
 
 local DeclarationAmbiguous = {
 	Ctrl = "LeftControl";

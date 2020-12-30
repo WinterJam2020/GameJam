@@ -1,7 +1,4 @@
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local CollectionService = game:GetService("CollectionService")
-local RunService = game:GetService("RunService")
 
 local Resources = require(ReplicatedStorage.Resources)
 local CatchFactory = Resources:LoadLibrary("CatchFactory")
@@ -9,6 +6,11 @@ local DataStore2 = Resources:LoadLibrary("DataStore2")
 local GetTimeString = Resources:LoadLibrary("GetTimeString")
 local Promise = Resources:LoadLibrary("Promise")
 local PromiseChild = Resources:LoadLibrary("PromiseChild")
+local Services = Resources:LoadLibrary("Services")
+
+local Players: Players = Services.Players
+local CollectionService: CollectionService = Services.CollectionService
+local RunService: RunService = Services.RunService
 
 local PlayerDataHandler = {}
 

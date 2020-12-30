@@ -2,11 +2,13 @@
 -- @module HapticFeedbackUtils
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local HapticService = game:GetService("HapticService")
 
 local Resources = require(ReplicatedStorage.Resources)
 local Promise = Resources:LoadLibrary("Promise")
+local Services = Resources:LoadLibrary("Services")
 local Typer = Resources:LoadLibrary("Typer")
+
+local HapticService: HapticService = Services.HapticService
 
 local HapticFeedbackUtils = {}
 

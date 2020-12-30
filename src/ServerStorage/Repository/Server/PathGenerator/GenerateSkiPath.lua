@@ -14,6 +14,9 @@ local Constants = Resources:LoadShared("Constants").SKI_PATH
 -- local Arrow = Resources:LoadLibrary("Arrow")
 local SplineModule = Resources:LoadShared("AstroSpline")
 local DrawSkiPath = Resources:LoadServer("DrawSkiPath")
+local Services = Resources:LoadLibrary("Services")
+
+local Workspace: Workspace = Services.Workspace
 
 ---- Settings
 local DELTA = 0.2
@@ -144,7 +147,7 @@ return function()
 			part.CFrame = CFrame.new(v)
 			part.Size = Vector3.new(1, 1, 1)
 			part.Anchored = true
-			part.Parent = workspace
+			part.Parent = Workspace
 		end
 
 		for _, cf in ipairs(SkiPathCFrames) do
@@ -153,7 +156,7 @@ return function()
 			part.CFrame = cf
 			part.Size = Vector3.new(4, 4, 4)
 			part.Anchored = true
-			part.Parent = workspace
+			part.Parent = Workspace
 		end
 
 		local points = {}
@@ -165,7 +168,7 @@ return function()
 			part.CFrame = CFrame.new(point)
 			part.Size = Vector3.new(1, 1, 1) / 2
 			part.Anchored = true
-			part.Parent = workspace
+			part.Parent = Workspace
 
 			--local point1 = SkiPath.GetRotCFrameOnPath(i)
 			--local part1 = Instance.new("Part")
@@ -182,7 +185,7 @@ return function()
 			part2.CFrame = CFrame.new(point2)
 			part2.Size = Vector3.new(1, 1, 1) / 2
 			part2.Anchored = true
-			part2.Parent = workspace
+			part2.Parent = Workspace
 		end
 	end
 

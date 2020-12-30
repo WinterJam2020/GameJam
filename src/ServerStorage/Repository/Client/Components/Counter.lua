@@ -1,9 +1,11 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 
 local Resources = require(ReplicatedStorage.Resources)
 local EventConnection = Resources:LoadLibrary("EventConnection")
 local Roact = Resources:LoadLibrary("Roact")
+local Services = Resources:LoadLibrary("Services")
+
+local RunService: RunService = Services.RunService
 
 local Counter = Roact.Component:extend("Counter")
 

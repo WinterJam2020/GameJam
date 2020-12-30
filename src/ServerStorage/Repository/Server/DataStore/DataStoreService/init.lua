@@ -6,15 +6,18 @@
 	https://github.com/buildthomas/MockDataStoreService/blob/master/LICENSE
 ]]
 
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Resources = require(ReplicatedStorage.Resources)
+local Services = Resources:LoadLibrary("Services")
 local MockDataStoreServiceModule = script.MockDataStoreService
 
 local shouldUseMock = false
 if game.GameId == 0 then -- Local place file
 	shouldUseMock = true
-elseif game:GetService("RunService"):IsStudio() then -- Published file in Studio
+elseif Services.RunService:IsStudio() then -- Published file in Studio
 	local status, message = pcall(function()
 		-- This will error if current instance has no Studio API access:
-		game:GetService("DataStoreService"):GetDataStore("__TEST"):SetAsync("__TEST", "__TEST_" .. os.time())
+		Services.DataStoreService:GetDataStore("__TEST"):SetAsync("__TEST", "__TEST_" .. os.time())
 	end)
 	if not status and message:find("403", 1, true) then -- HACK
 		-- Can connect to datastores, but no API access
@@ -27,5 +30,5 @@ if shouldUseMock then
 	warn("INFO: Using MockDataStoreService instead of DataStoreService")
 	return require(MockDataStoreServiceModule)
 else
-	return game:GetService("DataStoreService")
+	return Services.DataStoreService
 end

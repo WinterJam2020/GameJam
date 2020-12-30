@@ -1,11 +1,13 @@
-local Workspace = game:GetService("Workspace")
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 
 local Resources = require(ReplicatedStorage.Resources)
 local Constants = Resources:LoadLibrary("Constants")
+local Services = Resources:LoadLibrary("Services")
 local ValueObject = Resources:LoadLibrary("ValueObject")
+
+local Workspace: Workspace = Services.Workspace
+local Players: Players = Services.Players
+local RunService: RunService = Services.RunService
 
 local IProperties = Constants.TYPE_CHECKS.IParticleProperties
 
