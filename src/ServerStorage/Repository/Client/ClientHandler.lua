@@ -61,6 +61,40 @@ local CLIENT_EVENTS = {
 			IsMenuVisible = false,
 		})
 	end;
+
+	[Constants.SHOW_COUNTDOWN] = function(self)
+		self.Store:dispatch({
+			type = "CountdownVisible",
+			IsCountdownVisible = true,
+		})
+	end;
+
+	[Constants.HIDE_COUNTDOWN] = function(self)
+		self.Store:dispatch({
+			type = "CountdownVisible",
+			IsCountdownVisible = false,
+		})
+	end;
+
+	[Constants.IS_COUNTDOWN_ACTIVE] = function(self, IsActive)
+		self.Store:dispatch({
+			type = "CountdownActive",
+			IsCountdownActive = IsActive,
+		})
+	end;
+
+	[Constants.SET_COUNTDOWN_DURATION] = function(self, Duration: number)
+		self.Store:dispatch({
+			type = "CountdownDuration",
+			CountdownDuration = Duration,
+		})
+	end;
+
+	[Constants.RESET_UI] = function(self)
+		self.Store:dispatch({
+			type = "ResetAll",
+		})
+	end;
 }
 
 function ClientHandler:Initialize()
@@ -101,8 +135,9 @@ end
 
 function ClientHandler:Mount()
 	assert(self.CanMount.Value, "Cannot mount!")
-	self.RoactTree = Roact.mount(self.App, self.MainGui, "MAIN")
+	self.RoactTree = Roact.mount(self.App, self.MainGui, "SkiUi")
 
+	-- TODO: Comment this out
 	Promise.Delay(2):Then(function()
 		print("time to show")
 		self.Store:dispatch({

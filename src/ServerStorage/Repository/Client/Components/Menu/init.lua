@@ -12,7 +12,6 @@ local Roact = Resources:LoadLibrary("Roact")
 local Scale = Resources:LoadLibrary("Scale")
 local SwShButton = Resources:LoadLibrary("SwShButton")
 local ValueObject = Resources:LoadLibrary("ValueObject")
-local RoactRodux = Resources:LoadLibrary("RoactRodux")
 
 local GameEvent = Resources:GetRemoteEvent("GameEvent")
 
@@ -21,7 +20,9 @@ Menu.defaultProps = {
 	Visible = true,
 }
 
-function Menu:init(props)
+local Roact_createElement = Roact.createElement
+
+function Menu:init()
 	self.janitor = Janitor.new()
 	self.pageRef = Roact.createRef()
 	self.motor = self.janitor:Add(Flipper.SingleMotor.new(0), "Destroy")
@@ -51,12 +52,12 @@ end
 local PADDING_SIZE = UDim2.fromScale(1, 0.025)
 
 function Menu:render()
-	return Roact.createElement("Frame", {
+	return Roact_createElement("Frame", {
 		BackgroundTransparency = 1,
 		Size = UDim2.fromScale(1, 1),
 		Visible = self.props.Visible,
 	}, {
-		UIPageLayout = Roact.createElement("UIPageLayout", {
+		UIPageLayout = Roact_createElement("UIPageLayout", {
 			Animated = true,
 			EasingDirection = Enum.EasingDirection.Out,
 			EasingStyle = Enum.EasingStyle.Cubic,
@@ -74,30 +75,30 @@ function Menu:render()
 			[Roact.Ref] = self.pageRef,
 		}),
 
-		MainFrame = Roact.createElement("Frame", {
+		MainFrame = Roact_createElement("Frame", {
 			BackgroundTransparency = 1,
 			Size = UDim2.fromScale(1, 1),
 			LayoutOrder = 0,
 		}, {
-			ContainerFrame = Roact.createElement("Frame", {
+			ContainerFrame = Roact_createElement("Frame", {
 				AnchorPoint = Vector2.new(0.5, 0.5),
 				Position = UDim2.fromScale(0.5, 0.5),
 				Size = UDim2.fromScale(1, 1),
 				BackgroundTransparency = 1,
 			}, {
-				UIScale = Roact.createElement(Scale, {
+				UIScale = Roact_createElement(Scale, {
 					Scale = 0.85,
 					Size = Vector2.new(850, 850),
 				}),
 
-				UIListLayout = Roact.createElement("UIListLayout", {
+				UIListLayout = Roact_createElement("UIListLayout", {
 					FillDirection = Enum.FillDirection.Vertical,
 					HorizontalAlignment = Enum.HorizontalAlignment.Center,
 					SortOrder = Enum.SortOrder.LayoutOrder,
 					VerticalAlignment = Enum.VerticalAlignment.Center,
 				}),
 
-				TitleLabel = Roact.createElement("TextLabel", {
+				TitleLabel = Roact_createElement("TextLabel", {
 					BackgroundTransparency = 1,
 					LayoutOrder = 0,
 					Size = UDim2.fromScale(1, 0.15),
@@ -108,12 +109,12 @@ function Menu:render()
 					TextStrokeTransparency = 0.85,
 				}),
 
-				Padding1 = Roact.createElement(Padding, {
+				Padding1 = Roact_createElement(Padding, {
 					LayoutOrder = 1,
 					Size = UDim2.fromScale(1, 0.05),
 				}),
 
-				PlayButton = Roact.createElement(SwShButton, {
+				PlayButton = Roact_createElement(SwShButton, {
 					Text = "Start Skiing",
 					LayoutOrder = 2,
 					-- HoveredColor3 = Color.Blue[500],
@@ -128,10 +129,6 @@ function Menu:render()
 								self.props.StartButtonFunction()
 							end
 
-							-- self:setState({
-							-- 	visible = false,
-							-- })
-
 							if RunService:IsRunning() then
 								GameEvent:FireServer(Constants.READY_PLAYER)
 							end
@@ -141,12 +138,12 @@ function Menu:render()
 					end,
 				}),
 
-				Padding3 = Roact.createElement(Padding, {
+				Padding3 = Roact_createElement(Padding, {
 					LayoutOrder = 3,
 					Size = PADDING_SIZE,
 				}),
 
-				StatsButton = Roact.createElement(SwShButton, {
+				StatsButton = Roact_createElement(SwShButton, {
 					Text = "Player Stats",
 					LayoutOrder = 4,
 					Size = UDim2.fromScale(0.5, 0.15),
@@ -155,12 +152,12 @@ function Menu:render()
 					end,
 				}),
 
-				Padding5 = Roact.createElement(Padding, {
+				Padding5 = Roact_createElement(Padding, {
 					LayoutOrder = 5,
 					Size = PADDING_SIZE,
 				}),
 
-				SettingsButton = Roact.createElement(SwShButton, {
+				SettingsButton = Roact_createElement(SwShButton, {
 					Text = "Settings",
 					LayoutOrder = 6,
 					Size = UDim2.fromScale(0.5, 0.15),
@@ -169,12 +166,12 @@ function Menu:render()
 					end,
 				}),
 
-				Padding7 = Roact.createElement(Padding, {
+				Padding7 = Roact_createElement(Padding, {
 					LayoutOrder = 7,
 					Size = PADDING_SIZE,
 				}),
 
-				CreditsButton = Roact.createElement(SwShButton, {
+				CreditsButton = Roact_createElement(SwShButton, {
 					Text = "Credits",
 					LayoutOrder = 8,
 					Size = UDim2.fromScale(0.5, 0.15),
@@ -185,36 +182,36 @@ function Menu:render()
 			}),
 		}),
 
-		PlayFrame = Roact.createElement("Frame", {
+		PlayFrame = Roact_createElement("Frame", {
 			BackgroundTransparency = 1,
 			Size = UDim2.fromScale(1, 1),
 			LayoutOrder = 1,
 		}),
 
-		StatsFrame = Roact.createElement("Frame", {
+		StatsFrame = Roact_createElement("Frame", {
 			BackgroundTransparency = 1,
 			Size = UDim2.fromScale(1, 1),
 			LayoutOrder = 2,
 		}, {
-			ContainerFrame = Roact.createElement("Frame", {
+			ContainerFrame = Roact_createElement("Frame", {
 				AnchorPoint = Vector2.new(0.5, 0.5),
 				Position = UDim2.fromScale(0.5, 0.5),
 				Size = UDim2.fromScale(1, 1),
 				BackgroundTransparency = 1,
 			}, {
-				UIScale = Roact.createElement(Scale, {
+				UIScale = Roact_createElement(Scale, {
 					Scale = 0.85,
 					Size = Vector2.new(850, 850),
 				}),
 
-				UIListLayout = Roact.createElement("UIListLayout", {
+				UIListLayout = Roact_createElement("UIListLayout", {
 					FillDirection = Enum.FillDirection.Vertical,
 					HorizontalAlignment = Enum.HorizontalAlignment.Center,
 					SortOrder = Enum.SortOrder.LayoutOrder,
 					VerticalAlignment = Enum.VerticalAlignment.Center,
 				}),
 
-				TitleLabel = Roact.createElement("TextLabel", {
+				TitleLabel = Roact_createElement("TextLabel", {
 					BackgroundTransparency = 1,
 					LayoutOrder = 0,
 					Size = UDim2.fromScale(1, 0.15),
@@ -225,12 +222,12 @@ function Menu:render()
 					TextStrokeTransparency = 0.85,
 				}),
 
-				Padding1 = Roact.createElement(Padding, {
+				Padding1 = Roact_createElement(Padding, {
 					LayoutOrder = 1,
 					Size = UDim2.fromScale(1, 0.05),
 				}),
 
-				BackButton = Roact.createElement(SwShButton, {
+				BackButton = Roact_createElement(SwShButton, {
 					Text = "Go Back",
 					LayoutOrder = 3,
 					Size = UDim2.fromScale(0.5, 0.15),
@@ -241,30 +238,30 @@ function Menu:render()
 			}),
 		}),
 
-		SettingsFrame = Roact.createElement("Frame", {
+		SettingsFrame = Roact_createElement("Frame", {
 			BackgroundTransparency = 1,
 			Size = UDim2.fromScale(1, 1),
 			LayoutOrder = 3,
 		}, {
-			ContainerFrame = Roact.createElement("Frame", {
+			ContainerFrame = Roact_createElement("Frame", {
 				AnchorPoint = Vector2.new(0.5, 0.5),
 				Position = UDim2.fromScale(0.5, 0.5),
 				Size = UDim2.fromScale(1, 1),
 				BackgroundTransparency = 1,
 			}, {
-				UIScale = Roact.createElement(Scale, {
+				UIScale = Roact_createElement(Scale, {
 					Scale = 0.85,
 					Size = Vector2.new(850, 850),
 				}),
 
-				UIListLayout = Roact.createElement("UIListLayout", {
+				UIListLayout = Roact_createElement("UIListLayout", {
 					FillDirection = Enum.FillDirection.Vertical,
 					HorizontalAlignment = Enum.HorizontalAlignment.Center,
 					SortOrder = Enum.SortOrder.LayoutOrder,
 					VerticalAlignment = Enum.VerticalAlignment.Center,
 				}),
 
-				TitleLabel = Roact.createElement("TextLabel", {
+				TitleLabel = Roact_createElement("TextLabel", {
 					BackgroundTransparency = 1,
 					LayoutOrder = 0,
 					Size = UDim2.fromScale(1, 0.15),
@@ -275,12 +272,12 @@ function Menu:render()
 					TextStrokeTransparency = 0.85,
 				}),
 
-				Padding1 = Roact.createElement(Padding, {
+				Padding1 = Roact_createElement(Padding, {
 					LayoutOrder = 1,
 					Size = UDim2.fromScale(1, 0.05),
 				}),
 
-				BackButton = Roact.createElement(SwShButton, {
+				BackButton = Roact_createElement(SwShButton, {
 					Text = "Go Back",
 					LayoutOrder = 3,
 					Size = UDim2.fromScale(0.5, 0.15),
@@ -291,30 +288,30 @@ function Menu:render()
 			}),
 		}),
 
-		CreditsFrame = Roact.createElement("Frame", {
+		CreditsFrame = Roact_createElement("Frame", {
 			BackgroundTransparency = 1,
 			Size = UDim2.fromScale(1, 1),
 			LayoutOrder = 4,
 		}, {
-			ContainerFrame = Roact.createElement("Frame", {
+			ContainerFrame = Roact_createElement("Frame", {
 				AnchorPoint = Vector2.new(0.5, 0.5),
 				Position = UDim2.fromScale(0.5, 0.5),
 				Size = UDim2.fromScale(1, 1),
 				BackgroundTransparency = 1,
 			}, {
-				UIScale = Roact.createElement(Scale, {
+				UIScale = Roact_createElement(Scale, {
 					Scale = 0.85,
 					Size = Vector2.new(850, 850),
 				}),
 
-				UIListLayout = Roact.createElement("UIListLayout", {
+				UIListLayout = Roact_createElement("UIListLayout", {
 					FillDirection = Enum.FillDirection.Vertical,
 					HorizontalAlignment = Enum.HorizontalAlignment.Center,
 					SortOrder = Enum.SortOrder.LayoutOrder,
 					VerticalAlignment = Enum.VerticalAlignment.Center,
 				}),
 
-				TitleLabel = Roact.createElement("TextLabel", {
+				TitleLabel = Roact_createElement("TextLabel", {
 					BackgroundTransparency = 1,
 					LayoutOrder = 0,
 					Size = UDim2.fromScale(1, 0.15),
@@ -325,12 +322,12 @@ function Menu:render()
 					TextStrokeTransparency = 0.85,
 				}),
 
-				Padding1 = Roact.createElement(Padding, {
+				Padding1 = Roact_createElement(Padding, {
 					LayoutOrder = 1,
 					Size = UDim2.fromScale(1, 0.05),
 				}),
 
-				BackButton = Roact.createElement(SwShButton, {
+				BackButton = Roact_createElement(SwShButton, {
 					Text = "Go Back",
 					LayoutOrder = 3,
 					Size = UDim2.fromScale(0.5, 0.15),

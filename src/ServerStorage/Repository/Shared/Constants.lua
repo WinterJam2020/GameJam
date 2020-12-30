@@ -12,14 +12,21 @@ return Table.Lock({
 	SPAWN_AT_TOP = 4;
 	REPLICATE_POSITION = 5;
 
-	DISPLAY_LEADERBOARD = 6;
-	HIDE_LEADERBOARD = 7;
-	SHOW_MENU = 8;
-	HIDE_MENU = 9;
+	READY_PLAYER = 6;
+	GET_SPLINE_ALPHA = 7;
 
-	READY_PLAYER = 10;
+	DISPLAY_LEADERBOARD = 8; -- GameEvent:FireAllClients(Constants.DISPLAY_LEADERBOARD)
+	HIDE_LEADERBOARD = 9; -- GameEvent:FireAllClients(Constants.HIDE_LEADERBOARD)
 
-	GET_SPLINE_ALPHA = 11;
+	SHOW_MENU = 10; -- GameEvent:FireAllClients(Constants.SHOW_MENU)
+	HIDE_MENU = 11; -- GameEvent:FireAllClients(Constants.HIDE_MENU)
+
+	SHOW_COUNTDOWN = 13; -- GameEvent:FireAllClients(Constants.SHOW_COUNTDOWN)
+	HIDE_COUNTDOWN = 14; -- GameEvent:FireAllClients(Constants.HIDE_COUNTDOWN)
+	IS_COUNTDOWN_ACTIVE = 15; -- GameEvent:FireAllClients(Constants.IS_COUNTDOWN_ACTIVE, bool Active)
+	SET_COUNTDOWN_DURATION = 16; -- GameEvent:FireAllClients(Constants.SET_COUNTDOWN_DURATION, int Length)
+
+	RESET_UI = 17; -- GameEvent:FireAllClients(Constants.RESET_UI)
 
 	CONFIGURATION = {
 		RAGDOLL_TAG_NAME = "PlayerRagdoll";
