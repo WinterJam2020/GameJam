@@ -188,7 +188,7 @@ function PathGenerator:Generate()
 			--part1.Anchored = true
 			--part1.Parent = workspace
 
-			local point2 = SkiPath:GetArcPosition(i)
+			local point2 = SkiChain:GetArcPosition(i)
 			table.insert(points, point2)
 			local part2 = Instance.new("Part")
 			part2.BrickColor = BrickColor.Green()
