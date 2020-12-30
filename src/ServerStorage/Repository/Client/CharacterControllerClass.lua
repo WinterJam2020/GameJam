@@ -9,6 +9,7 @@ local Constants = Resources:LoadShared("Constants")
 -- local Arrow = Resources:LoadShared("Arrow")
 local Janitor = Resources:LoadLibrary("Janitor")
 local SplineModule = Resources:LoadLibrary("AstroSpline")
+local ClientHandler = Resources:LoadClient("ClientHandler")
 
 local Player = Players.LocalPlayer
 local Mouse = Player:GetMouse()
@@ -100,8 +101,13 @@ function CharacterController:Step(deltaTime)
 		local distanceToSpline = (skiChain:GetPosition(alpha) - newPosition).Magnitude
 		while increments < 20 do
 			local nextAlpha = alpha + alphaIncrement
-			if nextAlpha < 0 or nextAlpha > 1 then
+			if nextAlpha < 0 then
 				break
+			elseif nextAlpha > 1 then
+				print("done skiing")
+				self.Alpha = 1
+				ClientHandler:StopSkiing()
+				return
 			end
 			local nextDistanceToSpline = (skiChain:GetPosition(nextAlpha) - newPosition).Magnitude
 			if nextDistanceToSpline > distanceToSpline then -- distance function is increasing
