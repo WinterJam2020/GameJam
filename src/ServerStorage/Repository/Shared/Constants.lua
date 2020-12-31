@@ -81,11 +81,12 @@ return Table.Lock({
 
 	SKI_PATH = {
 		TERRAIN_WIDTH = 100;
+		TERRAIN_DEPTH = 4;
 		PATH_WIDTH = 40;
 		NUM_GATES = 50;
 		SCALE_FACTOR = 100; -- scales up the ski path 100x
 		MAX_BANK_ANGLE = math.rad(60);
-		WEDGE_DEPTH = 4; -- terrain depth in studs
 		DEBUG = false;
+		NUM_TREES = 1000;
 	}
 }, nil, script.Name)
