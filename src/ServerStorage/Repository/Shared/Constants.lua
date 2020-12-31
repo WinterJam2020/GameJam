@@ -33,8 +33,11 @@ return Table.Lock({
 	START_SKIING = 20;
 	STOP_SKIING = 21;
 
+	REMOUNT_UI = 22;
+
 	CONFIGURATION = {
 		RAGDOLL_TAG_NAME = "PlayerRagdoll";
+		TIME_PER_ROUND = 90;
 
 		-- How the day-night cycle handles.
 		DAY_NIGHT_CONSTANTS = {

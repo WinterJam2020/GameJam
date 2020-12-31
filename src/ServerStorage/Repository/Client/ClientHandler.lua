@@ -9,7 +9,6 @@ local Janitor = Resources:LoadLibrary("Janitor")
 local MainMenu = Resources:LoadLibrary("MainMenu")
 local ParticleEngine = Resources:LoadLibrary("ParticleEngine")
 local Postie = Resources:LoadLibrary("Postie")
-local Promise = Resources:LoadLibrary("Promise")
 local PromiseChild = Resources:LoadLibrary("PromiseChild")
 local Roact = Resources:LoadLibrary("Roact")
 local RoactRodux = Resources:LoadLibrary("RoactRodux")
@@ -21,16 +20,16 @@ local RunService: RunService = Services.RunService
 
 local ClientHandler = {
 	App = nil;
-	GameEvent = nil;
 	CanMount = nil;
+	CharacterController = nil;
+	CharacterJanitor = nil;
+	GameEvent = nil;
 	LocalPlayer = nil;
 	MainGui = nil;
 	ParticleEngine = nil;
 	RoactTree = nil;
 	Store = nil;
 	TimeSyncService = nil;
-	CharacterController = nil;
-	CharacterJanitor = nil;
 }
 
 local CLIENT_EVENTS = {
@@ -58,6 +57,9 @@ local CLIENT_EVENTS = {
 		self.Store:dispatch({
 			type = "MenuVisible",
 			IsMenuVisible = true,
+		}):dispatch({
+			type = "MenuLayoutOrder",
+			MenuLayoutOrder = 1,
 		}):dispatch({
 			type = "MenuLayoutOrder",
 			MenuLayoutOrder = 0,
@@ -105,6 +107,10 @@ local CLIENT_EVENTS = {
 		})
 	end;
 
+	[Constants.REMOUNT_UI] = function(self)
+		self:Remount()
+	end;
+
 	[Constants.SPAWN_CHARACTER] = function(self, skiChainCFrames)
 		self:Spawn(skiChainCFrames)
 	end;
@@ -123,11 +129,11 @@ local CLIENT_EVENTS = {
 }
 
 function ClientHandler:Initialize()
-	self.GameEvent = Resources:GetRemoteEvent("GameEvent")
 	self.CanMount = ValueObject.new(false)
+	self.CharacterJanitor = Janitor.new()
 	self.LocalPlayer = Services.Players.LocalPlayer
 	self.TimeSyncService = Resources:LoadLibrary("TimeSyncService"):Initialize()
-	self.CharacterJanitor = Janitor.new()
+	self.GameEvent = Resources:GetRemoteEvent("GameEvent")
 
 	PromiseChild(self.LocalPlayer, "PlayerGui", 5):Then(function(PlayerGui: PlayerGui)
 		PromiseChild(PlayerGui, "MainGui", 60):Then(function(MainGui: ScreenGui)
@@ -212,6 +218,11 @@ function ClientHandler:Mount()
 	-- end)
 
 	return self
+end
+
+-- i win!
+function ClientHandler:Remount()
+	return self:Unmount():Mount()
 end
 
 function ClientHandler:Unmount()

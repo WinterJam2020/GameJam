@@ -30,6 +30,16 @@ local print = function(a, p)
 	return a
 end
 
+function MainMenu:init()
+	self.startButtonFunction = function()
+		print("StartButtonFunction")
+		self.props.SetCountdownDuration(60)
+		self.props.SetMenuVisible(false)
+		self.props.SetCountdownVisible(true)
+		self.props.SetCountdownActive(true)
+	end
+end
+
 function MainMenu:render()
 	return Roact.createElement("Frame", {
 		BackgroundTransparency = 1,
@@ -37,14 +47,8 @@ function MainMenu:render()
 		Visible = self.props.Visible,
 	}, {
 		Menu = Roact.createElement(Menu, {
-			StartButtonFunction = function()
-				self.props.SetCountdownDuration(60)
-				self.props.SetMenuVisible(false)
-				self.props.SetCountdownVisible(true)
-				self.props.SetCountdownActive(true)
-			end,
-
-			Visible = print(self.props.MenuVisible, "MenuVisible"),
+			StartButtonFunction = self.props.StartButtonFunction,
+			Visible = self.props.MenuVisible,
 		}),
 
 		Leaderboard = Roact.createElement(Leaderboard, {
@@ -129,6 +133,29 @@ end, function(dispatch)
 		ResetUI = function()
 			dispatch({
 				type = "ResetAll",
+			})
+		end,
+
+		StartButtonFunction = function()
+			print("StartButtonFunction!")
+			dispatch({
+				type = "CountdownDuration",
+				CountdownDuration = 60,
+			})
+
+			dispatch({
+				type = "MenuVisible",
+				IsMenuVisible = false,
+			})
+
+			dispatch({
+				type = "CountdownVisible",
+				IsCountdownVisible = true,
+			})
+
+			dispatch({
+				type = "CountdownActive",
+				IsCountdownActive = true,
 			})
 		end,
 	}

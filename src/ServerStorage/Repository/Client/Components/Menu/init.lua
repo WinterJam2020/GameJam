@@ -31,6 +31,7 @@ function Menu:init()
 	self.displayValue = self.janitor:Add(ValueObject.new(0), "Destroy")
 
 	self.janitor:Add(self.displayValue.Changed:Connect(function(newValue)
+		print("self.displayValue.Changed:", newValue)
 		if newValue and self.pageRef then
 			local uiPageLayout: UIPageLayout = self.pageRef:getValue()
 			if uiPageLayout then
@@ -48,8 +49,15 @@ function Menu:init()
 end
 
 function Menu:willUpdate(nextProps)
-	if nextProps.MenuLayoutOrder ~= self.props.MenuLayoutOrder then
-		self.displayValue.Value = nextProps.MenuLayoutOrder
+	if nextProps.Visible ~= self.props.Visible then
+		print("not same")
+		if not nextProps.Visible then
+			print("not visble")
+			local uiPageLayout: UIPageLayout = self.pageRef:getValue()
+			if uiPageLayout then
+				uiPageLayout:JumpToIndex(0)
+			end
+		end
 	end
 end
 

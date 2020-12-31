@@ -16,14 +16,14 @@ local CollectionService: CollectionService = Services.CollectionService
 local ServerHandler = {
 	Constants = nil;
 	GameEvent = nil;
-	GameInProgress = ValueObject.new(false);
+	GameInProgress = nil;
 	GameLoop = nil;
 	ParticleEngine = nil;
 	PlayerData = {};
 	PlayerDataHandler = nil;
-	TimeSyncService = nil;
 	SkiPathGenerator = nil;
 	SkiPathRemote = nil;
+	TimeSyncService = nil;
 }
 
 local SERVER_EVENTS = {
@@ -34,10 +34,11 @@ local SERVER_EVENTS = {
 
 function ServerHandler:Initialize()
 	self.Constants = Constants
+	self.GameInProgress = ValueObject.new(false)
 	self.ParticleEngine = Resources:LoadLibrary("ParticleEngine"):Initialize()
-	self.TimeSyncService = Resources:LoadLibrary("TimeSyncService"):Initialize()
 	self.PlayerDataHandler = Resources:LoadLibrary("PlayerDataHandler"):Initialize()
 	self.SkiPathGenerator = Resources:LoadServer("SkiPathGenerator")
+	self.TimeSyncService = Resources:LoadLibrary("TimeSyncService"):Initialize()
 
 	self.SkiPathRemote = Resources:GetRemoteFunction(Constants.REMOTE_NAMES.SKI_PATH_REMOTE_FUNCTION_NAME)
 	self.GameEvent = Resources:GetRemoteEvent("GameEvent")
@@ -75,7 +76,7 @@ function ServerHandler:StartGameLoop()
 	if self.GameLoop then
 		self.GameLoop.Paused = false
 	else
-		self.GameLoop = SyncedPoller.new(1, function()
+		self.GameLoop = SyncedPoller.new(10, function()
 			if self.GameInProgress.Value then
 				self.GameLoop.Paused = true
 				self.GameInProgress.Changed:Wait()
@@ -104,7 +105,7 @@ function ServerHandler:StartGameLoop()
 				local CountdownPoller
 				CountdownPoller = SyncedPoller.new(0.5, function(_, ElapsedTime)
 					CountdownTime += ElapsedTime
-					if CountdownTime >= 60 then
+					if CountdownTime >= Constants.CONFIGURATION.TIME_PER_ROUND then
 						ShouldContinue:Fire()
 						CountdownPoller:Destroy()
 					else
@@ -113,12 +114,12 @@ function ServerHandler:StartGameLoop()
 								continue
 							end
 
-							Postie.PromiseInvokeClient(Player, "GetProgress", 5):Then(function(Alpha: number)
+							Postie.PromiseInvokeClient(Player, "GetProgress", 10):Then(function(Alpha: number)
 								if Alpha == 1 then
 									PlayerData.HasFinished = true
 									PlayerData.EndTime = time()
 								end
-							end):Catch(CatchFactory("Postie.PromiseInvokeClient"))
+							end):Catch(CatchFactory("Postie.PromiseInvokeClient")):Wait()
 						end
 					end
 				end)
@@ -160,21 +161,16 @@ function ServerHandler:StartGameLoop()
 				end
 
 				self.GameEvent:FireAllClients(Constants.DISPLAY_LEADERBOARD, Entries)
-				Promise.Delay(5):Wait()
-				print("Hiding leaderboard")
-				self.GameEvent:FireAllClients(Constants.HIDE_LEADERBOARD)
-				Promise.Delay(5):Wait()
-				print("Despawning")
-				self.GameEvent:FireAllClients(Constants.DESPAWN_CHARACTER)
-				Promise.Delay(1):Wait()
-				self.GameEvent:FireAllClients(Constants.SHOW_MENU)
-
-				-- if player finished skiing then update the data table
-
-				-- once every player is finished, show leaderboard
-
-				-- give nice delay then reset
-				-- might do something like Promise.Delay(5):ThenCall(self.GameEvent.FireAllClients, self.GameEvent, Constants._____) or something
+				Promise.Delay(5):Then(function()
+					self.GameEvent:FireAllClients(Constants.HIDE_LEADERBOARD)
+					return Promise.Delay(5)
+				end):Then(function()
+					self.GameEvent:FireAllClients(Constants.DESPAWN_CHARACTER)
+					self.GameEvent:FireAllClients(Constants.REMOUNT_UI) -- I WIN WOOOOOOOOOO
+					return Promise.Delay(1)
+				end):Then(function()
+					self.GameInProgress.Value = false
+				end)
 			end
 		end)
 	end
