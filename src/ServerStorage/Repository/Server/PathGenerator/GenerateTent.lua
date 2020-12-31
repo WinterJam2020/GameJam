@@ -1,6 +1,6 @@
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+-- local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
-local Resources = require(ReplicatedStorage.Resources)
+-- local Resources = require(ReplicatedStorage.Resources)
 
 local Tent = ServerStorage.Props.Tent
 

@@ -175,8 +175,8 @@ function ClientHandler:Initialize()
 			self.ParticleEngine = ParticleEngine:Initialize(MainGui)
 			self.ParticleEngineHelper = Resources:LoadLibrary("ParticleEngineHelper")
 		end):Catch(CatchFactory("PromiseChild")):Finally(function()
-			local middleware = false and {
-				Rodux.loggerMiddleware,
+			local middleware = {
+				-- Rodux.loggerMiddleware,
 			}
 
 			self.Store = Rodux.Store.new(ClientReducer, nil, middleware)
@@ -280,14 +280,12 @@ function ClientHandler:Spawn(skiChainCFrames)
 
 	self.CharacterController = CharacterControllerClass.new(skiChainCFrames)
 end
-
 function ClientHandler:Despawn()
 	if self.CharacterController then
 		self.CharacterController:Destroy()
 	end
 	self.CharacterController = nil
 end
-
 function ClientHandler:StartSkiing()
 	local characterController = assert(self.CharacterController, "CharacterController doesn't exist!")
 	self.CharacterJanitor:Add(RunService.Heartbeat:Connect(function(deltaTime)
@@ -298,9 +296,7 @@ function ClientHandler:StartSkiing()
 		end
 	end))
 end
-
 function ClientHandler:StopSkiing()
-	print("stop skiing")
 	self.CharacterJanitor:Cleanup()
 end
 

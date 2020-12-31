@@ -148,10 +148,12 @@ function CharacterController:Step(deltaTime)
 			if nextAlpha < 0 then
 				break
 			elseif nextAlpha > 1 then
-				print("done skiing")
-				self.Alpha = 1
-				Resources("ClientHandler"):StopSkiing()
-				return
+				alpha = 1
+				-- break
+				-- print("done skiing")
+				-- self.Alpha = 1
+				-- Resources("ClientHandler"):StopSkiing()
+				break
 			end
 			local nextDistanceToSpline = (skiChain:GetPosition(nextAlpha) - newPosition).Magnitude
 			if nextDistanceToSpline > distanceToSpline then -- distance function is increasing
@@ -195,6 +197,10 @@ function CharacterController:Step(deltaTime)
 	self.Alpha = alpha
 	self.SkiChainCFrame = skiChainCFrame
 	self.RootCFrame = newRootCFrame
+
+	if alpha == 1 then
+		Resources("ClientHandler"):StopSkiing()
+	end
 end
 
 return CharacterController

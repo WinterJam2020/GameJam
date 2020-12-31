@@ -116,7 +116,7 @@ function Menu:render()
 					LayoutOrder = 0,
 					Size = UDim2.fromScale(1, 0.15),
 					Font = Enum.Font.GothamBlack,
-					Text = "Untitled Ski Game",
+					Text = "Ski Game",
 					TextScaled = true,
 					TextColor3 = Color3.new(1, 1, 1),
 					TextStrokeTransparency = 0.85,
