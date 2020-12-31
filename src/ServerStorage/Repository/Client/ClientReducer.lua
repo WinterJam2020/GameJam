@@ -14,7 +14,15 @@ local DEFAULT_STATE = {
 	MenuVisible = true,
 	TimerVisible = false,
 
+	RoundCountdownActive = false,
+	RoundCountdownDuration = 5,
+	RoundCountdownVisible = false,
+
 	CountdownFunction = function()
+		print("DESTROY")
+	end,
+
+	RoundCountdownFunction = function()
 		print("DESTROY")
 	end,
 }
@@ -60,6 +68,18 @@ local function ClientReducer(State, Action)
 	elseif Action.type == "MenuLayoutOrder" then
 		return Llama.Dictionary.extend(State, {
 			MenuLayoutOrder = Action.MenuLayoutOrder,
+		})
+	elseif Action.type == "RoundCountdownActive" then
+		return Llama.Dictionary.extend(State, {
+			RoundCountdownActive = Action.IsRoundCountdownActive,
+		})
+	elseif Action.type == "RoundCountdownDuration" then
+		return Llama.Dictionary.extend(State, {
+			RoundCountdownDuration = Action.RoundCountdownDuration,
+		})
+	elseif Action.type == "RoundCountdownVisible" then
+		return Llama.Dictionary.extend(State, {
+			RoundCountdownVisible = Action.IsRoundCountdownVisible,
 		})
 	elseif Action.type == "ResetAll" then
 		return DEFAULT_STATE

@@ -126,6 +126,40 @@ local CLIENT_EVENTS = {
 	[Constants.STOP_SKIING] = function(self)
 		self:StopSkiing()
 	end;
+
+	[Constants.SHOW_ROUND_COUNTDOWN] = function(self)
+		self.Store:dispatch({
+			type = "ResetAll",
+		})
+	end;
+
+	[Constants.SHOW_ROUND_COUNTDOWN] = function(self)
+		self.Store:dispatch({
+			type = "RoundCountdownVisible",
+			IsRoundCountdownVisible = true,
+		})
+	end;
+
+	[Constants.HIDE_ROUND_COUNTDOWN] = function(self)
+		self.Store:dispatch({
+			type = "RoundCountdownVisible",
+			IsRoundCountdownVisible = false,
+		})
+	end;
+
+	[Constants.IS_ROUND_COUNTDOWN_ACTIVE] = function(self, IsActive)
+		self.Store:dispatch({
+			type = "RoundCountdownActive",
+			IsRoundCountdownActive = IsActive,
+		})
+	end;
+
+	[Constants.SET_ROUND_COUNTDOWN_DURATION] = function(self, Duration: number)
+		self.Store:dispatch({
+			type = "RoundCountdownDuration",
+			RoundCountdownDuration = Duration,
+		})
+	end;
 }
 
 function ClientHandler:Initialize()
@@ -141,9 +175,11 @@ function ClientHandler:Initialize()
 			self.ParticleEngine = ParticleEngine:Initialize(MainGui)
 			self.ParticleEngineHelper = Resources:LoadLibrary("ParticleEngineHelper")
 		end):Catch(CatchFactory("PromiseChild")):Finally(function()
-			self.Store = Rodux.Store.new(ClientReducer, nil, {
+			local middleware = false and {
 				Rodux.loggerMiddleware,
-			})
+			}
+
+			self.Store = Rodux.Store.new(ClientReducer, nil, middleware)
 
 			self.App = Roact.createElement(RoactRodux.StoreProvider, {
 				store = self.Store,

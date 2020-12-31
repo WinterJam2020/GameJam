@@ -21,6 +21,10 @@ MainMenu.defaultProps = {
 		print("Destroy!")
 	end,
 
+	RoundCountdownActive = false,
+	RoundCountdownDuration = 5,
+	RoundCountdownVisible = false,
+
 	Visible = true,
 }
 
@@ -59,6 +63,16 @@ function MainMenu:render()
 			Size = UDim2.fromScale(0.5, 0.1),
 			Visible = self.props.CountdownVisible,
 		}),
+
+		-- RoundCountdown = Roact.createElement({
+		-- 	Active = self.props.RoundCountdownActive,
+		-- 	AnchorPoint = Vector2.new(0.5, 0.05),
+		-- 	Destroy = self.props.RoundCountdownFunction,
+		-- 	Duration = self.props.RoundCountdownDuration,
+		-- 	Position = UDim2.fromScale(0.5, 0.05),
+		-- 	Size = UDim2.fromScale(0.5, 0.1),
+		-- 	Visible = self.props.RoundCountdownVisible,
+		-- }),
 	})
 end
 
@@ -72,6 +86,11 @@ return RoactRodux.connect(function(state)
 		CountdownDuration = state.CountdownDuration,
 		CountdownFunction = state.CountdownFunction,
 		Visible = state.Visible,
+
+		RoundCountdownActive = state.RoundCountdownActive,
+		RoundCountdownVisible = state.RoundCountdownVisible,
+		RoundCountdownDuration = state.RoundCountdownDuration,
+		RoundCountdownFunction = state.RoundCountdownFunction,
 	}
 end, function(dispatch)
 	return {
@@ -154,6 +173,34 @@ end, function(dispatch)
 					IsCountdownActive = true,
 				})
 			end)
+		end,
+
+		SetRoundCountdownVisible = function(isRoundCountdownVisible)
+			dispatch({
+				type = "RoundCountdownVisible",
+				IsRoundCountdownVisible = isRoundCountdownVisible,
+			})
+		end,
+
+		SetRoundCountdownActive = function(isRoundCountdownActive)
+			dispatch({
+				type = "RoundCountdownActive",
+				IsRoundCountdownActive = isRoundCountdownActive,
+			})
+		end,
+
+		SetRoundCountdownDuration = function(roundCountdownDuration)
+			dispatch({
+				type = "RoundCountdownDuration",
+				RoundCountdownDuration = roundCountdownDuration,
+			})
+		end,
+
+		SetRoundCountdownFunction = function(roundCountdownFunction)
+			dispatch({
+				type = "RoundCountdownFunction",
+				RoundCountdownFunction = roundCountdownFunction,
+			})
 		end,
 	}
 end)(MainMenu)
