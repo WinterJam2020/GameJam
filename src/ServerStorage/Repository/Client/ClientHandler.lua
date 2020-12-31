@@ -168,6 +168,7 @@ function ClientHandler:Initialize()
 	self.LocalPlayer = Services.Players.LocalPlayer
 	self.TimeSyncService = Resources:LoadLibrary("TimeSyncService"):Initialize()
 	self.GameEvent = Resources:GetRemoteEvent("GameEvent")
+	game.Players.LocalPlayer:GetMouse().Icon = "rbxasset://textures/Cursors/Gamepad/Pointer.png" -- dogshit
 
 	PromiseChild(self.LocalPlayer, "PlayerGui", 5):Then(function(PlayerGui: PlayerGui)
 		PromiseChild(PlayerGui, "MainGui", 60):Then(function(MainGui: ScreenGui)
