@@ -156,6 +156,7 @@ function ServerHandler:StartGameLoop()
 
 				GameEvent:FireAllClients(Constants.IS_COUNTDOWN_ACTIVE, false)
 				GameEvent:FireAllClients(Constants.HIDE_COUNTDOWN)
+				GameEvent:FireAllClients(Constants.STOP_SKIING)
 
 				local Entries = {}
 				local Length = 0
