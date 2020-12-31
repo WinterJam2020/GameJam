@@ -22,10 +22,44 @@ local CAMERA_OFFSET = ROOT_PART_OFFSET * CFrame.new(0, 5, 10)
 -- local PUSH_COOLDOWN = 0.5
 local MAX_CARVE_ANGLE = 40
 -- local MAX_SKID_ANGLE = 80
-local GRAVITY = 196.2
+local GRAVITY = 75
+
+local CHARACTER_COLORS = {
+	{ -- blue
+		Color = Color3.fromRGB(0, 255, 255),
+		SkiTextureID = "rbxassetid://6155083113",
+		PoleTextureID = "rbxassetid://6155081816",
+		HelmetTextureID = "rbxassetid://6164542515"	
+	},
+	{ -- red
+		Color = Color3.fromRGB(255, 89, 89),
+		SkiTextureID = "rbxassetid://6155082723",
+		PoleTextureID = "rbxassetid://6155082163",
+		HelmetTextureID = "rbxassetid://6164542870"
+	},
+	{ -- purple
+		Color = Color3.fromRGB(180, 128, 255),
+		SkiTextureID = "rbxassetid://6155082858",
+		PoleTextureID = "rbxassetid://6155082046",
+		HelmetTextureID = "rbxassetid://6164542746"
+	},
+	{ -- white
+		Color = Color3.fromRGB(248, 248, 248),
+		SkiTextureID = "rbxassetid://6155082509",
+		PoleTextureID = "rbxassetid://6155082421",
+		HelmetTextureID = "rbxassetid://6164542392"
+	},
+	{ -- green
+		Color = Color3.fromRGB(61, 255, 90),
+		SkiTextureID = "rbxassetid://6164543226",
+		PoleTextureID = "rbxassetid://6165753009",
+		HelmetTextureID = "rbxassetid://6164542607"	
+	}
+}
 
 ---- Initialize
 workspace.CurrentCamera.CameraType = Enum.CameraType.Scriptable
+workspace.CurrentCamera.CFrame = CFrame.new()
 workspace.CurrentCamera.FieldOfView = 100
 
 ---- Functions
@@ -42,7 +76,18 @@ CharacterController.__index = CharacterController
 function CharacterController.new(skiChainCFrames)
 	local skiChain = SplineModule.Chain.new(skiChainCFrames)
 	local startCFrame = skiChain:GetRotCFrame(0)
+	local color = CHARACTER_COLORS[math.random(1, #CHARACTER_COLORS)]
 	local rig = CharacterRig:Clone()
+	rig.UpperTorso.Color = color.Color
+	rig.LeftHand.Color = color.Color
+	rig.RightHand.Color = color.Color
+	rig.LeftFoot.Color = color.Color
+	rig.RightFoot.Color = color.Color
+	rig.LeftSki.TextureID = color.SkiTextureID
+	rig.RightSki.TextureID = color.SkiTextureID
+	rig.LeftPole.TextureID = color.PoleTextureID
+	rig.RightPole.TextureID = color.PoleTextureID
+	rig.Helmet.TextureID = color.HelmetTextureID
 	local root = rig.PrimaryPart
 	rig.Name = Player.Name
 	root.CFrame = startCFrame * ROOT_PART_OFFSET
