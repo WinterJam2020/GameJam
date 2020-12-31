@@ -24,7 +24,7 @@ return function(spline)
     --     Enum.Material.Snow
     -- )
     workspace.Terrain:FillCylinder(
-        cframe * CFrame.new(0, -TERRAIN_DEPTH / 2, -TERRAIN_WIDTH),
+        cframe * CFrame.new(0, -TERRAIN_DEPTH, -TERRAIN_WIDTH),
         TERRAIN_DEPTH,
         TERRAIN_WIDTH * 3/2,
         Enum.Material.Snow
