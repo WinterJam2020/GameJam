@@ -59,7 +59,7 @@ local CHARACTER_COLORS = {
 
 ---- Initialize
 workspace.CurrentCamera.CameraType = Enum.CameraType.Scriptable
-workspace.CurrentCamera.CFrame = CFrame.new()
+workspace.CurrentCamera.CFrame = CFrame.new(0, 20, 0)
 workspace.CurrentCamera.FieldOfView = 100
 
 ---- Functions
