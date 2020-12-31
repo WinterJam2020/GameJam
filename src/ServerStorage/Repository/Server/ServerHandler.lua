@@ -89,6 +89,7 @@ function ServerHandler:StartGameLoop()
 				self.GameInProgress.Value = true
 				for _, Player: Player in ipairs(ReadyPlayers) do
 					CollectionService:RemoveTag(Player, "ReadyPlayers")
+					self.GameEvent:FireClient(Player, Constants.START_THE_COUNTDOWN)
 					-- Player:LoadCharacter()
 					self.GameEvent:FireClient(Player, Constants.SPAWN_CHARACTER, self.SkiChainCFrames)
 					self.GameEvent:FireClient(Player, Constants.START_SKIING)
@@ -99,17 +100,41 @@ function ServerHandler:StartGameLoop()
 					}
 				end
 
+				local CurrentPlayerData = self.PlayerData
+
+				local function GetLength(): number
+					local Length = 0
+					for _ in next, CurrentPlayerData do
+						Length += 1
+					end
+
+					return Length
+				end
+
+				local function IsEveryoneDone(): boolean
+					local GoalLength = GetLength()
+					local Length = 0
+
+					for _, PlayerData in next, CurrentPlayerData do
+						if PlayerData.HasFinished then
+							Length += 1
+						end
+					end
+
+					return Length == GoalLength
+				end
+
 				-- Check if player finished skiing
 				local ShouldContinue = Instance.new("BindableEvent")
 				local CountdownTime = 0
 				local CountdownPoller
 				CountdownPoller = SyncedPoller.new(0.5, function(_, ElapsedTime)
 					CountdownTime += ElapsedTime
-					if CountdownTime >= Constants.CONFIGURATION.TIME_PER_ROUND then
+					if CountdownTime >= Constants.CONFIGURATION.TIME_PER_ROUND or IsEveryoneDone() then
 						ShouldContinue:Fire()
 						CountdownPoller:Destroy()
 					else
-						for Player, PlayerData in next, self.PlayerData do
+						for Player, PlayerData in next, CurrentPlayerData do
 							if PlayerData.HasFinished then
 								continue
 							end
@@ -133,7 +158,7 @@ function ServerHandler:StartGameLoop()
 				local Entries = {}
 				local Length = 0
 
-				for Player, PlayerData in next, self.PlayerData do
+				for Player, PlayerData in next, CurrentPlayerData do
 					-- print(Resources("Fmt")("Player: {}\n{}", Player.Name, Resources("Debug").TableToString(PlayerData, true, "PlayerData")))
 					Length += 1
 					if PlayerData.HasFinished then
@@ -161,6 +186,7 @@ function ServerHandler:StartGameLoop()
 				end
 
 				self.GameEvent:FireAllClients(Constants.DISPLAY_LEADERBOARD, Entries)
+
 				Promise.Delay(5):Then(function()
 					self.GameEvent:FireAllClients(Constants.HIDE_LEADERBOARD)
 					return Promise.Delay(5)
@@ -171,6 +197,15 @@ function ServerHandler:StartGameLoop()
 				end):Then(function()
 					self.GameInProgress.Value = false
 				end)
+
+				-- Promise.Delay(5):Wait()
+				-- self.GameEvent:FireAllClients(Constants.HIDE_LEADERBOARD)
+				-- Promise.Delay(5):Wait()
+				-- self.GameEvent:FireAllClients(Constants.DESPAWN_CHARACTER)
+				-- -- self.GameEvent:FireAllClients(Constants.SHOW_MENU)
+				-- self.GameEvent:FireAllClients(Constants.REMOUNT_UI)
+				-- Promise.Delay(1):Wait()
+				-- self.GameInProgress.Value = false
 			end
 		end)
 	end

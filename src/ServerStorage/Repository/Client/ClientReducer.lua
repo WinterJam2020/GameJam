@@ -1,10 +1,11 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Resources = require(ReplicatedStorage.Resources)
+local Constants = Resources:LoadLibrary("Constants")
 local Llama = Resources:LoadLibrary("Llama")
 
 local DEFAULT_STATE = {
 	CountdownActive = false,
-	CountdownDuration = 60,
+	CountdownDuration = Constants.CONFIGURATION.TIME_PER_ROUND,
 	CountdownVisible = false,
 	LeaderboardEntries = {},
 	LeaderboardVisible = false,

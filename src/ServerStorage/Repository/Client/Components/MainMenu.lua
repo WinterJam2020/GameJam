@@ -1,11 +1,15 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Resources = require(ReplicatedStorage.Resources)
+local Constants = Resources:LoadLibrary("Constants")
 local Countdown = Resources:LoadLibrary("Countdown")
-local Menu = Resources:LoadLibrary("Menu")
 local Leaderboard = Resources:LoadLibrary("Leaderboard")
+local Menu = Resources:LoadLibrary("Menu")
+local Promise = Resources:LoadLibrary("Promise")
 local Roact = Resources:LoadLibrary("Roact")
 local RoactRodux = Resources:LoadLibrary("RoactRodux")
+
+local GameEvent: RemoteEvent = Resources:GetRemoteEvent("GameEvent")
 
 local MainMenu = Roact.Component:extend("MainMenu")
 MainMenu.defaultProps = {
@@ -137,26 +141,29 @@ end, function(dispatch)
 		end,
 
 		StartButtonFunction = function()
-			print("StartButtonFunction!")
-			dispatch({
-				type = "CountdownDuration",
-				CountdownDuration = 60,
-			})
+			Promise.FromEvent(GameEvent.OnClientEvent, function(FunctionCall)
+				return FunctionCall == Constants.START_THE_COUNTDOWN
+			end):Then(function()
+				dispatch({
+					type = "CountdownDuration",
+					CountdownDuration = Constants.CONFIGURATION.TIME_PER_ROUND,
+				})
 
-			dispatch({
-				type = "MenuVisible",
-				IsMenuVisible = false,
-			})
+				dispatch({
+					type = "MenuVisible",
+					IsMenuVisible = false,
+				})
 
-			dispatch({
-				type = "CountdownVisible",
-				IsCountdownVisible = true,
-			})
+				dispatch({
+					type = "CountdownVisible",
+					IsCountdownVisible = true,
+				})
 
-			dispatch({
-				type = "CountdownActive",
-				IsCountdownActive = true,
-			})
+				dispatch({
+					type = "CountdownActive",
+					IsCountdownActive = true,
+				})
+			end)
 		end,
 	}
 end)(MainMenu)

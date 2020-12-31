@@ -34,6 +34,7 @@ return Table.Lock({
 	STOP_SKIING = 21;
 
 	REMOUNT_UI = 22;
+	START_THE_COUNTDOWN = 23;
 
 	CONFIGURATION = {
 		RAGDOLL_TAG_NAME = "PlayerRagdoll";
