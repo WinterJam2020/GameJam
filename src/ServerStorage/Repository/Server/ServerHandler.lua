@@ -86,13 +86,15 @@ function ServerHandler:StartGameLoop()
 
 			local ReadyPlayers = CollectionService:GetTagged("ReadyPlayers")
 			if #ReadyPlayers > 0 then
+				local GameEvent: RemoteEvent = self.GameEvent
 				self.GameInProgress.Value = true
+
 				for _, Player: Player in ipairs(ReadyPlayers) do
 					CollectionService:RemoveTag(Player, "ReadyPlayers")
-					self.GameEvent:FireClient(Player, Constants.START_THE_COUNTDOWN)
+					GameEvent:FireClient(Player, Constants.START_THE_COUNTDOWN)
 					-- Player:LoadCharacter()
-					self.GameEvent:FireClient(Player, Constants.SPAWN_CHARACTER, self.SkiChainCFrames)
-					self.GameEvent:FireClient(Player, Constants.START_SKIING)
+					GameEvent:FireClient(Player, Constants.SPAWN_CHARACTER, self.SkiChainCFrames)
+					GameEvent:FireClient(Player, Constants.START_SKIING)
 					self.PlayerData[Player] = {
 						StartTime = time();
 						EndTime = 0;
@@ -152,8 +154,8 @@ function ServerHandler:StartGameLoop()
 				ShouldContinue.Event:Wait()
 				ShouldContinue:Destroy()
 
-				self.GameEvent:FireAllClients(Constants.IS_COUNTDOWN_ACTIVE, false)
-				self.GameEvent:FireAllClients(Constants.HIDE_COUNTDOWN)
+				GameEvent:FireAllClients(Constants.IS_COUNTDOWN_ACTIVE, false)
+				GameEvent:FireAllClients(Constants.HIDE_COUNTDOWN)
 
 				local Entries = {}
 				local Length = 0
@@ -185,14 +187,14 @@ function ServerHandler:StartGameLoop()
 					end
 				end
 
-				self.GameEvent:FireAllClients(Constants.DISPLAY_LEADERBOARD, Entries)
+				GameEvent:FireAllClients(Constants.DISPLAY_LEADERBOARD, Entries)
 
 				Promise.Delay(5):Then(function()
-					self.GameEvent:FireAllClients(Constants.HIDE_LEADERBOARD)
+					GameEvent:FireAllClients(Constants.HIDE_LEADERBOARD)
 					return Promise.Delay(5)
 				end):Then(function()
-					self.GameEvent:FireAllClients(Constants.DESPAWN_CHARACTER)
-					self.GameEvent:FireAllClients(Constants.REMOUNT_UI) -- I WIN WOOOOOOOOOO
+					GameEvent:FireAllClients(Constants.DESPAWN_CHARACTER)
+					GameEvent:FireAllClients(Constants.REMOUNT_UI) -- I WIN WOOOOOOOOOO
 					return Promise.Delay(1)
 				end):Then(function()
 					self.GameInProgress.Value = false
