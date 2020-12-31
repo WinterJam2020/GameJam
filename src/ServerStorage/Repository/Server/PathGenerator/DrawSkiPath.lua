@@ -6,12 +6,15 @@ local DrawTriangle = Resources:LoadServer("DrawTriangle")
 local Services = Resources:LoadLibrary("Services")
 local Workspace: Workspace = Services.Workspace
 
-local GenerateMarkers = Resources:LoadLibrary("GenerateMarkers")
-local GenerateGates = Resources:LoadLibrary("GenerateGates")
+local GenerateMarkers = Resources:LoadServer("GenerateMarkers")
+local GenerateGates = Resources:LoadServer("GenerateGates")
+local GenerateTrees = Resources:LoadServer("GenerateTrees")
+local GenerateTent = Resources:LoadServer("GenerateTent")
+local GenerateFinishLine = Resources:LoadServer("GenerateFinishLine")
 
 local Terrain = Workspace.Terrain
-local WIDTH = Constants.TERRAIN_WIDTH
-local WEDGE_DEPTH = Constants.WEDGE_DEPTH
+local TERRAIN_WIDTH = Constants.TERRAIN_WIDTH
+local TERRAIN_DEPTH = Constants.TERRAIN_DEPTH
 local DEBUG = Constants.DEBUG
 
 local DebugContainer
@@ -53,7 +56,7 @@ local function DrawSkiPath(spline)
 			local p = Instance.new("Part")
 			p.Anchored = true
 			p.CFrame = cf
-			p.Size = Vector3.new(WIDTH, 1, 1)
+			p.Size = Vector3.new(TERRAIN_WIDTH, 1, 1)
 			if curvature * 1000 > 5 then
 				p.BrickColor = BrickColor.Black()
 				debugColor = BrickColor.Black()
@@ -64,8 +67,8 @@ local function DrawSkiPath(spline)
 
 		pathPoints[#pathPoints + 1] = {
 			CFrame = cf,
-			P0 = cf.Position + cf.RightVector * WIDTH/2,
-			P1 = cf.Position - cf.RightVector * WIDTH/2,
+			P0 = cf.Position + cf.RightVector * TERRAIN_WIDTH/2,
+			P1 = cf.Position - cf.RightVector * TERRAIN_WIDTH/2,
 			DebugColor = debugColor
 		}
 	end
@@ -85,8 +88,8 @@ local function DrawSkiPath(spline)
 		--DrawTerrainWedge(DrawTriangle(pt.P1, nxt.P1, midpoint, WEDGE_DEPTH))
 
 		-- 2:
-		local cf0, cf1, size0, size1 = DrawTriangle(pt.P0, nxt.P0, pt.P1, WEDGE_DEPTH, pt.CFrame.UpVector)
-		local cfa, cfb, sizea, sizeb = DrawTriangle(pt.P1, nxt.P0, nxt.P1, WEDGE_DEPTH, pt.CFrame.UpVector)
+		local cf0, cf1, size0, size1 = DrawTriangle(pt.P0, nxt.P0, pt.P1, TERRAIN_DEPTH, pt.CFrame.UpVector)
+		local cfa, cfb, sizea, sizeb = DrawTriangle(pt.P1, nxt.P0, nxt.P1, TERRAIN_DEPTH, pt.CFrame.UpVector)
 		DrawTerrainWedge(cf0, cf1, size0, size1, pt.DebugColor)
 		DrawTerrainWedge(cfa, cfb, sizea, sizeb, pt.DebugColor)
 	end
@@ -96,6 +99,9 @@ local function DrawSkiPath(spline)
 	container.Parent = workspace
 	GenerateMarkers(spline, container)
 	GenerateGates(spline, container)
+	GenerateTrees(spline, container)
+	GenerateTent(spline, container)
+	GenerateFinishLine(spline, container)
 	return container
 end
 
