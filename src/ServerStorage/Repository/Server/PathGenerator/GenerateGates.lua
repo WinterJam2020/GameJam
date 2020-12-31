@@ -1,24 +1,19 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerStorage = game:GetService("ServerStorage")
 local Resources = require(ReplicatedStorage.Resources)
 local Constants = Resources:LoadLibrary("Constants")
+
+local Gate = ServerStorage.Props.Gate
 
 local PATH_WIDTH = Constants.SKI_PATH.PATH_WIDTH + 4
 local NUM_GATES = Constants.SKI_PATH.NUM_GATES
 
-local Part = Instance.new("Part")
-Part.Anchored = true
-Part.BrickColor = BrickColor.new("Persimmon")
-Part.CanCollide = false
-Part.Size = Vector3.new(3, 4, 1)
-Part.TopSurface = Enum.SurfaceType.Smooth
-Part.BottomSurface = Enum.SurfaceType.Smooth
-
 local function generateGates(spline, container, rightOffset)
 	for i = 0, NUM_GATES - 1 do
 		local cf = spline:GetArcRotCFrame(i / (NUM_GATES - 1))
-		local p = Part:Clone()
-		p.CFrame = cf + cf.UpVector * 4 + cf.RightVector * rightOffset
-		p.Parent = container
+		local gate = Gate:Clone()
+		gate.CFrame = cf * CFrame.new(rightOffset, 1.8, 0)
+		gate.Parent = container
 	end
 end
 
