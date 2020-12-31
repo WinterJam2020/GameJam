@@ -27,6 +27,13 @@ local StaticContainers = {
 	game:GetService("ServerStorage");
 }
 
+local Promise_Defer = Promise.Defer
+local Promise_Delay = Promise.Delay
+local Promise_Resolve = Promise.Resume
+local SafeThread_Resume = SafeThread.Resume
+local SafeThread_Running = SafeThread.Running
+local SafeThread_Yield = SafeThread.Yield
+
 local UseInStaticContainer = false
 
 for Index = 1, #StaticContainers do
@@ -64,6 +71,10 @@ local Replica = {
 	FactoredOr = require(script.Replicants.FactoredOr);
 	FactoredNor = require(script.Replicants.FactoredNor);
 	FactoredSum = require(script.Replicants.FactoredSum);
+
+	ReplicantRegistered = FastSignal.new();
+	ReplicantWillUnregister = FastSignal.new();
+	ReplicantUnregistered = FastSignal.new();
 }
 
 local Registry = {}
@@ -111,7 +122,7 @@ function Replica.Register(KeyRef, RegisteredReplicant)
 			Replica.Unregister(KeyRef)
 		end
 
-		local Replicator = Instance.new("RemoteEvent")
+		local Replicator: RemoteEvent = Instance.new("RemoteEvent")
 		Replicator.Name = Key
 		Replicator.Parent = Replicators
 
@@ -180,25 +191,25 @@ function Replica.WaitForRegistered(KeyRef, Timeout)
 		return RegisteredReplicant
 	end
 
-	local Thread = SafeThread.Running()
+	local Thread = SafeThread_Running()
 	local GotReturnValue = false
 	local Connection = Replica.ReplicantRegistered:Connect(function(NewReplicant, OtherKey)
 		if not GotReturnValue and OtherKey == KeyRef then
 			GotReturnValue = true
-			SafeThread.Resume(Thread, NewReplicant)
+			SafeThread_Resume(Thread, NewReplicant)
 		end
 	end)
 
 	if Timeout ~= nil then
-		Promise.Delay(Timeout):Then(function()
+		Promise_Delay(Timeout):Then(function()
 			if not GotReturnValue then
 				GotReturnValue = true
-				SafeThread.Resume(Thread, nil)
+				SafeThread_Resume(Thread, nil)
 			end
 		end)
 	end
 
-	local ReturnValue = SafeThread.Yield()
+	local ReturnValue = SafeThread_Yield()
 	Connection:Disconnect()
 
 	if type(ReturnValue) == "table" and rawget(ReturnValue, "_IsReplicant") == true then
@@ -211,29 +222,29 @@ end
 function Replica.PromiseRegistered(KeyRef, Timeout)
 	local RegisteredReplicant = Replica.GetRegistered(KeyRef)
 	if RegisteredReplicant ~= nil then
-		return Promise.Resolve(Replicant)
+		return Promise_Resolve(Replicant)
 	end
 
-	return Promise.Defer(function(Resolve, Reject)
-		local Thread = SafeThread.Running()
+	return Promise_Defer(function(Resolve, Reject)
+		local Thread = SafeThread_Running()
 		local GotReturnValue = false
 		local Connection = Replica.ReplicantRegistered:Connect(function(NewReplicant, OtherKey)
 			if not GotReturnValue and OtherKey == KeyRef then
 				GotReturnValue = true
-				SafeThread.Resume(Thread, NewReplicant)
+				SafeThread_Resume(Thread, NewReplicant)
 			end
 		end)
 
 		if Timeout ~= nil then
-			Promise.Delay(Timeout):Then(function()
+			Promise_Delay(Timeout):Then(function()
 				if not GotReturnValue then
 					GotReturnValue = true
-					SafeThread.Resume(Thread, nil)
+					SafeThread_Resume(Thread, nil)
 				end
 			end)
 		end
 
-		local ReturnValue = SafeThread.Yield()
+		local ReturnValue = SafeThread_Yield()
 		Connection:Disconnect()
 
 		if type(ReturnValue) == "table" and rawget(ReturnValue, "_IsReplicant") == true then
@@ -249,16 +260,13 @@ function Replica.GetRegistered(KeyRef)
 end
 
 Replica.Deserialize = Replicant.FromSerialized
-Replica.ReplicantRegistered = FastSignal.new()
-Replica.ReplicantWillUnregister = FastSignal.new()
-Replica.ReplicantUnregistered = FastSignal.new()
 
 -- Register replicants created on the server
 if RunService:IsClient() then
 	Scheduler.FastSpawn(function()
 		script:WaitForChild("Replicators")
-		local BaseReplicantEvent = Resources:GetRemoteEvent("ReplicateBaseReplicant")
-		local GetGuidFunction = Resources:GetRemoteFunction("GetRegisteredGuid")
+		local BaseReplicantEvent: RemoteEvent = Resources:GetRemoteEvent("ReplicateBaseReplicant")
+		local GetGuidFunction: RemoteFunction = Resources:GetRemoteFunction("GetRegisteredGuid")
 
 		-- We want to match instances tagged in CollectionService with string GUID keys.
 		local CollectionBuffer = {}
@@ -358,16 +366,13 @@ if RunService:IsClient() then
 		end)
 	end)
 else
-	local BaseReplicantEvent = Resources:GetRemoteEvent("ReplicateBaseReplicant")
-	local GetGuidFunction = Resources:GetRemoteFunction("GetRegisteredGuid")
+	local BaseReplicantEvent: RemoteEvent = Resources:GetRemoteEvent("ReplicateBaseReplicant")
+	local GetGuidFunction: RemoteFunction = Resources:GetRemoteFunction("GetRegisteredGuid")
 	local SentInitialReplication = {}
 
 	Replica.ReplicantRegistered:Connect(function(RegisteredReplicant, KeyRef)
 		local Key
-		if
-			type(KeyRef) == "string"
-			or type(KeyRef) == "number"
-		then
+		if type(KeyRef) == "string" or type(KeyRef) == "number" then
 			Key = KeyRef
 		elseif typeof(KeyRef) == "Instance" then
 			Key = InstanceGuidMap[KeyRef]

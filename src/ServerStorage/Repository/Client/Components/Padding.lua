@@ -9,10 +9,13 @@ type PaddingProps = {
 	SizeConstraint: EnumItem,
 }
 
-local function Padding(props: PaddingProps)
-	local newProps: PaddingProps = Table.Copy(props)
+local Roact_createElement = Roact.createElement
+local Table_Copy = Table.Copy
 
-	return Roact.createElement("Frame", {
+local function Padding(props: PaddingProps)
+	local newProps: PaddingProps = Table_Copy(props)
+
+	return Roact_createElement("Frame", {
 		BackgroundTransparency = 1,
 		LayoutOrder = newProps.LayoutOrder or 0,
 		Size = newProps.Size,

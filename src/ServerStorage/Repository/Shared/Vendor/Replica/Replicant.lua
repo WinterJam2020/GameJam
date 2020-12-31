@@ -15,6 +15,16 @@ local Replicators = script.Parent.Replicators
 local Replicant = {}
 local Members = {}
 
+local Context_new = Context.new
+local Utility_Copy = Utility.Copy
+local Utility_OverrideDefaults = Utility.OverrideDefaults
+local Utility_Serialize = Utility.Serialize
+local Utility_Deserialize = Utility.Deserialize
+local Utility_DeepCompare = Utility.DeepCompare
+local Utility_Inspect = Utility.Inspect
+local Utility_NextId = Utility.NextId
+local Scheduler_FastSpawn = Scheduler.FastSpawn
+
 function Members:GetConfig()
 	return self.Config
 end
@@ -23,7 +33,7 @@ function Members:SetConfig(NewConfig)
 	self.Config = NewConfig
 	self.ConfigInferred = false
 
-	self:_SetContext(Context.new(self.Context.Base, self.Context.KeyPath, NewConfig))
+	self:_SetContext(Context_new(self.Context.Base, self.Context.KeyPath, NewConfig))
 end
 
 function Members:_HookListeners()
@@ -58,13 +68,13 @@ function Members:_SetContext(NewContext)
 	if self.ConfigInferred then
 		self.Config = NewContext.Config
 	elseif self.PartialConfig ~= nil then
-		self.Config = Utility.OverrideDefaults(NewContext.Config, self.PartialConfig)
+		self.Config = Utility_OverrideDefaults(NewContext.Config, self.PartialConfig)
 	end
 
 	-- Recursively update config context in wrapped descendants
 	for Index, Value in next, self.Wrapped do
 		if type(Value) == "table" and rawget(Value, "_IsReplicant") == true then
-			local ExtendedPath = Utility.Copy(NewContext.KeyPath)
+			local ExtendedPath = Utility_Copy(NewContext.KeyPath)
 			ExtendedPath[#ExtendedPath + 1] = Index
 			Value:_SetContext(NewContext.new(NewContext.Base, ExtendedPath, self.Config, NewContext.Active, NewContext.RegistryKey))
 		end
@@ -147,10 +157,10 @@ function Members:Set(Key, Value)
 	if self.Context.Active then
 		-- Update context for nested replicants
 		if type(Value) == "table" and rawget(Value, "_IsReplicant") then
-			local ExtendedPath = Utility.Copy(self.Context.KeyPath)
+			local ExtendedPath = Utility_Copy(self.Context.KeyPath)
 			ExtendedPath[#ExtendedPath + 1] = Key
 
-			Value:_setContext(Context.new(self.Context.Base, ExtendedPath, self.Config, self.Context.Active, self.Context.RegistryKey))
+			Value:_setContext(Context_new(self.Context.Base, ExtendedPath, self.Config, self.Context.Active, self.Context.RegistryKey))
 		end
 
 		-- Add to replication buffer
@@ -203,7 +213,7 @@ function Members:Serialize(AtKey, ForClient)
 		if type(Value) == "table" and rawget(Value, "_IsReplicant") then
 			SymbolicValue[#SymbolicValue + 1] = Value:Serialize(Index, ForClient)
 		else
-			SymbolicValue[#SymbolicValue + 1] = Utility.Serialize(Index, Value)
+			SymbolicValue[#SymbolicValue + 1] = Utility_Serialize(Index, Value)
 		end
 	end
 
@@ -221,7 +231,7 @@ function Members:Collate(Function)
 	-- Else spawn a collation thread and expect no yielding
 	self.Collating = true
 
-	Scheduler.FastSpawn(function()
+	Scheduler_FastSpawn(function()
 		local Success, Error = pcall(Function)
 		self:_FlushReplicationBuffer()
 		self.Collating = false
@@ -339,9 +349,9 @@ function Members:_MatchPredictions(Buffer)
 
 			if PredictedKey == UpdatedKey then
 				local PredictedValue = PredictionBuffer[Index][2]
-				local ActualValue = Utility.Deserialize(NestedSerialized)
+				local ActualValue = Utility_Deserialize(NestedSerialized)
 
-				if Utility.DeepCompare(PredictedValue, ActualValue) then
+				if Utility_DeepCompare(PredictedValue, ActualValue) then
 					ConsumedPrediction = true
 				else
 					return false
@@ -399,9 +409,9 @@ function Members:_ApplyUpdate(Buffer, DestroyList, RelocatedList, UpdateList)
 
 				-- Update keypath context for displaced items
 				if Existing ~= DisplacedExisting then
-					local ExtendedPath = Utility.Copy(self.Context.KeyPath)
+					local ExtendedPath = Utility_Copy(self.Context.KeyPath)
 					ExtendedPath[#ExtendedPath + 1] = Key
-					DisplacedExisting:_SetContext(Context.new(self.Context.Base, ExtendedPath, self.Config, self.Context.Active, self.Context.RegistryKey))
+					DisplacedExisting:_SetContext(Context_new(self.Context.Base, ExtendedPath, self.Config, self.Context.Active, self.Context.RegistryKey))
 				end
 
 				-- Update buffered items
@@ -439,7 +449,8 @@ function Members:_ApplyUpdate(Buffer, DestroyList, RelocatedList, UpdateList)
 end
 
 function Members:_BufferRawUpdate(WrappedKey, WrappedValue)
-	if not self.Context.Active
+	if
+		not self.Context.Active
 		or self.Context.RegistryKey == nil
 		or self:_InLocalContext()
 	then
@@ -471,7 +482,7 @@ function Members:_BufferRawUpdate(WrappedKey, WrappedValue)
 	if type(WrappedValue) == "table" and rawget(WrappedValue, "_IsReplicant") then
 		QualifiedBuffer[#QualifiedBuffer + 1] = WrappedValue:Serialize(WrappedKey)
 	else
-		QualifiedBuffer[#QualifiedBuffer + 1] = Utility.Serialize(WrappedKey, WrappedValue)
+		QualifiedBuffer[#QualifiedBuffer + 1] = Utility_Serialize(WrappedKey, WrappedValue)
 	end
 end
 
@@ -484,7 +495,7 @@ function Members:Local(Function)
 	-- Else create a new local context
 	self.ExplicitLocalContext = true
 
-	Scheduler.FastSpawn(function()
+	Scheduler_FastSpawn(function()
 		local Success, Error = pcall(Function)
 		self.ExplicitLocalContext = false
 		assert(Success, Error)
@@ -568,7 +579,7 @@ function Members:Inspect(MaxDepth, CurrentDepth, Key)
 			Value:Inspect(MaxDepth, CurrentDepth + 1, Index)
 		else
 			if type(Value) == "table" then
-				Utility.Inspect(Value, MaxDepth, CurrentDepth + 1, Index)
+				Utility_Inspect(Value, MaxDepth, CurrentDepth + 1, Index)
 			else
 				local IndexString = tostring(Index)
 				if type(Index) == "number" then
@@ -629,10 +640,10 @@ function Members:MergeSerialized(Serialized)
 end
 
 function Members:Destroy()
-	self:_SetContext(Context.new(
+	self:_SetContext(Context_new(
 		self,
 		{},
-		self.PartialConfig and Utility.OverrideDefaults(DefaultConfig, self.PartialConfig) or DefaultConfig,
+		self.PartialConfig and Utility_OverrideDefaults(DefaultConfig, self.PartialConfig) or DefaultConfig,
 		false,
 		nil
 	))
@@ -687,7 +698,7 @@ function Replicant.FromSerialized(Serialized, PartialConfig, NewContext)
 	end
 
 	-- Check primitives/rbx datatypes
-	return Utility.Deserialize(Serialized)
+	return Utility_Deserialize(Serialized)
 end
 
 function Replicant.RegisterSubclasses()
@@ -705,21 +716,21 @@ end
 -- Should be implemented
 Replicant.SerialType = "Replicant"
 
-function Replicant.Constructor(self, PartialConfig, NewContext)
+function Replicant:Constructor(PartialConfig, NewContext)
 	local ConfigInferred = PartialConfig == nil
 	if ConfigInferred then
 		self.ConfigInferred = true
 		self.Config = DefaultConfig
 	else
 		self.ConfigInferred = false
-		self.Config = Utility.OverrideDefaults(DefaultConfig, PartialConfig)
+		self.Config = Utility_OverrideDefaults(DefaultConfig, PartialConfig)
 		self.partialConfig = PartialConfig
 	end
 
 	self.Collating = false
 	self.ExplicitLocalContext = false
 	self.Wrapped = {}
-	self.Context = NewContext or Context.new(self, {}, self.Config, false, nil)
+	self.Context = NewContext or Context_new(self, {}, self.Config, false, nil)
 	self.ReplicationBuffer = {}
 	self.PredictionBuffer = {}
 	self._IsReplicant = true
@@ -732,7 +743,7 @@ function Replicant.Constructor(self, PartialConfig, NewContext)
 	self.ValueWillUpdateSignals = {}
 	self.ValueOnUpdateSignals = {}
 
-	self._PreservationId = Utility.NextId()
+	self._PreservationId = Utility_NextId()
 end
 
 -- OOP boilerplate

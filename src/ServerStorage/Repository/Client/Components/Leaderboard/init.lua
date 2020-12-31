@@ -29,6 +29,9 @@ Leaderboard.validateProps = t.interface({
 	Visible = t.boolean,
 })
 
+local Llama_List_sort = Llama.List.sort
+local Roact_createElement = Roact.createElement
+
 function Leaderboard:init()
 	self.sortFunction = function(a, b)
 		return a.Time < b.Time
@@ -44,7 +47,7 @@ end
 
 function Leaderboard:render()
 	local children = {
-		UIListLayout = Roact.createElement("UIListLayout", {
+		UIListLayout = Roact_createElement("UIListLayout", {
 			Padding = UDim.new(0, 5),
 			FillDirection = Enum.FillDirection.Vertical,
 			HorizontalAlignment = Enum.HorizontalAlignment.Left,
@@ -52,22 +55,22 @@ function Leaderboard:render()
 			VerticalAlignment = Enum.VerticalAlignment.Top,
 		}),
 
-		UIScale = Roact.createElement(Scale, {
+		UIScale = Roact_createElement(Scale, {
 			Scale = 0.85,
 			Size = Vector2.new(850, 850),
 		}),
 	}
 
-	local entries = Llama.List.sort(self.props.Entries, self.sortFunction)
+	local entries = Llama_List_sort(self.props.Entries, self.sortFunction)
 	for index, elementData in ipairs(entries) do
-		children[elementData.Username] = Roact.createElement(LeaderboardEntry, {
+		children[elementData.Username] = Roact_createElement(LeaderboardEntry, {
 			LayoutOrder = index - 1,
 			Time = elementData.Time,
 			Username = elementData.Username,
 		})
 	end
 
-	return Roact.createElement(AutomatedScrollingFrameComponent, {
+	return Roact_createElement(AutomatedScrollingFrameComponent, {
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		BackgroundTransparency = 1,
 		Position = UDim2.fromScale(0.5, 0.5),

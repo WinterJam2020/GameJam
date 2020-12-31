@@ -3,6 +3,9 @@ local Resources = require(ReplicatedStorage.Resources)
 local Llama = Resources:LoadLibrary("Llama")
 local Roact = Resources:LoadLibrary("Roact")
 
+local Roact_createElement = Roact.createElement
+local Llama_Dictionary_assign = Llama.Dictionary.assign
+
 local function AutoFixedScrollingFrame(props)
 	local count = 0
 	for _ in next, props[Roact.Children] do
@@ -11,12 +14,12 @@ local function AutoFixedScrollingFrame(props)
 
 	local rows = math.ceil(count / props.CellsPerRow)
 
-	return Roact.createElement("ScrollingFrame", Llama.Dictionary.assign(props.ScrollingFrame, {
+	return Roact_createElement("ScrollingFrame", Llama_Dictionary_assign(props.ScrollingFrame, {
 		BackgroundTransparency = 1,
 		BorderSizePixel = 0,
 		CanvasSize = UDim2.fromOffset(0, (rows * props.CellSize.Y.Offset) + (rows * props.CellPadding.Y.Offset)),
-	}), Llama.Dictionary.assign(props[Roact.Children], {
-		UIGridLayout = Roact.createElement("UIGridLayout", Llama.Dictionary.assign(props.GridLayout or {}, {
+	}), Llama_Dictionary_assign(props[Roact.Children], {
+		UIGridLayout = Roact_createElement("UIGridLayout", Llama_Dictionary_assign(props.GridLayout or {}, {
 			CellPadding = props.CellPadding,
 			CellSize = props.CellSize,
 			FillDirectionMaxCells = props.CellsPerRow,

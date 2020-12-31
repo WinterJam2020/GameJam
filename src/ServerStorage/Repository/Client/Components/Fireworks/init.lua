@@ -19,16 +19,16 @@ Fireworks.defaultProps = {
 	end,
 }
 
-function Fireworks:init()
-	local particlePositions = {}
+function Fireworks:init(props)
+	local particlePositions = table.create(props.Particles)
 
-	for _ = 1, self.props.Particles do
-		table.insert(particlePositions, {
+	for index = 1, props.Particles do
+		particlePositions[index] = {
 			Direction = math.random() >= 0.5 and 1 or -1,
-			Peak = Random.new():NextNumber(self.props.MinPeak, self.props.MaxPeak),
+			Peak = Random.new():NextNumber(props.MinPeak, props.MaxPeak),
 			X = math.random(),
 			Y = math.random(),
-		})
+		}
 	end
 
 	self.particlePositions = particlePositions
@@ -48,18 +48,18 @@ function Fireworks:render()
 						BorderSizePixel = 0,
 						Image = self.props.ParticleImage,
 						ImageColor3 = self.props.ColorGenerator(),
-						ImageTransparency = counter:map(function(t)
-							if t <= self.props.TransparencyFadeTime then
-								return 1 - t / self.props.TransparencyFadeTime
+						ImageTransparency = counter:map(function(alpha)
+							if alpha <= self.props.TransparencyFadeTime then
+								return 1 - alpha / self.props.TransparencyFadeTime
 							end
 						end),
 
-						Position = counter:map(function(t)
+						Position = counter:map(function(alpha)
 							return UDim2.fromScale(particlePositions.X, particlePositions.Y)
 								+ UDim2.fromScale(
-									t * self.props.ParticleSpeed * particlePositions.Direction,
+									alpha * self.props.ParticleSpeed * particlePositions.Direction,
 									(
-										-(-((2 * t - 1) ^ 2) + 1) * particlePositions.Peak
+										-(-((2 * alpha - 1) ^ 2) + 1) * particlePositions.Peak
 									) * particlePositions.Peak
 								)
 						end),
@@ -72,18 +72,18 @@ function Fireworks:render()
 					particles["Particle" .. index] = Roact_createElement("Frame", {
 						BackgroundColor3 = self.props.ColorGenerator(),
 						BorderSizePixel = 0,
-						BackgroundTransparency = counter:map(function(t)
-							if t <= self.props.TransparencyFadeTime then
-								return 1 - t / self.props.TransparencyFadeTime
+						BackgroundTransparency = counter:map(function(alpha)
+							if alpha <= self.props.TransparencyFadeTime then
+								return 1 - alpha / self.props.TransparencyFadeTime
 							end
 						end),
 
-						Position = counter:map(function(t)
+						Position = counter:map(function(alpha)
 							return UDim2.fromScale(particlePositions.X, particlePositions.Y)
 								+ UDim2.fromScale(
-									t * self.props.ParticleSpeed * particlePositions.Direction,
+									alpha * self.props.ParticleSpeed * particlePositions.Direction,
 									(
-										-(-((2 * t - 1) ^ 2) + 1) * particlePositions.Peak
+										-(-((2 * alpha - 1) ^ 2) + 1) * particlePositions.Peak
 									) * particlePositions.Peak
 								)
 						end),

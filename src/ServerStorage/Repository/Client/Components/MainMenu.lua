@@ -24,25 +24,15 @@ MainMenu.defaultProps = {
 	Visible = true,
 }
 
-local print = function(a, p)
-	if p then
-		print(p, a)
-	else
-		print(a)
-	end
+-- local print = function(a, p)
+-- 	if p then
+-- 		print(p, a)
+-- 	else
+-- 		print(a)
+-- 	end
 
-	return a
-end
-
-function MainMenu:init()
-	self.startButtonFunction = function()
-		print("StartButtonFunction")
-		self.props.SetCountdownDuration(60)
-		self.props.SetMenuVisible(false)
-		self.props.SetCountdownVisible(true)
-		self.props.SetCountdownActive(true)
-	end
-end
+-- 	return a
+-- end
 
 function MainMenu:render()
 	return Roact.createElement("Frame", {

@@ -20,9 +20,11 @@ Alert.defaultProps = {
 	Window = RunService:IsRunning() and Players.LocalPlayer.PlayerGui.MainGui.Main,
 }
 
-function Alert:init()
-	self.fadeBinding, self.updateFadeBinding = Roact.createBinding(self.props.Open and 0 or 1)
-	if self.props.Open then
+local Roact_createElement = Roact.createElement
+
+function Alert:init(props)
+	self.fadeBinding, self.updateFadeBinding = Roact.createBinding(props.Open and 0 or 1)
+	if props.Open then
 		self:Open()
 	end
 end
@@ -73,10 +75,10 @@ end
 function Alert:render()
 	local props = self.props
 
-	return Roact.createElement(Roact.Portal, {
+	return Roact_createElement(Roact.Portal, {
 		target = props.Window,
 	}, {
-		Notification = Roact.createElement("TextLabel", {
+		Notification = Roact_createElement("TextLabel", {
 			AnchorPoint = Vector2.new(0.5, 0),
 			BackgroundTransparency = 1,
 			Font = Enum.Font.GothamBold,

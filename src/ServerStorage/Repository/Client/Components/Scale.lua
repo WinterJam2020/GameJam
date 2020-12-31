@@ -12,6 +12,7 @@ local GuiService: GuiService = Services.GuiService
 
 local CurrentCamera = Workspace.CurrentCamera
 local TopInset, BottomInset = GuiService:GetGuiInset()
+local Roact_createElement = Roact.createElement
 
 local Scale = Roact.PureComponent:extend("Scale")
 Scale.defaultProps = {
@@ -48,7 +49,7 @@ function Scale:willUnmount()
 end
 
 function Scale:render()
-	return Roact.createElement("UIScale", {
+	return Roact_createElement("UIScale", {
 		Scale = self.state.scale * self.props.Scale,
 	})
 end

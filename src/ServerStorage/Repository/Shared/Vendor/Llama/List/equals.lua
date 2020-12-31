@@ -6,7 +6,7 @@ local function equals(...)
 		return true
 	end
 
-	local argc = select('#', ...)
+	local argc = select("#", ...)
 
 	for i = 1, argc do
 		local list = select(i, ...)
@@ -15,8 +15,8 @@ local function equals(...)
 			if j ~= i then
 				local compare = select(j, ...)
 
-				for k = 1, #list do
-					if list[k] ~= compare[k] then
+				for k, value in ipairs(list) do
+					if value ~= compare[k] then
 						return false
 					end
 				end

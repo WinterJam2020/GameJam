@@ -3,8 +3,8 @@ local equalObjects = require(script.Parent.Parent.equalObjects)
 
 local function equalsDeepOneWay(object, comparison)
 	if type(object) == "table" and type(comparison) == "table" then
-		for i = 1, #object do
-			if not equalsDeepOneWay(object[i], comparison[i]) then
+		for index, value in ipairs(object) do
+			if not equalsDeepOneWay(value, comparison[index]) then
 				return false
 			end
 		end
@@ -22,7 +22,7 @@ local function equalsDeep(...)
 		return true
 	end
 
-	local argc = select('#', ...)
+	local argc = select("#", ...)
 
 	for i = 1, argc do
 		local dictionary = select(i, ...)

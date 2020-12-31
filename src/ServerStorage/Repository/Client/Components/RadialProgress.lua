@@ -18,7 +18,6 @@ local Roact_createElement = Roact.createElement
 
 function RadialProgress:render()
 	local imageSize = self.props.ImageSize
-
 	local gradientRotation = self.props.Clockwise and self.props.Value:map(function(value)
 		return (value - 0.5) * 360
 	end)

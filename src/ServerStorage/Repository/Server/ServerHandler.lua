@@ -21,6 +21,8 @@ local ServerHandler = {
 	ParticleEngine = nil;
 	PlayerData = {};
 	PlayerDataHandler = nil;
+	SkiChain = nil;
+	SkiChainCFrames = nil;
 	SkiPathGenerator = nil;
 	SkiPathRemote = nil;
 	TimeSyncService = nil;
@@ -31,6 +33,9 @@ local SERVER_EVENTS = {
 		CollectionService:AddTag(Player, "ReadyPlayers")
 	end;
 }
+
+local Postie_PromiseInvokeClient = Postie.PromiseInvokeClient
+local Promise_Delay = Promise.Delay
 
 function ServerHandler:Initialize()
 	self.Constants = Constants
@@ -92,9 +97,9 @@ function ServerHandler:StartGameLoop()
 				for _, Player: Player in ipairs(ReadyPlayers) do
 					CollectionService:RemoveTag(Player, "ReadyPlayers")
 					GameEvent:FireClient(Player, Constants.START_THE_COUNTDOWN)
-					-- Player:LoadCharacter()
 					GameEvent:FireClient(Player, Constants.SPAWN_CHARACTER, self.SkiChainCFrames)
 					GameEvent:FireClient(Player, Constants.START_SKIING)
+
 					self.PlayerData[Player] = {
 						StartTime = time();
 						EndTime = 0;
@@ -103,9 +108,8 @@ function ServerHandler:StartGameLoop()
 				end
 
 				local CurrentPlayerData = self.PlayerData
-
 				local function GetLength(): number
-					local Length = 0
+					local Length: number = 0
 					for _ in next, CurrentPlayerData do
 						Length += 1
 					end
@@ -114,8 +118,8 @@ function ServerHandler:StartGameLoop()
 				end
 
 				local function IsEveryoneDone(): boolean
-					local GoalLength = GetLength()
-					local Length = 0
+					local GoalLength: number = GetLength()
+					local Length: number = 0
 
 					for _, PlayerData in next, CurrentPlayerData do
 						if PlayerData.HasFinished then
@@ -141,12 +145,12 @@ function ServerHandler:StartGameLoop()
 								continue
 							end
 
-							Postie.PromiseInvokeClient(Player, "GetProgress", 10):Then(function(Alpha: number)
+							Postie_PromiseInvokeClient(Player, "GetProgress", 10):Then(function(Alpha: number)
 								if Alpha == 1 then
 									PlayerData.HasFinished = true
 									PlayerData.EndTime = time()
 								end
-							end):Catch(CatchFactory("Postie.PromiseInvokeClient")):Wait()
+							end):Catch(CatchFactory("Postie.PromiseInvokeClient"))--:Wait()
 						end
 					end
 				end)
@@ -190,13 +194,13 @@ function ServerHandler:StartGameLoop()
 
 				GameEvent:FireAllClients(Constants.DISPLAY_LEADERBOARD, Entries)
 
-				Promise.Delay(5):Then(function()
+				Promise_Delay(5):Then(function()
 					GameEvent:FireAllClients(Constants.HIDE_LEADERBOARD)
-					return Promise.Delay(5)
-				end):Then(function()
 					GameEvent:FireAllClients(Constants.DESPAWN_CHARACTER)
+					return Promise_Delay(5)
+				end):Then(function()
 					GameEvent:FireAllClients(Constants.REMOUNT_UI) -- I WIN WOOOOOOOOOO
-					return Promise.Delay(1)
+					return Promise_Delay(1)
 				end):Then(function()
 					self.GameInProgress.Value = false
 				end)

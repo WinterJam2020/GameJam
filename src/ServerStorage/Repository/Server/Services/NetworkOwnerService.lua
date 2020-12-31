@@ -64,7 +64,7 @@ function NetworkOwnerService:_removeOwner(part, toRemove)
 		return false
 	end
 
-	for index, item in pairs(ownerDataStack) do
+	for index, item in ipairs(ownerDataStack) do
 		if item == toRemove then
 			table.remove(ownerDataStack, index)
 

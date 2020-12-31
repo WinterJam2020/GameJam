@@ -5,16 +5,18 @@ local Roact = Resources:LoadLibrary("Roact")
 local Table = Resources:LoadLibrary("Table")
 
 local AutomatedScrollingFrameComponent = Roact.PureComponent:extend("AutomatedScrollingFrameComponent")
+local Roact_createElement = Roact.createElement
+local Table_Copy = Table.Copy
 
 function AutomatedScrollingFrameComponent:init(props)
 	self.ref = props[Roact.Ref] or Roact.createRef()
 end
 
 function AutomatedScrollingFrameComponent:render()
-	local props = Table.Copy(self.props)
+	local props = Table_Copy(self.props)
 	props.UIGridStyleLayout = nil
 	props[Roact.Ref] = self.ref
-	return Roact.createElement("ScrollingFrame", props)
+	return Roact_createElement("ScrollingFrame", props)
 end
 
 function AutomatedScrollingFrameComponent:didMount()

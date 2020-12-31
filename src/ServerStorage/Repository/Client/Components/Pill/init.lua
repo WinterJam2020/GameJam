@@ -16,6 +16,7 @@ Pill.defaultProps = {
 	ZIndex = 2,
 }
 
+local Llama_Dictionary_join = Llama.Dictionary.join
 local Roact_createElement = Roact.createElement
 
 function Pill:render()
@@ -42,7 +43,7 @@ function Pill:render()
 			Position = UDim2.fromScale(0.5, 0.5),
 			Size = UDim2.new(1 - diameter.Scale, -diameter.Offset, 1, 0),
 			ZIndex = self.props.ZIndex,
-		}, Llama.Dictionary.join({
+		}, Llama_Dictionary_join({
 			PillBacking = Roact_createElement("Frame", {
 				BackgroundColor3 = self.props.BackgroundColor3,
 				BorderSizePixel = 0,

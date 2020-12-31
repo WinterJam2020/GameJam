@@ -17,7 +17,6 @@ SwShButton.defaultProps = {
 	end,
 }
 
-local Roact_createElement = Roact.createElement
 
 local HIDDEN_VECTOR2 = Vector2.new(-1, 0)
 local VISIBLE_VECTOR2 = Vector2.new()
@@ -28,6 +27,11 @@ local SPRING_PROPERTIES = {
 }
 
 local Color3Lerp = Lerps.Color3
+
+local Flipper_Instant_new = Flipper.Instant.new
+local Flipper_Spring_new = Flipper.Spring.new
+local Promise_Delay = Promise.Delay
+local Roact_createElement = Roact.createElement
 
 function SwShButton:init(props)
 	self.offsetMotor = Flipper.SingleMotor.new(0)
@@ -105,11 +109,11 @@ function SwShButton:render()
 					self.props.Hovered(true)
 				end
 
-				self.colorMotor:SetGoal(Flipper.Spring.new(1))
-				Promise.Delay(0.025):Then(function()
-					self.offsetMotor:SetGoal(Flipper.Instant.new(1))
-					Promise.Delay(0.025):Then(function()
-						self.offsetMotor:SetGoal(Flipper.Spring.new(0, SPRING_PROPERTIES))
+				self.colorMotor:SetGoal(Flipper_Spring_new(1))
+				Promise_Delay(0.025):Then(function()
+					self.offsetMotor:SetGoal(Flipper_Instant_new(1))
+					Promise_Delay(0.025):Then(function()
+						self.offsetMotor:SetGoal(Flipper_Spring_new(0, SPRING_PROPERTIES))
 					end)
 				end)
 			end
@@ -125,11 +129,11 @@ function SwShButton:render()
 					self.props.Hovered(false)
 				end
 
-				self.colorMotor:SetGoal(Flipper.Spring.new(0))
-				Promise.Delay(0.025):Then(function()
-					self.offsetMotor:SetGoal(Flipper.Instant.new(0))
-					Promise.Delay(0.025):Then(function()
-						self.offsetMotor:SetGoal(Flipper.Spring.new(1, SPRING_PROPERTIES))
+				self.colorMotor:SetGoal(Flipper_Spring_new(0))
+				Promise_Delay(0.025):Then(function()
+					self.offsetMotor:SetGoal(Flipper_Instant_new(0))
+					Promise_Delay(0.025):Then(function()
+						self.offsetMotor:SetGoal(Flipper_Spring_new(1, SPRING_PROPERTIES))
 					end)
 				end)
 

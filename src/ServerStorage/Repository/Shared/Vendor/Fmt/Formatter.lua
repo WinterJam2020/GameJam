@@ -38,7 +38,7 @@ function Formatter:Unlock()
 end
 
 function Formatter:AddToBuffer(Value)
-	if self._IsLocked == false then
+	if not self._IsLocked then
 		if type(Value) == "string" and type(self._Buffer[#self._Buffer]) == "string" then
 			self._Buffer[#self._Buffer] ..= Value
 		else
