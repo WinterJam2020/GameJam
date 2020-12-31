@@ -11,6 +11,7 @@ local GenerateGates = Resources:LoadServer("GenerateGates")
 local GenerateTrees = Resources:LoadServer("GenerateTrees")
 local GenerateTent = Resources:LoadServer("GenerateTent")
 local GenerateFinishLine = Resources:LoadServer("GenerateFinishLine")
+local GenerateRocks = Resources:LoadServer("GenerateRocks")
 
 local Terrain = Workspace.Terrain
 local TERRAIN_WIDTH = Constants.TERRAIN_WIDTH
@@ -97,11 +98,12 @@ local function DrawSkiPath(spline)
 	local container = Instance.new("Model")
 	container.Name = "SkiPathProps"
 	container.Parent = workspace
-	GenerateMarkers(spline, container)
+	GenerateMarkers(spline, container) -- dogshit
 	GenerateGates(spline, container)
 	GenerateTrees(spline, container)
 	GenerateTent(spline, container)
 	GenerateFinishLine(spline, container)
+	-- GenerateRocks(spline, container)
 	return container
 end
 
