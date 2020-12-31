@@ -249,18 +249,22 @@ function ClientHandler:Despawn()
 	if self.CharacterController then
 		self.CharacterController:Destroy()
 	end
-
 	self.CharacterController = nil
 end
 
 function ClientHandler:StartSkiing()
 	local characterController = assert(self.CharacterController, "CharacterController doesn't exist!")
 	self.CharacterJanitor:Add(RunService.Heartbeat:Connect(function(deltaTime)
-		characterController:Step(deltaTime)
+		if characterController then
+			characterController:Step(deltaTime)
+		else
+			self.Janitor:Cleanup()
+		end
 	end))
 end
 
 function ClientHandler:StopSkiing()
+	print("stop skiing")
 	self.CharacterJanitor:Cleanup()
 end
 
