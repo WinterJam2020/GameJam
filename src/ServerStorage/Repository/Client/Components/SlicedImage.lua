@@ -3,26 +3,29 @@ local Resources = require(ReplicatedStorage.Resources)
 local Roact = Resources:LoadLibrary("Roact")
 local Table = Resources:LoadLibrary("Table")
 
+local Roact_createElement = Roact.createElement
+local Table_DeepCopy = Table.DeepCopy
+
 local function SlicedImage(props)
-	local newProps = Table.DeepCopy(props)
+	local newProps = Table_DeepCopy(props)
 	local slice = newProps.Slice
 
-	return Roact.createElement("ImageLabel", {
+	return Roact_createElement("ImageLabel", {
+		AnchorPoint = newProps.AnchorPoint,
+		BackgroundTransparency = 1,
+
 		Image = slice.Image,
 		ImageColor3 = newProps.Color,
 		ImageTransparency = newProps.Transparency,
 
+		LayoutOrder = newProps.LayoutOrder,
+		Position = newProps.Position,
 		ScaleType = Enum.ScaleType.Slice,
+		Size = newProps.Size,
+
 		SliceCenter = slice.Center,
 		SliceScale = slice.Scale,
-
-		Size = newProps.Size,
-		Position = newProps.Position,
-		AnchorPoint = newProps.AnchorPoint,
-
 		ZIndex = newProps.ZIndex,
-		LayoutOrder = newProps.LayoutOrder,
-		BackgroundTransparency = 1,
 	}, newProps[Roact.Children])
 end
 

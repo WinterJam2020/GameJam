@@ -1,19 +1,15 @@
-
 local function alwaysTrue()
 	return true
 end
 
 local function count(list, predicate)
-	local listType = type(list)
-	assert(listType == "table", "expected a table for first argument, got " .. listType)
-
+	assert(type(list) == "table", "expected a table for first argument, got " .. typeof(list))
 	predicate = predicate or alwaysTrue
 
 	local counter = 0
-
-	for i = 1, #list do
-		if predicate(list[i], i) then
-			counter = counter + 1
+	for index, value in ipairs(list) do
+		if predicate(value, index) then
+			counter += 1
 		end
 	end
 

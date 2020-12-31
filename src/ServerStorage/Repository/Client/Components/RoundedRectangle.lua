@@ -94,6 +94,8 @@ RoundedRectangle.validateProps = t.interface({
 	ZIndex = t.optional(t.integer),
 })
 
+local Roact_createElement = Roact.createElement
+
 function RoundedRectangle:render()
 	local radius = self.props.Radius
 	local mode = self.props.Mode
@@ -127,7 +129,7 @@ function RoundedRectangle:render()
 		end
 	end
 
-	return Roact.createElement(self.props.Activated and "ImageButton" or "ImageLabel", {
+	return Roact_createElement(self.props.Activated and "ImageButton" or "ImageLabel", {
 		Image = image,
 		ImageColor3 = self.props.Color,
 		ImageTransparency = self.props.Transparency,

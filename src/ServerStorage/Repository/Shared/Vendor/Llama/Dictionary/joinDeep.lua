@@ -8,7 +8,7 @@ local function joinDeep(...)
 	for dictionaryIndex = 1, select("#", ...) do
 		local dictionary = select(dictionaryIndex, ...)
 
-		for k, v in pairs(dictionary) do
+		for k, v in next, dictionary do
 			if v == None then
 				new[k] = nil
 			elseif type(v) == "table" then

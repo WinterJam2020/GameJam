@@ -23,6 +23,7 @@ Menu.defaultProps = {
 }
 
 local Roact_createElement = Roact.createElement
+local Promise_FromEvent = Promise.FromEvent
 
 function Menu:init()
 	self.janitor = Janitor.new()
@@ -49,14 +50,10 @@ function Menu:init()
 end
 
 function Menu:willUpdate(nextProps)
-	if nextProps.Visible ~= self.props.Visible then
-		print("not same")
-		if not nextProps.Visible then
-			print("not visble")
-			local uiPageLayout: UIPageLayout = self.pageRef:getValue()
-			if uiPageLayout then
-				uiPageLayout:JumpToIndex(0)
-			end
+	if nextProps.Visible ~= self.props.Visible and not nextProps.Visible then
+		local uiPageLayout: UIPageLayout = self.pageRef:getValue()
+		if uiPageLayout then
+			uiPageLayout:JumpToIndex(0)
 		end
 	end
 end
@@ -138,7 +135,7 @@ function Menu:render()
 					-- TextColor3 = Color.Black,
 					Size = UDim2.fromScale(0.5, 0.15),
 					Activated = function()
-						Promise.FromEvent(self.pageRef:getValue().Stopped, function()
+						Promise_FromEvent(self.pageRef:getValue().Stopped, function()
 							return true
 						end):Then(function()
 							if self.props.StartButtonFunction then

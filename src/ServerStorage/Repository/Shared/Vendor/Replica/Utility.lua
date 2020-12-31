@@ -9,11 +9,11 @@ function Utility.Copy(Table)
 	return NewTable
 end
 
-function Utility.DeepCopy(Table)
+local function DeepCopy(Table)
 	local NewTable = {}
 	for Index, Value in next, Table do
 		if type(Value) == "table" then
-			NewTable[Index] = Utility.DeepCopy(Value)
+			NewTable[Index] = DeepCopy(Value)
 		else
 			NewTable[Index] = Value
 		end
@@ -22,10 +22,12 @@ function Utility.DeepCopy(Table)
 	return NewTable
 end
 
-function Utility.DeepCompare(Value1, Value2)
+Utility.DeepCopy = DeepCopy
+
+local function DeepCompare(Value1, Value2)
 	if type(Value1) == "table" and type(Value2) == "table" then
 		for Index, Value in next, Value1 do
-			if not Utility.DeepCompare(Value, Value2[Index]) then
+			if not DeepCompare(Value, Value2[Index]) then
 				return false
 			end
 		end
@@ -36,13 +38,15 @@ function Utility.DeepCompare(Value1, Value2)
 	end
 end
 
-function Utility.OverrideDefaults(Defaults, Table)
-	local NewTable = Utility.DeepCopy(Defaults)
+Utility.DeepCompare = DeepCompare
+
+local function OverrideDefaults(Defaults, Table)
+	local NewTable = DeepCopy(Defaults)
 
 	for Index, Value in next, Table do
 		local Existing = Defaults[Index]
 		if Existing and type(Value) == "table" and type(Existing) == "table" then
-			NewTable[Index] = Utility.OverrideDefaults(Existing, Value)
+			NewTable[Index] = OverrideDefaults(Existing, Value)
 		else
 			NewTable[Index] = Value
 		end
@@ -50,6 +54,8 @@ function Utility.OverrideDefaults(Defaults, Table)
 
 	return NewTable
 end
+
+Utility.OverrideDefaults = OverrideDefaults
 
 -- Serialized values should be in the form {key, type, symbolic_value, [preservation_id]}
 -- Most standard roblox data types are supported, so long as they are reversible

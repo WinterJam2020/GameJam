@@ -6,9 +6,11 @@ local Services = Resources:LoadLibrary("Services")
 local Table = Resources:LoadLibrary("Table")
 
 local TextService: TextService = Services.TextService
+local Roact_createElement = Roact.createElement
+local Table_Copy = Table.Copy
 
 local function PerfectTextLabel(props)
-	local newProps = Table.Copy(props)
+	local newProps = Table_Copy(props)
 
 	assert(newProps.Text ~= nil, "Text is nil")
 	assert(newProps.TextSize ~= nil, "TextSize is nil")
@@ -41,9 +43,9 @@ local function PerfectTextLabel(props)
 	if newProps.RenderParent then
 		local renderParent = newProps.RenderParent
 		newProps.RenderParent = nil
-		return renderParent(Roact.createElement("TextLabel", newProps), newProps.Size)
+		return renderParent(Roact_createElement("TextLabel", newProps), newProps.Size)
 	else
-		return Roact.createElement("TextLabel", newProps)
+		return Roact_createElement("TextLabel", newProps)
 	end
 end
 

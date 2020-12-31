@@ -7,7 +7,7 @@ local function join(...)
 	for dictionaryIndex = 1, select("#", ...) do
 		local dictionary = select(dictionaryIndex, ...)
 
-		for k, v in pairs(dictionary) do
+		for k, v in next, dictionary do
 			if v == None then
 				new[k] = nil
 			else

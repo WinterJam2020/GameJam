@@ -27,6 +27,10 @@ Countdown.defaultProps = {
 local VISIBLE_VECTOR2 = Vector2.new(0.4, 0)
 local HIDDEN_VECTOR2 = Vector2.new(-0.7, 0)
 
+local Flipper_Spring_new = Flipper.Spring.new
+local Roact_createElement = Roact.createElement
+local RoactFlipper_GetBinding = RoactFlipper.GetBinding
+
 function Countdown:init(props)
 	self.motor = Flipper.SingleMotor.new(0)
 	self.timeRemaining, self.setTimeRemaining = Roact.createBinding(0)
@@ -45,7 +49,7 @@ end
 
 function Countdown:didMount()
 	if self.props.Active and not self.connection then
-		self.motor:SetGoal(Flipper.Spring.new(1, {
+		self.motor:SetGoal(Flipper_Spring_new(1, {
 			DampingRatio = 1.2,
 			Frequency = 6,
 		}))
@@ -66,7 +70,7 @@ end
 function Countdown:Close()
 	if not self.isClosing then
 		self.isClosing = true
-		self.motor:SetGoal(Flipper.Spring.new(0, {
+		self.motor:SetGoal(Flipper_Spring_new(0, {
 			DampingRatio = 0.75,
 			Frequency = 4,
 		}))
@@ -77,7 +81,7 @@ end
 
 function Countdown:didUpdate(lastProps)
 	if self.props.Active and not self.connection then
-		self.motor:SetGoal(Flipper.Spring.new(1, {
+		self.motor:SetGoal(Flipper_Spring_new(1, {
 			DampingRatio = 1.2,
 			Frequency = 6,
 		}))
@@ -105,10 +109,8 @@ function Countdown:willUnmount()
 	end
 end
 
-local Roact_createElement = Roact.createElement
-
 function Countdown:render()
-	local transparency = RoactFlipper.GetBinding(self.motor):map(function(value)
+	local transparency = RoactFlipper_GetBinding(self.motor):map(function(value)
 		return 1 - value
 	end)
 
