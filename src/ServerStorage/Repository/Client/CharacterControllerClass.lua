@@ -3,11 +3,13 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
 
 local Resources = require(ReplicatedStorage.Resources)
 local Constants = Resources:LoadShared("Constants")
 -- local Arrow = Resources:LoadShared("Arrow")
 local Janitor = Resources:LoadLibrary("Janitor")
+local ParticleEngineHelper = Resources:LoadClient("ParticleEngineHelper")
 local SplineModule = Resources:LoadLibrary("AstroSpline")
 
 local Player = Players.LocalPlayer
@@ -18,7 +20,7 @@ local CharacterRig = ReplicatedStorage.CharacterRig
 ---- Constants
 local TERRAIN_WIDTH = Constants.SKI_PATH.TERRAIN_WIDTH
 local ROOT_PART_OFFSET = CFrame.new(0, 2.7 + 1 + 2, 0) -- 2.7: hip height, 1: HRP height/2, 2: fudge
-local CAMERA_OFFSET = ROOT_PART_OFFSET * CFrame.new(0, 5, 10)
+local CAMERA_OFFSET = ROOT_PART_OFFSET * CFrame.new(0, 5, 10) * CFrame.Angles(math.rad(-20), 0, 0)
 -- local PUSH_COOLDOWN = 0.5
 local MAX_CARVE_ANGLE = 40
 -- local MAX_SKID_ANGLE = 80
@@ -191,6 +193,19 @@ function CharacterController:Step(deltaTime)
 	local newRootCFrame = CFrameUpAt(newPosition, skiChainUp, rootLook)
 		* CFrame.Angles(0, mouseX * -math.rad(MAX_CARVE_ANGLE) / 10, 0)
 
+	-- ski particles
+	if math.random() > 0.5 then
+		local windCFrame = skiChain:GetCFrame(math.clamp(alpha + 0.01, 0, 1))
+		ParticleEngineHelper.WindParticle(
+			(windCFrame * CFrame.new(
+				(2 * math.random() - 1) * TERRAIN_WIDTH / 2,
+				math.random() * 20,
+				0
+			)).Position,
+			CFrame.new()
+		)
+	end
+
 	-- update fields
 	self:SetRootCFrame(newRootCFrame)
 	self:SetCameraCFrame(newRootCFrame)
@@ -198,8 +213,28 @@ function CharacterController:Step(deltaTime)
 	self.SkiChainCFrame = skiChainCFrame
 	self.RootCFrame = newRootCFrame
 
-	if alpha == 1 then
+	if alpha == 1 then -- absolute dogshit
 		Resources("ClientHandler"):StopSkiing()
+		local lastSkiCFrame = skiChain:GetCFrame(1)
+		lastSkiCFrame = CFrameUpAt(
+			lastSkiCFrame.Position,
+			Vector3.new(0, 1, 0),
+			lastSkiCFrame.LookVector
+		)
+		workspace.CurrentCamera.CFrame =
+			lastSkiCFrame * CFrame.Angles(0, math.pi, 0) * CFrame.new(0, 8, 30)
+		local rotationMultiplier = math.random() > 0.5 and 1 or -1
+		local random = Random.new()
+		local lastRootCFrame = lastSkiCFrame
+			* CFrame.new(0, 2, -25)
+			* ROOT_PART_OFFSET
+			* CFrame.Angles(
+				0,
+				rotationMultiplier * random:NextNumber(0.8, 1) * math.pi / 2,
+				0
+			)
+		local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out, 0, false, 0)
+		TweenService:Create(self.Root, tweenInfo, {CFrame = lastRootCFrame}):Play()
 	end
 end
 
