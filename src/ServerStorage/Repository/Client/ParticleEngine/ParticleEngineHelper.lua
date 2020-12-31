@@ -28,17 +28,31 @@ local SNOW_GRAVITY = Vector3.new(0, -3, 0)
 local REFLECTABLE_BLOOM = Vector2.new(2, 2)
 local REFLECTABLE_GRAVITY = Vector3.new(0, -50, 0)
 
-function ParticleEngineHelper.SnowParticle(Position, VelocityCFrame)
+-- function ParticleEngineHelper.SnowParticle(Position, VelocityCFrame)
+-- 	ParticleEngine:Add {
+-- 		Occlusion = true;
+-- 		Size = Vector2.new(0.05 + NextNumber(RandomLib) / 20, 0.05 + NextNumber(RandomLib) / 20);
+-- 		Velocity = GetRandomAngles(VelocityCFrame, 0.2).Position.Unit * NextNumber(RandomLib, 100, 200);
+-- 		Transparency = 0,--0.1 + NextNumber(RandomLib) * 0.4;
+-- 		Position = Position;
+-- 		Gravity = SNOW_GRAVITY;
+-- 		WindResistance = 10;
+-- 		Lifetime = NextNumber(RandomLib) + 0.5;
+-- 		Color = Color3.fromRGB(NextInteger(RandomLib, 230, 255), NextInteger(RandomLib, 230, 255), NextInteger(RandomLib, 230, 255));
+-- 	}
+-- end
+
+function ParticleEngineHelper.WindParticle(Position, VelocityCFrame)
 	ParticleEngine:Add {
-		Occlusion = true;
-		Size = Vector2.new(0.05 + NextNumber(RandomLib) / 20, 0.05 + NextNumber(RandomLib) / 20);
-		Velocity = GetRandomAngles(VelocityCFrame, 0.2).Position.Unit * NextNumber(RandomLib, 100, 200);
+		Occlusion = false;
+		Size = Vector2.new(0.5, 0.5);
+		Velocity = Vector3.new(), --VelocityCFrame.LookVector * NextNumber(RandomLib, 50, 100);
 		Transparency = 0.1 + NextNumber(RandomLib) * 0.4;
 		Position = Position;
 		Gravity = SNOW_GRAVITY;
 		WindResistance = 10;
 		Lifetime = NextNumber(RandomLib) + 0.5;
-		Color = Color3.fromRGB(NextInteger(RandomLib, 230, 255), NextInteger(RandomLib, 230, 255), NextInteger(RandomLib, 230, 255));
+		Color = Color3.fromRGB(255, 255, 255)
 	}
 end
 
