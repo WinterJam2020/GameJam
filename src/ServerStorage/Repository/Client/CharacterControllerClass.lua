@@ -105,7 +105,7 @@ function CharacterController.new(skiChainCFrames)
 		RootCFrame = root.CFrame,
 		SkiChain = skiChain,
 		SkiChainCFrame = startCFrame,
-		Velocity = Vector3.new()
+		Velocity = startCFrame.LookVector * 30
 	}
 
 	self.Janitor:Add(rig)
