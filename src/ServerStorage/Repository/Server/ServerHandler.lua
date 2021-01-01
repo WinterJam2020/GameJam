@@ -81,7 +81,7 @@ function ServerHandler:StartGameLoop()
 	if self.GameLoop then
 		self.GameLoop.Paused = false
 	else
-		self.GameLoop = SyncedPoller.new(10, function()
+		self.GameLoop = SyncedPoller.new(1, function()
 			if self.GameInProgress.Value then
 				self.GameLoop.Paused = true
 				self.GameInProgress.Changed:Wait()
