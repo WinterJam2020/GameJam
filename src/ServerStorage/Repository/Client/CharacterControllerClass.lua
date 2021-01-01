@@ -94,6 +94,8 @@ function CharacterController.new(skiChainCFrames)
 	rig.Name = Player.Name
 	root.CFrame = startCFrame * ROOT_PART_OFFSET
 	rig.Parent = workspace
+	local animationTrack = rig.AnimationController:LoadAnimation(rig.AnimationController.Stance)
+	animationTrack:Play()
 
 	local self = {
 		Alpha = 0,
@@ -192,7 +194,6 @@ function CharacterController:Step(deltaTime)
 	local mouseX = 2 * Mouse.X / Mouse.ViewSizeX - 1 -- [-1, 1]
 	local newRootCFrame = CFrameUpAt(newPosition, skiChainUp, rootLook)
 		* CFrame.Angles(0, mouseX * -math.rad(MAX_CARVE_ANGLE) / 10, 0)
-
 	-- ski particles
 	if math.random() > 0.5 then
 		local windCFrame = skiChain:GetCFrame(math.clamp(alpha + 0.01, 0, 1))
