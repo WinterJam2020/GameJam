@@ -44,14 +44,14 @@ local REFLECTABLE_GRAVITY = Vector3.new(0, -50, 0)
 
 function ParticleEngineHelper.WindParticle(Position, VelocityCFrame)
 	ParticleEngine:Add {
-		Occlusion = false;
+		Occlusion = true;
 		Size = Vector2.new(0.5, 0.5);
 		Velocity = Vector3.new(), --VelocityCFrame.LookVector * NextNumber(RandomLib, 50, 100);
 		Transparency = 0.1 + NextNumber(RandomLib) * 0.4;
 		Position = Position;
 		Gravity = SNOW_GRAVITY;
 		WindResistance = 10;
-		Lifetime = NextNumber(RandomLib) + 0.5;
+		Lifetime = 3;
 		Color = Color3.fromRGB(255, 255, 255)
 	}
 end
